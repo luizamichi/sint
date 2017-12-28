@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% set page = 'eventos' %}
+
+{% block title %}{{ super() }} - Eventos{% endblock %}
+
+{% block content %}
+	<div class="subcabecalho">
+		<h1>Eventos</h1>
+	</div>
+	<div id="eventos">
+	{% if tuplas %}
+		<!-- Grade de Eventos -->
+		<div class="card-deck">
+		{% for tupla in tuplas %}
+			{% if (loop.index - 1) % colunas == 0 and loop.index > 1 %}
+		</div>
+		<br>
+		<div class="card-deck">
+			{% endif %}
+			<div class="card" data-link="{{ url_for('website.eventos', id=tupla.id) }}">
+				<img alt="Evento {{ tupla.id }}" class="card-img-top" src="{{ url_for('static', filename=tupla.imagens[0].caminho) }}">
+				<div class="card-body">
+					<h5 class="card-title">{{ tupla.titulo }}</h5>
+					{% if tupla.descricao %}
+					<p class="card-text">{{ tupla.descricao|striptags }}</p>
+					{% endif %}
+				</div>
+				<div class="card-footer">
+					<small class="text-muted"><time datetime="{{ tupla.data.strftime('%Y-%m-%dT%H:%M:%S') }}">{{ tupla.data.strftime('%d/%m/%Y') }}</time></small>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
+		<!--/ Grade de Eventos -->
+	{% elif not tupla %}
+		<h5 class="text-center">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</h5>
+	{% endif %}
+
+	{% if tupla %}
+		<!-- Evento -->
+		<div class="text-center">
+			<h1>{{ tupla.titulo }}</h1>
+		</div>
+		{% if tupla.descricao %}
+		<p class="mt-4 text-justify">{{ tupla.descricao | replace('\n', '<br>') | safe }}</p>
+		{% endif %}
+		{% include 'midias-sociais.html' %}
+		<div class="text-center">
+			{% for imagem in tupla.imagens %}
+			<img alt="Imagem {{ imagem.id }}" class="img-fluid img-thumbnail quadro" src="{{ url_for('static', filename=imagem.caminho) }}">
+			{% endfor %}
+		</div>
+		<!--/ Evento -->
+	{% endif %}
+	</div>
+
+	{% if paginas and paginas > 1 %}
+		{% include 'navegador.html' %}
+	{% endif %}
+
+{% endblock %}

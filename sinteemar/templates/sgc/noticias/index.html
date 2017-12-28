@@ -1,0 +1,113 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'noticias' %}
+
+{% block title %}{{ super() }} - Notícias{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-flag fa-lg"></i>
+		Notícias
+	</h1>
+
+	{% if not tupla %}
+	<!-- Formulário de Consulta -->
+	<form action="{{ url_for('sgc.noticias') }}" method="get">
+		<div class="align-items-center form-row">
+			<div class="col-lg-3 col-md-6">
+				<label class="sr-only" for="input-pesquisa">Pesquisa</label>
+				<div class="input-group mb-2">
+					<div class="input-group-prepend">
+						<div class="input-group-text">
+							<i class="fas fa-search"></i>
+						</div>
+					</div>
+					<input class="form-control" id="input-pesquisa" name="pesquisa" min="1" required type="number">
+					<select class="custom-select mr-sm-2" id="input-tipo" name="tipo">
+						<option selected value="id">ID</option>
+						<option value="titulo">Título</option>
+						<option value="subtitulo">Subtítulo</option>
+						<option value="texto">Texto</option>
+						<option value="imagem">Imagem</option>
+						<option value="data">Data</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-block btn-dark mb-2" type="submit">Procurar</button>
+			</div>
+			<div class="col-auto">
+				<a class="btn btn-block btn-outline-dark mb-2" href="{{ url_for('sgc.inserir_noticia') }}">Cadastrar</a>
+			</div>
+		</div>
+	</form>
+	<!--/ Formulário de Consulta -->
+	{% endif %}
+
+	{% if get_flashed_messages() %}
+	<div class="text-center mt-3">
+		<div class="alert alert-{{ get_flashed_messages()[0] }}" role="alert">{{ get_flashed_messages()[1] }}</div>
+	</div>
+	{% endif %}
+
+	{% if tuplas %}
+	<!-- Tabela de Registros -->
+	<table class="table table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">Título</th>
+				<th scope="col">Data - Hora</th>
+				<th scope="col">Ações</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in tuplas %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.data.strftime('%d/%m/%Y - %H:%M:%S') }}</td>
+				<td>
+					<a class="mx-1 text-dark" href="{{ url_for('sgc.noticias', id=tupla.id) }}" title="Visualizar"><i class="far fa-eye fa-lg"></i></a>
+					<a class="mx-1 text-dark" href="{{ url_for('sgc.alterar_noticia', id=tupla.id) }}" title="Alterar"><i class="fas fa-pencil-alt fa-lg"></i></a>
+					<a class="mx-1 text-dark" data-toggle="modal" data-target="#modal" href="#" id="{{ url_for('sgc.remover_noticia', id=tupla.id) }}" title="Remover"><i class="fas fa-trash-alt fa-lg"></i></a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Registros -->
+	{% endif %}
+
+	{% if tupla %}
+	<!-- Visualização de Registro -->
+	<h3>ID</h3>
+	<p>{{ tupla.id }}</p>
+	<h3>Título</h3>
+	<p>{{ tupla.titulo }}</p>
+	{% if tupla.subtitulo %}
+	<h3>Subtítulo</h3>
+	<p>{{ tupla.subtitulo }}</p>
+	{% endif %}
+	<h3>Texto</h3>
+	<div>{{ tupla.texto|safe }}</div>
+	{% if tupla.imagem %}
+	<h3>Imagem</h3>
+	<figure class="figure">
+		<img alt="Noticia {{ tupla.id }}" class="figure-img img-fluid rounded" height="500" src="{{ url_for('static', filename=tupla.imagem.caminho) }}" width="500">
+		<figcaption class="figure-caption">{{ tupla.imagem.arquivo }}</figcaption>
+	</figure>
+	{% endif %}
+	<h3>Usuário</h3>
+	<p>{{ tupla.usuario.nome }}</p>
+	<h3>Data - Hora</h3>
+	<p>{{ tupla.data.strftime('%d/%m/%Y - %H:%M:%S') }}</p>
+	<!--/ Visualização de Registro -->
+
+	{% elif paginas %}
+		{% include 'sgc/navegador.html' %}
+		{% include 'sgc/modal.html' %}
+	{% endif %}
+
+{% endblock %}
