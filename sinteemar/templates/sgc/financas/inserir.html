@@ -1,0 +1,91 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'financas' %}
+
+{% block title %}{{ super() }} - Inserir Finança{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-dollar-sign fa-lg"></i>
+		Inserir Finança
+	</h1>
+
+	{% if get_flashed_messages() %}
+	<div class="mt-3 text-center">
+		<div class="alert alert-{{ get_flashed_messages()[0] }}" role="alert">{{ get_flashed_messages()[1] }}</div>
+	</div>
+	{% endif %}
+
+	<!-- Formulário de Inserção -->
+	<form action="{{ url_for('sgc.inserir_financa') }}" enctype="multipart/form-data" method="post">
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-periodo">Período</label>
+				<select autofocus class="custom-select" id="input-periodo" name="periodo" required>
+					<option disabled value="">Selecione uma opção</option>
+					<optgroup label="Mensal">
+						<option {{ 'selected' if financa.flag[4:] == '01' }} value="01">Janeiro</option>
+						<option {{ 'selected' if financa.flag[4:] == '02' }} value="02">Fevereiro</option>
+						<option {{ 'selected' if financa.flag[4:] == '03' }} value="03">Março</option>
+						<option {{ 'selected' if financa.flag[4:] == '04' }} value="04">Abril</option>
+						<option {{ 'selected' if financa.flag[4:] == '05' }} value="05">Maio</option>
+						<option {{ 'selected' if financa.flag[4:] == '06' }} value="06">Junho</option>
+						<option {{ 'selected' if financa.flag[4:] == '07' }} value="07">Julho</option>
+						<option {{ 'selected' if financa.flag[4:] == '08' }} value="08">Agosto</option>
+						<option {{ 'selected' if financa.flag[4:] == '09' }} value="09">Setembro</option>
+						<option {{ 'selected' if financa.flag[4:] == '10' }} value="10">Outubro</option>
+						<option {{ 'selected' if financa.flag[4:] == '11' }} value="11">Novembro</option>
+						<option {{ 'selected' if financa.flag[4:] == '12' }} value="12">Dezembro</option>
+					</optgroup>
+					<optgroup label="Trimestral">
+						<option {{ 'selected' if financa.flag[4:] == '03.1' }} value="03.1">1º Trimestre</option>
+						<option {{ 'selected' if financa.flag[4:] == '06.1' }} value="06.1">2º Trimestre</option>
+						<option {{ 'selected' if financa.flag[4:] == '09.1' }} value="09.1">3º Trimestre</option>
+						<option {{ 'selected' if financa.flag[4:] == '12.1' }} value="12.1">4º Trimestre</option>
+					</optgroup>
+				</select>
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-ano">Ano</label>
+				<select class="custom-select" id="input-ano" name="ano" required>
+					<option disabled value="">Selecione uma opção</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[0] }} value="{{ ano[0] }}">{{ ano[0] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[1] }} value="{{ ano[1] }}">{{ ano[1] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[2] }} value="{{ ano[2] }}">{{ ano[2] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[3] }} value="{{ ano[3] }}">{{ ano[3] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[4] }} value="{{ ano[4] }}">{{ ano[4] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[5] }} value="{{ ano[5] }}">{{ ano[5] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[6] }} value="{{ ano[6] }}">{{ ano[6] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[7] }} value="{{ ano[7] }}">{{ ano[7] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[8] }} value="{{ ano[8] }}">{{ ano[8] }}</option>
+					<option {{ 'selected' if financa.flag[:4] == ano[9] }} value="{{ ano[9] }}">{{ ano[9] }}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="input-documento">Documento</label>
+			<div class="custom-file">
+				<label class="custom-file-label" for="input-documento">Escolher documento</label>
+				<input accept="application/pdf" class="custom-file-input" id="input-documento" name="documento" required type="file">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div class="embed-responsive embed-responsive-21by9" style="display: none;">
+				<iframe class="embed-responsive-item" id="visualizador-de-documento" title="Documento"></iframe>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-dark" type="submit">Cadastrar</button>
+			</div>
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-outline-dark" type="reset">Limpar</button>
+			</div>
+		</div>
+	</form>
+	<!--/ Formulário de Inserção -->
+
+{% endblock %}

@@ -1,0 +1,695 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'tabelas' %}
+
+{% block title %}{{ super() }} - Tabelas{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-database fa-lg"></i>
+		Tabelas
+	</h1>
+
+	<!-- Formulário de Redirecionamento -->
+	<div class="align-items-center form-row">
+		<div class="col-lg-3 col-md-6">
+			<label class="sr-only" for="input-tabela">Pesquisa</label>
+			<div class="input-group mb-2">
+				<div class="input-group-prepend">
+					<div class="input-group-text">
+						<i class="fas fa-search"></i>
+					</div>
+				</div>
+				<select class="custom-select mr-sm-2" id="input-tabela">
+					<option selected value="acessos">Acessos</option>
+					<option value="arquivos">Arquivos</option>
+					<option value="banners">Banners</option>
+					<option value="boletins">Boletins</option>
+					<option value="convencoes">Convenções</option>
+					<option value="convenios">Convênios</option>
+					<option value="diretoria">Diretoria</option>
+					<option value="editais">Editais</option>
+					<option value="estatuto">Estatuto</option>
+					<option value="eventos">Eventos</option>
+					<option value="financas">Finanças</option>
+					<option value="historico">Histórico</option>
+					<option value="jornais">Jornais</option>
+					<option value="juridicos">Jurídicos</option>
+					<option value="noticias">Notícias</option>
+					<option value="permissoes">Permissões</option>
+					<option value="registros">Registros</option>
+					<option value="usuarios">Usuários</option>
+					<option value="videos">Vídeos</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<!--/ Formulário de Redirecionamento -->
+
+	<!-- Tabela de Acessos -->
+	<br>
+	<h3 id="acessos">Acessos</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">IP</th>
+				<th scope="col">DATA</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in acessos %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.ip }}</td>
+				<td>{{ tupla.data }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Acessos -->
+
+	<!-- Tabela de Arquivos -->
+	<br>
+	<h3 id="arquivos">Arquivos</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">EVENTO</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in arquivos %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.arquivo }}</td>
+				<td><a href="#evento{{ tupla.evento }}">{{ tupla.evento }}</a></td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Arquivos -->
+
+	<!-- Tabela de Banners -->
+	<br>
+	<h3 id="banners">Banners</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in banners %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Banners -->
+
+	<!-- Tabela de Boletins -->
+	<br>
+	<h3 id="boletins">Boletins</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in boletins %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				{% if tupla.imagem %}
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				{% else %}
+				<td>{{ tupla.imagem }}</td>
+				{% endif %}
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Boletins -->
+
+	<!-- Tabela de Convenções -->
+	<br>
+	<h3 id="convencoes">Convenções</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">TIPO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in convencoes %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				<td>{{ tupla.tipo|int }}</td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Convenções -->
+
+	<!-- Tabela de Convênios -->
+	<br>
+	<h3 id="convenios">Convênios</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DESCRICAO</th>
+				<th scope="col">CIDADE</th>
+				<th scope="col">TELEFONE</th>
+				<th scope="col">CELULAR</th>
+				<th scope="col">WEBSITE</th>
+				<th scope="col">EMAIL</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in convenios %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.descricao }}</td>
+				<td>{{ tupla.cidade }}</td>
+				<td>{{ tupla.telefone }}</td>
+				<td>{{ tupla.celular }}</td>
+				{% if tupla.website %}
+				<td><a href="{{ tupla.website }}" target="_blank">{{ tupla.website }}</a></td>
+				{% else %}
+				<td>{{ tupla.website }}</td>
+				{% endif %}
+				{% if tupla.email %}
+				<td><a href="mailto:{{ tupla.email }}" target="_blank">{{ tupla.email }}</a></td>
+				{% else %}
+				<td>{{ tupla.email }}</td>
+				{% endif %}
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				{% if tupla.documento %}
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				{% else %}
+				<td>{{ tupla.documento }}</td>
+				{% endif %}
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Convênios -->
+
+	<!-- Tabela de Diretoria -->
+	<br>
+	<h3 id="diretoria">Diretoria</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">TEXTO</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in diretoria %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.texto }}</td>
+				{% if tupla.imagem %}
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				{% else %}
+				<td>{{ tupla.imagem }}</td>
+				{% endif %}
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Diretoria -->
+
+	<!-- Tabela de Editais -->
+	<br>
+	<h3 id="editais">Editais</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DESCRICAO</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in editais %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.descricao }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Editais -->
+
+	<!-- Tabela de Estatuto -->
+	<br>
+	<h3 id="estatuto">Estatuto</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in estatuto %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Estatuto -->
+
+	<!-- Tabela de Eventos -->
+	<br>
+	<h3 id="eventos">Eventos</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DESCRICAO</th>
+				<th scope="col">DIRETORIO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in eventos %}
+			<tr>
+				<th id="evento{{ tupla.id }}">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.descricao }}</td>
+				<td>{{ tupla.diretorio }}</td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Eventos -->
+
+	<!-- Tabela de Finanças -->
+	<br>
+	<h3 id="financas">Finanças</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">PERIODO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in financas %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.periodo }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Finanças -->
+
+	<!-- Tabela de Histórico -->
+	<br>
+	<h3 id="historico">Histórico</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in historico %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Histórico -->
+
+	<!-- Tabela de Jornais -->
+	<br>
+	<h3 id="jornais">Jornais</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">EDICAO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in jornais %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.edicao }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				{% if tupla.imagem %}
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				{% else %}
+				<td>{{ tupla.imagem }}</td>
+				{% endif %}
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Jornais -->
+
+	<!-- Tabela de Jurídicos -->
+	<br>
+	<h3 id="juridicos">Jurídicos</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">DESCRICAO</th>
+				<th scope="col">DOCUMENTO</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in juridicos %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.descricao }}</td>
+				<td><a href="{{ url_for('static', filename=tupla.documento.caminho) }}" target="_blank">{{ tupla.documento.arquivo }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Jurídicos -->
+
+	<!-- Tabela de Notícias -->
+	<br>
+	<h3 id="noticias">Notícias</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">SUBTITULO</th>
+				<th scope="col">TEXTO</th>
+				<th scope="col">IMAGEM</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in noticias %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td>{{ tupla.subtitulo }}</td>
+				<td>{{ tupla.texto }}</td>
+				{% if tupla.imagem %}
+				<td><a href="{{ url_for('static', filename=tupla.imagem.caminho) }}" target="_blank">{{ tupla.imagem.arquivo }}</a></td>
+				{% else %}
+				<td>{{ tupla.imagem }}</td>
+				{% endif %}
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Notícias -->
+
+	<!-- Tabela de Permissões -->
+	<br>
+	<h3 id="permissoes">Permissões</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">ADMIN</th>
+				<th scope="col">ACESSOS</th>
+				<th scope="col">BANNERS</th>
+				<th scope="col">BOLETINS</th>
+				<th scope="col">CONVENCOES</th>
+				<th scope="col">CONVENIOS</th>
+				<th scope="col">DIRETORIA</th>
+				<th scope="col">DIRETORIO</th>
+				<th scope="col">EDITAIS</th>
+				<th scope="col">ESTATUTO</th>
+				<th scope="col">EVENTOS</th>
+				<th scope="col">FINANCAS</th>
+				<th scope="col">HISTORICO</th>
+				<th scope="col">JORNAIS</th>
+				<th scope="col">JURIDICOS</th>
+				<th scope="col">NOTICIAS</th>
+				<th scope="col">REGISTROS</th>
+				<th scope="col">TABELAS</th>
+				<th scope="col">USUARIOS</th>
+				<th scope="col">VIDEOS</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in permissoes %}
+			<tr>
+				<th id="permissao{{ tupla.id }}">{{ tupla.id }}</th>
+				<td>{{ tupla.admin|int }}</td>
+				<td>{{ tupla.acessos|int }}</td>
+				<td>{{ tupla.banners|int }}</td>
+				<td>{{ tupla.boletins|int }}</td>
+				<td>{{ tupla.convencoes|int }}</td>
+				<td>{{ tupla.convenios|int }}</td>
+				<td>{{ tupla.diretoria|int }}</td>
+				<td>{{ tupla.diretorio|int }}</td>
+				<td>{{ tupla.editais|int }}</td>
+				<td>{{ tupla.estatuto|int }}</td>
+				<td>{{ tupla.eventos|int }}</td>
+				<td>{{ tupla.financas|int }}</td>
+				<td>{{ tupla.historico|int }}</td>
+				<td>{{ tupla.jornais|int }}</td>
+				<td>{{ tupla.juridicos|int }}</td>
+				<td>{{ tupla.noticias|int }}</td>
+				<td>{{ tupla.registros|int }}</td>
+				<td>{{ tupla.tabelas|int }}</td>
+				<td>{{ tupla.usuarios|int }}</td>
+				<td>{{ tupla.videos|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Permissões -->
+
+	<!-- Tabela de Registros -->
+	<br>
+	<h3 id="registros">Registros</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">DESCRICAO</th>
+				<th scope="col">IP</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in registros %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.descricao }}</td>
+				<td>{{ tupla.ip }}</td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Registros -->
+
+	<!-- Tabela de Usuários -->
+	<br>
+	<h3 id="usuarios">Usuários</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">NOME</th>
+				<th scope="col">EMAIL</th>
+				<th scope="col">LOGIN</th>
+				<th scope="col">SENHA</th>
+				<th scope="col">PERMISSAO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in usuarios %}
+			<tr>
+				<th id="usuario{{ tupla.id }}">{{ tupla.id }}</th>
+				<td>{{ tupla.nome }}</td>
+				<td><a href="mailto:{{ tupla.email }}" target="_blank">{{ tupla.email }}</a></td>
+				<td>{{ tupla.login }}</td>
+				<td>{{ tupla.senha }}</td>
+				<td><a href="#permissao{{ tupla.permissao.id }}">{{ tupla.permissao.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Usuários -->
+
+	<!-- Tabela de Vídeos -->
+	<br>
+	<h3 id="videos">Vídeos</h3>
+	<table class="table table-hover table-responsive table-striped">
+		<caption></caption>
+		<thead>
+			<tr>
+				<th scope="col">ID</th>
+				<th scope="col">TITULO</th>
+				<th scope="col">URL</th>
+				<th scope="col">USUARIO</th>
+				<th scope="col">DATA</th>
+				<th scope="col">ATIVO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tupla in videos %}
+			<tr>
+				<th scope="col">{{ tupla.id }}</th>
+				<td>{{ tupla.titulo }}</td>
+				<td><a href="{{ tupla.url }}" target="_blank">{{ tupla.url }}</a></td>
+				<td><a href="#usuario{{ tupla.usuario.id }}">{{ tupla.usuario.id }}</a></td>
+				<td>{{ tupla.data }}</td>
+				<td>{{ tupla.ativo|int }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!--/ Tabela de Vídeos -->
+
+{% endblock %}

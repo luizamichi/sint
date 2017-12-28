@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% set page = 'editais' %}
+
+{% block title %}{{ super() }} - Editais{% endblock %}
+
+{% block content %}
+	<div class="subcabecalho">
+		<h1>Editais</h1>
+	</div>
+	<div id="editais">
+	{% if tuplas %}
+		<!-- Grade de Editais -->
+		<div class="card-deck">
+		{% for tupla in tuplas %}
+			{% if (loop.index - 1) % colunas == 0 and loop.index > 1 %}
+		</div>
+		<br>
+		<div class="card-deck">
+			{% endif %}
+			<div class="card" data-link="{{ url_for('website.editais', id=tupla.id) }}">
+				<img alt="Edital {{ tupla.id }}" class="card-img-top" src="{{ url_for('static', filename=tupla.imagem.caminho) }}">
+				<div class="card-body">
+					<h5 class="card-title">{{ tupla.titulo }}</h5>
+				</div>
+				<div class="card-footer">
+					<small class="text-muted"><time datetime="{{ tupla.data.strftime('%Y-%m-%dT%H:%M:%S') }}">{{ tupla.data.strftime('%d/%m/%Y') }}</time></small>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
+		<!--/ Grade de Editais -->
+	{% elif not tupla %}
+		<h5 class="text-center">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</h5>
+	{% endif %}
+
+	{% if tupla %}
+		<!-- Edital -->
+		<div class="text-center">
+			<h1>{{ tupla.titulo }}</h1>
+			{% if tupla.imagem %}
+			<img alt="Edital {{ tupla.id }}" class="img-fluid outdoor rounded" src="{{ url_for('static', filename=tupla.imagem.caminho) }}">
+			{% endif %}
+		</div>
+		{% include 'midias-sociais.html' %}
+		{% if tupla.descricao %}
+		<div class="text-justify">{{ tupla.descricao|safe }}</div>
+		{% endif %}
+		<!--/ Edital -->
+	{% endif %}
+	</div>
+
+	{% if paginas and paginas > 1 %}
+		{% include 'navegador.html' %}
+	{% endif %}
+
+{% endblock %}

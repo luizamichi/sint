@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% set page = 'boletins' %}
+
+{% block title %}{{ super() }} - Boletins{% endblock %}
+
+{% block content %}
+	<div class="subcabecalho">
+		<h1>Boletins</h1>
+	</div>
+	<div id="boletins">
+	{% if tuplas %}
+		<div class="card-deck">
+		{% for tupla in tuplas %}
+			{% if (loop.index - 1) % colunas == 0 and loop.index > 1 %}
+		</div>
+		<br>
+		<div class="card-deck">
+			{% endif %}
+			<div class="card" data-link="{{ url_for('static', filename=tupla.documento.caminho) }}">
+				<img alt="Boletim {{ tupla.id }}" class="card-img-top" src="{{ url_for('static', filename=tupla.imagem.caminho if tupla.imagem else 'uploads/boletim.jpg') }}">
+				<div class="card-body">
+					<h5 class="card-title">{{ tupla.titulo }}</h5>
+				</div>
+				<div class="card-footer">
+					<small class="text-muted">{{ tupla.data.strftime('%d/%m/%Y') }}</small>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
+	{% else %}
+		<h5 class="text-center">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</h5>
+	{% endif %}
+	</div>
+	{% if paginas > 1 %}
+		{% include 'navegador.html' %}
+	{% endif %}
+
+{% endblock %}

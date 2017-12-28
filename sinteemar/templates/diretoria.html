@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% set page = 'diretoria' %}
+
+{% block title %}{{ super() }} - Diretoria{% endblock %}
+
+{% block content %}
+	<div class="subcabecalho">
+		<h1>Diretoria</h1>
+	</div>
+	{% if tupla %}
+	<div id="diretoria">
+		{% if tupla.imagem %}
+		<div class="mb-2 text-center">
+			<img alt="Diretoria" class="figure-img img-fluid outdoor rounded" src="{{ url_for('static', filename=tupla.imagem.caminho) }}">
+		</div>
+		{% endif %}
+		{{ tupla.texto|safe }}
+	</div>
+	{% elif not tupla %}
+	<h5 class="text-center">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</h5>
+	{% endif %}
+
+{% endblock %}

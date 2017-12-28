@@ -1,0 +1,179 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'ajuda' %}
+
+{% block title %}{{ super() }} - Ajuda{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-question-circle fa-lg"></i>
+		Ajuda
+	</h1>
+
+	<!-- Tópicos de Ajuda -->
+	{% if permissao['acessos'] %}
+	<h3>Acessos</h3>
+	<p><em>Contador de visitas da página.</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['banners'] %}
+	<h3>Banners</h3>
+	<p><em>Imagem destacada da página inicial.</em></p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['boletins'] %}
+	<h3>Boletins</h3>
+	<p><em>Conteúdo informativo.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.<em> *opcional</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['convenções'] %}
+	<h3>Convenções</h3>
+	<p><em>Conjunto de acordos.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<p><strong>Tipo:</strong> Vigente ou anterior.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['convênios'] %}
+	<h3>Convênios</h3>
+	<p><em>Contratos firmados com empresa.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Descrição:</strong> Texto com no mínimo 6 caracteres.</p>
+	<p><strong>Cidade:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.</p>
+	<p><strong>Telefone:</strong> Texto no formato (XX) XXXX-XXXX.<em> *opcional</em></p>
+	<p><strong>Celular:</strong> Texto no formato (XX) XXXXX-XXXX.<em> *opcional</em></p>
+	<p><strong>Website:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.<em> *opcional</em></p>
+	<p><strong>E-mail:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.<em> *opcional</em></p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.<em> *opcional</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['diretoria'] %}
+	<h3>Diretoria</h3>
+	<p><em>Membros da atual diretoria.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Texto:</strong> Texto com no mínimo 6 caracteres.</p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.<em> *opcional</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['diretório'] %}
+	<h3>Diretório</h3>
+	<p><em>Listagem de arquivos e subdiretórios do sistema.</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['editais'] %}
+	<h3>Editais</h3>
+	<p><em>Publicações oficiais.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Descrição:</strong> Texto com no mínimo 6 caracteres.<em> *opcional</em></p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['estatuto'] %}
+	<h3>Estatuto</h3>
+	<p><em>Variedade de normas jurídicas.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Descrição:</strong> Texto com no mínimo 6 caracteres.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['eventos'] %}
+	<h3>Eventos</h3>
+	<p><em>Acontecimentos institucionais.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Descrição:</strong> Texto com no mínimo 6 caracteres.<em> *opcional</em></p>
+	<p><strong>Imagem:</strong> Arquivos de extensão JPEG, JPG ou PNG.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['finanças'] %}
+	<h3>Finanças</h3>
+	<p><em>Conjunto de receitas e despesas.</em></p>
+	<p><strong>Período:</strong> Mensal ou trimestral.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['histórico'] %}
+	<h3>Histórico</h3>
+	<p><em>Diretorias anteriores.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['jornais'] %}
+	<h3>Jornais</h3>
+	<p><em>Publicações periódicas.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Edição:</strong> Número inteiro maior que 0.</p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.<em> *opcional</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['jurídicos'] %}
+	<h3>Jurídicos</h3>
+	<p><em>Publicações relativa ao direito.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Descrição:</strong> Texto com no mínimo 6 caracteres.<em> *opcional</em></p>
+	<p><strong>Documento:</strong> Arquivo de extensão PDF.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['notícias'] %}
+	<h3>Notícias</h3>
+	<p><em>Divulgação de acontecimentos.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>Subtítulo:</strong> Texto com no mínimo 6 caracteres.<em> *opcional</em></p>
+	<p><strong>Texto:</strong> Texto com no mínimo 6 caracteres.</p>
+	<p><strong>Imagem:</strong> Arquivo de extensão JPG, JPEG ou PNG.<em> *opcional</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['registros'] %}
+	<h3>Registros</h3>
+	<p><em>Atividades dos usuários do sistema.</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['tabelas'] %}
+	<h3>Tabelas</h3>
+	<p><em>Registros do banco de dados.</em></p>
+	<br>
+	{% endif %}
+
+	{% if permissao['usuários'] %}
+	<h3>Usuários</h3>
+	<p><em>Responsáveis pela manipulação dos dados do sistema.</em></p>
+	<p><strong>Nome:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.</p>
+	<p><strong>E-mail:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.</p>
+	<p><strong>Login:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.</p>
+	<p><strong>Senha:</strong> Texto com no mínimo 6 caracteres.</p>
+	<p><strong>Permissões:</strong> Atividades de gerenciamento.</p>
+	<br>
+	{% endif %}
+
+	{% if permissao['vídeos'] %}
+	<h3>Vídeos</h3>
+	<p><em>Vídeos vinculados a plataforma YouTube.</em></p>
+	<p><strong>Título:</strong> Texto com no mínimo 6 e no máximo 128 caracteres.</p>
+	<p><strong>URL:</strong> Texto com no mínimo 6 e no máximo 64 caracteres.</p>
+	<br>
+	{% endif %}
+	<!--/ Tópicos de Ajuda -->
+
+{% endblock %}
