@@ -1,0 +1,39 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'diretoria' %}
+
+{% block title %}{{ super() }} - Diretoria{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-users fa-lg"></i>
+		Diretoria
+	</h1>
+
+	{% if tupla %}
+	<!-- Visualização de Registro -->
+	<h3>Título</h3>
+	<p>{{ tupla.titulo }}</p>
+	<h3>Texto</h3>
+	<div>{{ tupla.texto|safe }}</div>
+	{% if tupla.imagem %}
+	<h3>Imagem</h3>
+	<figure class="figure">
+		<img alt="Boletim {{ tupla.id }}" class="figure-img img-fluid rounded" height="500" src="{{ url_for('static', filename=tupla.imagem.caminho) }}" width="500">
+		<figcaption class="figure-caption">{{ tupla.imagem.arquivo }}</figcaption>
+	</figure>
+	{% endif %}
+	<h3>Usuário</h3>
+	<p>{{ tupla.usuario.nome }}</p>
+	<h3>Data - Hora</h3>
+	<p>{{ tupla.data.strftime('%d/%m/%Y - %H:%M:%S') }}</p>
+	<!--/ Visualização de Registro -->
+	{% endif %}
+
+	<div class="row">
+		<div class="col-lg-1 col-md-2">
+			<a class="btn btn-block btn-dark mb-2" href="{{ url_for('sgc.alterar_diretoria') }}">Alterar</a>
+		</div>
+	</div>
+
+{% endblock %}

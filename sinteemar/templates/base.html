@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<title>{% block title %}Sinteemar{% endblock %}</title>
+
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta name="keywords" content="Maringá, sindicato, Sinteemar">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Facebook Meta Tags -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Sinteemar">
+	<meta property="og:description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="og:image" content="https://www.sinteemar.com.br/static/img/sinteemar.png">
+	<meta property="og:url" content="https://www.sinteemar.com.br">
+
+	<!-- Twitter Meta Tags -->
+	<meta name="twitter:title" content="Sinteemar">
+	<meta name="twitter:description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta name="twitter:image" content="https://www.sinteemar.com.br/static/img/sinteemar.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:url" content="https://www.sinteemar.com.br">
+
+	<!-- Ícone do Cabeçalho do Navegador -->
+	<link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="shortcut icon" type="image/x-icon">
+
+	<!-- Bootstrap CSS -->
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+
+	<!-- FontAwesome CSS -->
+	<link href="{{ url_for('static', filename='css/all.min.css') }}" rel="stylesheet" type="text/css">
+
+	<!-- Folhas de Estilo Customizada Para o Template -->
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+	<!-- Cabeçalho da Página -->
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-dark">
+			<img alt="Sinteemar" class="logo mx-3" height="35" src="{{ url_for('static', filename='img/logo.svg') }}" width="35">
+			<a class="navbar-brand" href="{{ url_for('website.index') }}">SINTEEMAR</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="ml-auto navbar-nav">
+					<li class="nav-item {{ 'active' if page == 'inicio' else '' }}">
+						<a class="nav-link" href="{{ url_for('website.index') }}">Início<span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'boletins' else '' }}" href="{{ url_for('website.boletins') }}">Boletins</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'convencoes' else '' }}" href="{{ url_for('website.convencoes') }}">Convenções</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'convenios' else '' }}" href="{{ url_for('website.convenios') }}">Convênios</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'editais' else '' }}" href="{{ url_for('website.editais') }}">Editais</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'eventos' else '' }}" href="{{ url_for('website.eventos') }}">Eventos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'financas' else '' }}" href="{{ url_for('website.financas') }}">Finanças</a>
+					</li>
+					<li class="dropdown nav-item">
+						<a class="nav-link dropdown-toggle {{ 'active' if page in ['diretoria', 'estatuto', 'historico'] else '' }}" href="#" id="dropdown-institucional" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Institucional
+						</a>
+						<div class="dropdown-menu" aria-labelledby="dropdown-institucional">
+							<a class="dropdown-item {{ 'active' if page == 'diretoria' else '' }}" href="{{ url_for('website.diretoria') }}">Diretoria</a>
+							<a class="dropdown-item {{ 'active' if page == 'estatuto' else '' }}" href="{{ url_for('website.estatuto') }}">Estatuto</a>
+							<a class="dropdown-item {{ 'active' if page == 'historico' else '' }}" href="{{ url_for('website.historico') }}">Histórico</a>
+						</div>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'jornais' else '' }}" href="{{ url_for('website.jornais') }}">Jornais</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'juridicos' else '' }}" href="{{ url_for('website.juridicos') }}">Jurídicos</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'noticias' else '' }}" href="{{ url_for('website.noticias') }}">Notícias</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link {{ 'active' if page == 'videos' else '' }}" href="{{ url_for('website.videos') }}">Vídeos</a>
+					</li>
+				</ul>
+				<div class="social-part">
+					<a href="https://www.facebook.com/sinteemar" target="_blank" title="Siga-nos no Facebook"><i class="fab fa-facebook-square fa-lg fa-inverse" aria-hidden="true"></i></a>
+					<a href="https://wa.me/554499613561" target="_blank" title="Entre em contato conosco pelo WhatsApp"><i class="fab fa-whatsapp fa-lg fa-inverse" aria-hidden="true"></i></a>
+					<a href="https://www.youtube.com/user/sinteemar" target="_blank" title="Acompanhe o nosso canal no YouTube"><i class="fab fa-youtube fa-lg fa-inverse" aria-hidden="true"></i></a>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<!--/ Cabeçalho da Página -->
+
+	<!-- Conteúdo da Página -->
+	<div class="container" id="page-content">
+		{% block content %}
+		{% endblock %}
+	</div>
+	<!--/ Conteúdo da Página -->
+
+	<!-- Rodapé -->
+	<footer>
+		<div class="container">
+			<div class="row mx-md-n5">
+				<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+					<h5>QUEM SOMOS</h5>
+					<hr>
+					<p>O Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá é uma instituição com atuação voltada para os interesses dos professores e funcionários de redes de ensino público e privado de Maringá.</p>
+				</div>
+				<div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4">
+					<h5>CONTATO</h5>
+					<hr>
+					<ul class="list-unstyled">
+						<li>Endereço: Rua Prof. Itamar Orlando Soares, 357</li>
+						<li>Bairro: Jardim Universitário</li>
+						<li>Cidade: Maringá, PR</li>
+						<li>CEP: 87.020-270</li>
+						<li>Telefone: (44) 3225-1611</li>
+						<li>E-mail: sinteemar@sinteemar.com.br</li>
+					</ul>
+				</div>
+				<div class="col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4">
+					<h5>LINKS</h5>
+					<hr>
+					<ol>
+						<li><a href="{{ url_for('website.index') }}"><i class="fas fa-home fa-fw mr-1"></i>Início</a></li>
+						<li><a href="{{ url_for('website.boletins') }}"><i class="fas fa-envelope-open-text fa-fw mr-1"></i>Boletins</a></li>
+						<li><a href="{{ url_for('website.convencoes') }}"><i class="fas fa-pen-fancy fa-fw mr-1"></i>Convenções</a></li>
+						<li><a href="{{ url_for('website.convenios') }}"><i class="fas fa-credit-card fa-fw mr-1"></i>Convênios</a></li>
+						<li><a href="{{ url_for('website.diretoria') }}"><i class="fas fa-users fa-fw mr-1"></i>Diretoria</a></li>
+						<li><a href="{{ url_for('website.editais') }}"><i class="fas fa-file-alt fa-fw mr-1"></i>Editais</a></li>
+						<li><a href="{{ url_for('website.estatuto') }}"><i class="fas fa-book fa-fw mr-1"></i>Estatuto</a></li>
+						<li><a href="{{ url_for('website.eventos') }}"><i class="fas fa-calendar-alt fa-fw mr-1"></i>Eventos</a></li>
+						<li><a href="http://sweb1.diretainformatica.com.br:7080/prosindweb/index.php?sind=401" target="_blank"><i class="fas fa-barcode fa-fw mr-1"></i>Guias</a></li>
+						<li><a href="{{ url_for('website.financas') }}"><i class="fas fa-dollar-sign fa-fw mr-1"></i>Finanças</a></li>
+						<li><a href="{{ url_for('website.historico') }}"><i class="fas fa-clipboard-list fa-fw mr-1"></i>Histórico</a></li>
+						<li><a href="{{ url_for('website.jornais') }}"><i class="fas fa-newspaper fa-fw mr-1"></i>Jornais</a></li>
+						<li><a href="{{ url_for('website.juridicos') }}"><i class="fas fa-balance-scale fa-fw mr-1"></i>Jurídicos</a></li>
+						<li><a href="{{ url_for('website.noticias') }}"><i class="fas fa-flag fa-fw mr-1"></i>Notícias</a></li>
+						<li><a href="{{ url_for('website.videos') }}"><i class="fas fa-history fa-fw mr-1"></i>Vídeos</a></li>
+					</ol>
+				</div>
+			</div>
+		</div>
+		<div class="copyright text-center">
+			<p class="my-2">Copyright &copy; 2017 Sinteemar. Todos os direitos reservados.</p>
+			<a href="https://luizamichi.com.br" target="_blank" title="Desenvolvido por Luiz Joaquim Aderaldo Amichi"><img alt="Luiz Joaquim Aderaldo Amichi" src="{{ url_for('static', filename='img/luiz_amichi.svg') }}" width="50"></a>
+		</div>
+	</footer>
+	<!--/ Rodapé -->
+
+	<!-- jQuery, Bootstrap Scripts -->
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+	<script>
+		$(function () {
+			console.log("%cSindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá", "font-size: 25px");
+			console.log("%cCopyright © 2017 Sinteemar. Todos os direitos reservados.", "font-size: 15px");
+
+			$("#index div.card, #boletins div.card, #editais div.card, #eventos div.card, #jornais div.card, #noticias div.card, #videos div.card").click(function () {
+				window.location = $(this).data("link");
+			});
+
+		});
+	</script>
+
+</body>
+
+</html>

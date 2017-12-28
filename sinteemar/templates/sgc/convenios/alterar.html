@@ -1,0 +1,104 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'convenios' %}
+
+{% block title %}{{ super() }} - Alterar Convênio{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-credit-card fa-lg"></i>
+		Alterar Convênio
+	</h1>
+
+	{% if get_flashed_messages() %}
+	<div class="mt-3 text-center">
+		<div class="alert alert-{{ get_flashed_messages()[0] }}" role="alert">{{ get_flashed_messages()[1] }}</div>
+	</div>
+	{% endif %}
+
+	<!-- Formulário de Alteração -->
+	<form action="{{ url_for('sgc.alterar_convenio') }}" enctype="multipart/form-data" method="post">
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-titulo">Título</label>
+				<input autofocus class="form-control" id="input-titulo" maxlength="128" minlength="6" name="titulo" required type="text" value="{{ convenio.titulo }}">
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-cidade">Cidade</label>
+				<input class="form-control" id="input-cidade" maxlength="64" minlength="6" name="cidade" required type="text" value="{{ convenio.cidade }}">
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-telefone">Telefone</label>
+				<input class="form-control" id="input-telefone" maxlength="14" minlength="14" name="telefone" pattern="\([0-9]{2}\)\s[0-9]{4}-[0-9]{4}" type="tel" value="{{ convenio.telefone if convenio.telefone else '' }}">
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-celular">Celular</label>
+				<input class="form-control" id="input-celular" maxlength="15" minlength="15" name="celular" pattern="\([0-9]{2}\)\s[0-9]{5}-[0-9]{4}" type="tel" value="{{ convenio.celular if convenio.celular else '' }}">
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-website">Website</label>
+				<input class="form-control" id="input-website" maxlength="64" minlength="6" name="website" type="url" value="{{ convenio.website if convenio.website else '' }}">
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-email">E-mail</label>
+				<input class="form-control" id="input-email" maxlength="64" minlength="6" name="email" type="email" value="{{ convenio.email if convenio.email else '' }}">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="input-descricao">Descrição</label>
+			<textarea class="form-control" id="input-descricao" name="descricao" minlength="6" rows="5" required>{{ convenio.descricao }}</textarea>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-imagem">Imagem</label>
+				<div class="custom-file">
+					<label class="custom-file-label" for="input-imagem">{{ convenio.imagem.arquivo }}</label>
+					<input accept="image/x-png, image/jpeg" class="custom-file-input" id="input-imagem" name="imagem" type="file">
+				</div>
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-documento">Documento</label>
+				<div class="custom-file">
+					<label class="custom-file-label" for="input-documento">{{ convenio.documento.arquivo if convenio.documento else 'Escolher documento' }}</label>
+					<input accept="application/pdf" class="custom-file-input" id="input-documento" name="documento" type="file">
+					<input name="remover-documento" type="hidden">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<div class="text-center">
+					<img alt="Convênio {{ convenio.id }}" class="img-thumbnail rounded" height="500" id="visualizador-de-imagem" src="{{ url_for('static', filename=convenio.imagem.caminho) }}" width="500">
+				</div>
+			</div>
+			<div class="col-md-6 form-group">
+				<div class="embed-responsive embed-responsive-21by9" style="{{ '' if convenio.documento else 'display: none;' }}">
+					<iframe class="embed-responsive-item" id="visualizador-de-documento" src="{{ url_for('static', filename=convenio.documento.caminho) }}" title="Documento"></iframe>
+				</div>
+				<div class="text-center" style="{{ '' if convenio.documento else 'display: none;' }}">
+					<a class="text-danger" href="#" id="remove-documento">Remover</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-dark" type="submit">Alterar</button>
+			</div>
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-outline-dark" type="reset">Limpar</button>
+			</div>
+		</div>
+	</form>
+	<!--/ Formulário de Alteração -->
+
+{% endblock %}

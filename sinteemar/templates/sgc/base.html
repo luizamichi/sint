@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<title>{% block title %}Sistema de Gerenciamento de Conteúdo{% endblock %}</title>
+
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Gestor de publicação de conteúdo em plataformas digitais">
+	<meta name="keywords" content="CMS, SGC, CRUD">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Ícone do cabeçalho do navegador -->
+	<link href="{{ url_for('static', filename='img/sgc.ico') }}" rel="shortcut icon" type="image/x-icon">
+
+	<!-- Bootstrap CSS -->
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+
+	<!-- FontAwesome CSS -->
+	<link href="{{ url_for('static', filename='css/all.min.css') }}" rel="stylesheet" type="text/css">
+
+	{% if page in ['diretoria', 'editais', 'noticias'] %}
+	<!-- SummerNote CSS -->
+	<link href="{{ url_for('static', filename='css/summernote-bs4.min.css') }}" rel="stylesheet" type="text/css">
+	{% endif %}
+
+	<!-- Folhas de estilo customizada para o template -->
+	<link href="{{ url_for('static', filename='css/sgc-style.css') }}" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+	<div class="d-flex" id="wrapper">
+
+		<!-- Menu Lateral -->
+		<div class="bg-light border-right" id="sidebar-wrapper">
+			<div class="sidebar-heading text-center">
+				<img alt="SGC" height="20" src="{{ url_for('static', filename='img/sgc.svg') }}" width="20">
+				<strong>SGC</strong>
+			</div>
+			<div class="list-group list-group-flush">
+				{% if permissao['acessos'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'acessos' else 'bg-light' }}" href="{{ url_for('sgc.acessos') }}">
+					<i class="far fa-eye fa-fw"></i>&nbsp;Acessos
+				</a>
+				{% endif %}
+				{% if permissao['banners'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'banners' else 'bg-light' }}" href="{{ url_for('sgc.banners') }}">
+					<i class="fas fa-ad fa-fw"></i>&nbsp;Banners
+				</a>
+				{% endif %}
+				{% if permissao['boletins'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'boletins' else 'bg-light' }}" href="{{ url_for('sgc.boletins') }}">
+					<i class="fas fa-envelope-open-text fa-fw"></i>&nbsp;Boletins
+				</a>
+				{% endif %}
+				{% if permissao['convenções'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'convencoes' else 'bg-light' }}" href="{{ url_for('sgc.convencoes') }}">
+					<i class="fas fa-pen-fancy fa-fw"></i>&nbsp;Convenções
+				</a>
+				{% endif %}
+				{% if permissao['convênios'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'convenios' else 'bg-light' }}" href="{{ url_for('sgc.convenios') }}">
+					<i class="fas fa-credit-card fa-fw"></i>&nbsp;Convênios
+				</a>
+				{% endif %}
+				{% if permissao['diretoria'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'diretoria' else 'bg-light' }}" href="{{ url_for('sgc.diretoria') }}">
+					<i class="fas fa-users fa-fw"></i>&nbsp;Diretoria
+				</a>
+				{% endif %}
+				{% if permissao['diretório'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'diretorio' else 'bg-light' }}" href="{{ url_for('sgc.diretorio') }}">
+					<i class="fas fa-folder-open fa-fw"></i>&nbsp;Diretório
+				</a>
+				{% endif %}
+				{% if permissao['editais'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'editais' else 'bg-light' }}" href="{{ url_for('sgc.editais') }}">
+					<i class="fas fa-file-alt fa-fw"></i>&nbsp;Editais
+				</a>
+				{% endif %}
+				{% if permissao['estatuto'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'estatuto' else 'bg-light' }}" href="{{ url_for('sgc.estatuto') }}">
+					<i class="fas fa-book fa-fw"></i>&nbsp;Estatuto
+				</a>
+				{% endif %}
+				{% if permissao['eventos'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'eventos' else 'bg-light' }}" href="{{ url_for('sgc.eventos') }}">
+					<i class="fas fa-calendar-alt fa-fw"></i>&nbsp;Eventos
+				</a>
+				{% endif %}
+				{% if permissao['finanças'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'financas' else 'bg-light' }}" href="{{ url_for('sgc.financas') }}">
+					<i class="fas fa-dollar-sign fa-fw"></i>&nbsp;Finanças
+				</a>
+				{% endif %}
+				{% if permissao['histórico'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'historico' else 'bg-light' }}" href="{{ url_for('sgc.historico') }}">
+					<i class="fas fa-clipboard-list fa-fw"></i>&nbsp;Histórico
+				</a>
+				{% endif %}
+				{% if permissao['jornais'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'jornais' else 'bg-light' }}" href="{{ url_for('sgc.jornais') }}">
+					<i class="fas fa-newspaper fa-fw"></i>&nbsp;Jornais
+				</a>
+				{% endif %}
+				{% if permissao['jurídicos'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'juridicos' else 'bg-light' }}" href="{{ url_for('sgc.juridicos') }}">
+					<i class="fas fa-balance-scale fa-fw"></i>&nbsp;Jurídicos
+				</a>
+				{% endif %}
+				{% if permissao['notícias'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'noticias' else 'bg-light' }}" href="{{ url_for('sgc.noticias') }}">
+					<i class="fas fa-flag fa-fw"></i>&nbsp;Notícias
+				</a>
+				{% endif %}
+				{% if permissao['registros'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'registros' else 'bg-light' }}" href="{{ url_for('sgc.registros') }}">
+					<i class="fas fa-history fa-fw"></i>&nbsp;Registros
+				</a>
+				{% endif %}
+				{% if permissao['tabelas'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'tabelas' else 'bg-light' }}" href="{{ url_for('sgc.tabelas') }}">
+					<i class="fas fa-database fa-fw"></i>&nbsp;Tabelas
+				</a>
+				{% endif %}
+				{% if permissao['usuários'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'usuarios' else 'bg-light' }}" href="{{ url_for('sgc.usuarios') }}">
+					<i class="fas fa-user fa-fw"></i>&nbsp;Usuários
+				</a>
+				{% endif %}
+				{% if permissao['vídeos'] %}
+				<a class="list-group-item list-group-item-action {{ 'list-group-item-dark' if page == 'videos' else 'bg-light' }}" href="{{ url_for('sgc.videos') }}">
+					<i class="fas fa-video fa-fw"></i>&nbsp;Vídeos
+				</a>
+				{% endif %}
+			</div>
+		</div>
+		<!--/ Menu Lateral -->
+
+		<!-- Moldura da Página -->
+		<div id="page-content-wrapper">
+
+			<!-- Barra Superior -->
+			<nav class="bg-light border-bottom navbar navbar-expand-lg navbar-light sticky-top">
+				<button class="btn btn-outline-dark" id="menu-toggle"><i class="fas fa-align-left"></i></button>
+
+				<button aria-controls="top-menu" aria-expanded="false" aria-label="Menu de navegação" class="navbar-toggler" data-target="#top-menu" data-toggle="collapse" type="button">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="top-menu">
+					<ul class="ml-auto mt-2 mt-lg-0 navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link {{ 'active' if page == 'inicio' else '' }}" href="{{ url_for('sgc.index') }}">Início</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ 'active' if page == 'suporte' else '' }}" href="{{ url_for('sgc.suporte') }}">Suporte</a>
+						</li>
+						<li class="dropdown nav-item">
+							<a aria-expanded="false" aria-haspopup="true" class="dropdown-toggle nav-link {{ 'active' if page in ['conta', 'ajuda'] else '' }}" data-toggle="dropdown" href="#" id="submenu-opcoes" role="button">
+								Opções
+							</a>
+							<div aria-labelledby="submenu-opcoes" class="dropdown-menu dropdown-menu-right">
+								<a class="dropdown-item {{ 'list-group-item-dark' if page == 'conta' else '' }}" href="{{ url_for('sgc.conta') }}">
+									<i class="fas fa-user-circle"></i>
+									<span class="px-3">Conta</span>
+								</a>
+								<a class="dropdown-item {{ 'list-group-item-dark' if page == 'ajuda' else '' }}" href="{{ url_for('sgc.ajuda') }}">
+									<i class="fas fa-question-circle"></i>
+									<span class="px-3">Ajuda</span>
+								</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="{{ url_for('sgc.logout') }}">
+									<i class="fas fa-sign-out-alt"></i>
+									<span class="px-3">Sair</span>
+								</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<!--/ Barra Superior -->
+
+			<!-- Conteúdo da Página -->
+			<div class="container-fluid" id="content-of-page">
+				{% block content %}
+				{% endblock %}
+			</div>
+			<!--/ Conteúdo da Página -->
+
+			<!-- Rodapé -->
+			<div class="text-center" id="footer">
+				Copyright &copy; 2017 Luiz Joaquim Aderaldo Amichi. Todos os direitos reservados.
+			</div>
+			<!--/ Rodapé -->
+
+		</div>
+		<!--/ Moldura da Página -->
+
+	</div>
+
+	<!-- jQuery, Bootstrap, Tablesorter Scripts -->
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+	{% if page in ['diretoria', 'editais', 'noticias'] %}
+	<!-- SummerNote -->
+	<script src="{{ url_for('static', filename='js/summernote-bs4.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/summernote-pt-BR.min.js') }}"></script>
+	<script>
+		$(function () {
+			$("#summernote").summernote({
+				height: 250,
+				lang: "pt-BR",
+				toolbar: [
+					["style", ["style"]],
+					["font", ["bold", "italic", "underline", "clear"]],
+					["color", ["color"]],
+					["para", ["ul", "ol", "paragraph"]],
+					["table", ["table"]],
+					["insert", ["link", "picture", "video"]],
+					["view", ["fullscreen", "codeview", "help"]]
+				]
+			});
+
+			$("button[type='submit']").click(function () {
+				var texto = $("#summernote").summernote("code");
+				$("#summernote").html(texto);
+			});
+		});
+	</script>
+	{% endif %}
+
+	<!-- Script customizado -->
+	<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>

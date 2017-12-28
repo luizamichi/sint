@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% set page = 'inicio' %}
+
+{% block title %}{{ super() }} - Início{% endblock %}
+
+{% block content %}
+
+{% if banners %}
+<div class="carousel slide" data-ride="carousel" id="banners">
+	<ol class="carousel-indicators">
+		{% for banner in banners %}
+		<li data-slide-to="{{ banner.id }}" data-target="#banners" class="{{ 'active' if banner == banners[0] else '' }}"></li>
+		{% endfor %}
+	</ol>
+	<div class="carousel-inner">
+		{% for banner in banners %}
+		<div class="carousel-item {{ 'active' if banner == banners[0] else '' }}">
+			<img alt="Banner {{ banner.id }}" class="d-block w-100" src="{{ url_for('static', filename=banner.imagem.caminho) }}">
+		</div>
+		{% endfor %}
+	</div>
+	<a class="carousel-control-prev" data-slide="prev" href="#banners" role="button">
+		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		<span class="sr-only">Anterior</span>
+	</a>
+	<a class="carousel-control-next" data-slide="next" href="#banners" role="button">
+		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		<span class="sr-only">Próximo</span>
+	</a>
+</div>
+{% endif %}
+
+<div id="index">
+{% if tuplas %}
+	<div class="card-deck">
+	{% for tupla in tuplas %}
+		{% if (loop.index - 1) % colunas == 0 %}
+	</div>
+	<br>
+	<div class="card-deck">
+		{% endif %}
+		{% if tupla.__class__.__name__ in ['Boletim', 'Jornal'] %}
+		<div class="card" data-link="{{ url_for('static', filename=tupla.documento.caminho) }}">
+		{% elif tupla.__class__.__name__ == 'Edital' %}
+		<div class="card" data-link="{{ url_for('website.editais', id=tupla.id) }}">
+		{% elif tupla.__class__.__name__ == 'Evento' %}
+		<div class="card" data-link="{{ url_for('website.eventos', id=tupla.id) }}">
+		{% elif tupla.__class__.__name__ == 'Noticia' %}
+		<div class="card" data-link="{{ url_for('website.noticias', id=tupla.id) }}">
+		{% endif %}
+			{% if tupla.__class__.__name__ == 'Evento' %}
+			<img alt="{{ tupla.__class__.__name__ + ' ' + tupla.id|string }}" class="card-img-top" src="{{ url_for('static', filename=tupla.imagens[0].caminho) }}">
+			{% else %}
+			<img alt="{{ tupla.__class__.__name__ + ' ' + tupla.id|string }}" class="card-img-top" src="{{ url_for('static', filename=tupla.imagem.caminho if tupla.imagem else 'uploads/' + tupla.__class__.__name__.lower() + '.jpg') }}">
+			{% endif %}
+			<div class="card-body">
+				<h5 class="card-title">{{ tupla.titulo }}</h5>
+				{% if tupla.texto %}
+				<p class="card-text">{{ tupla.texto|striptags }}</p>
+				{% endif %}
+				<small class="text-muted"><strong>{{ 'Notícia' if tupla.__class__.__name__ == 'Noticia' else tupla.__class__.__name__ }}</strong></small>
+			</div>
+			<div class="card-footer">
+				<small class="text-muted"><time datetime="{{ tupla.data.strftime('%Y-%m-%dT%H:%M:%S') }}">{{ tupla.data.strftime('%d/%m/%Y - %H:%M') }}</time></small>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+{% else %}
+	<h5 class="text-center">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</h5>
+{% endif %}
+</div>
+
+{% endblock %}

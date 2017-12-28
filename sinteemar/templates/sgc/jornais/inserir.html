@@ -1,0 +1,75 @@
+{% extends 'sgc/base.html' %}
+
+{% set page = 'jornais' %}
+
+{% block title %}{{ super() }} - Inserir Jornal{% endblock %}
+
+{% block content %}
+	<h1 class="my-3">
+		<i class="fas fa-newspaper fa-lg"></i>
+		Inserir Jornal
+	</h1>
+
+	{% if get_flashed_messages() %}
+	<div class="mt-3 text-center">
+		<div class="alert alert-{{ get_flashed_messages()[0] }}" role="alert">{{ get_flashed_messages()[1] }}</div>
+	</div>
+	{% endif %}
+
+	<!-- Formulário de Inserção -->
+	<form action="{{ url_for('sgc.inserir_jornal') }}" enctype="multipart/form-data" method="post">
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-titulo">Título</label>
+				<input autofocus class="form-control" id="input-titulo" maxlength="128" minlength="6" name="titulo" required type="text" value="{{ jornal.titulo }}">
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-edicao">Edição</label>
+				<input class="form-control" id="input-edicao" min="1" name="edicao" type="number" value="{{ jornal.edicao }}">
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<label for="input-documento">Documento</label>
+				<div class="custom-file">
+					<label class="custom-file-label" for="input-documento">Escolher documento</label>
+					<input accept="application/pdf" class="custom-file-input" id="input-documento" name="documento" required type="file">
+				</div>
+			</div>
+			<div class="col-md-6 form-group">
+				<label for="input-imagem">Imagem</label>
+				<div class="custom-file">
+					<label class="custom-file-label" for="input-imagem">Escolher imagem</label>
+					<input accept="image/x-png, image/jpeg" class="custom-file-input" id="input-imagem" name="imagem" type="file">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-md-6 form-group">
+				<div class="embed-responsive embed-responsive-21by9" style="display: none;">
+					<iframe class="embed-responsive-item" id="visualizador-de-documento" title="Documento"></iframe>
+				</div>
+			</div>
+			<div class="col-md-6 form-group">
+				<div class="text-center" style="display: none;">
+					<img alt="Jornal" class="img-thumbnail rounded" height="500" id="visualizador-de-imagem" width="500">
+					<br>
+					<a class="text-danger" href="#" id="remove-imagem">Remover</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-dark" type="submit">Cadastrar</button>
+			</div>
+			<div class="col-lg-1 col-md-2 form-group">
+				<button class="btn btn-block btn-outline-dark" type="reset">Limpar</button>
+			</div>
+		</div>
+	</form>
+	<!--/ Formulário de Inserção -->
+
+{% endblock %}

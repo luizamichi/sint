@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% set page = 'historico' %}
+
+{% block title %}{{ super() }} - Histórico{% endblock %}
+
+{% block content %}
+	<div class="subcabecalho">
+		<h1>Histórico</h1>
+	</div>
+	<div id="historico">
+		<div class="text-justify">
+			<p>Com o golpe militar de 31 de março de 1964, implantou-se no país um regime de exceção que iria durar por mais de duas décadas. O regime militar estendeu seu controle a todas as instâncias do poder e da sociedade comprometendo as práticas democráticas e o sistema representativo Nacional.</p>
+			<p>Na educação, o Acordo MEC/USAID resultou na implantação da reforma universitária, a qual promoveria o desenvolvimento tecnológico do país, priorizando a produção do saber científico e tecnológico, o qual seria o pilar mestre do novo modelo desenvolvimentista brasileiro. A ditadura sob a égide da ideologia da segurança nacional abafou a produção do saber crítico, mola propulsora das mudanças sociais. A repressão se instalou no país criando a censura à imprensa e a suspensão dos direitos e garantias individuais. Nas Universidades foram instaladas as Assessorias de informação e Segurança. Os membros das comunidades universitárias passaram a viver um período, onde as articulações políticas são extremamente difíceis. O autoritarismo, igualmente se reflete na UEM. Docentes da UEM inconformados reuniam-se fora do Campus iniciando-se as articulações para criar uma entidade representativa e de resistência na luta pela democratização da Universidade, e na ampliação dos direitos políticos e trabalhistas de seus membros. Fundou-se então em 02 de dezembro de 1978, a ADUEM, Associação dos Docentes da Universidade Estadual de Maringá. Em seguida, surge a AFUEM Associação dos Funcionários da Universidade Estadual de Maringá.</p>
+			<p>Estas entidades atuavam no campo político, porém, encontravam dificuldades para atuarem nas questões trabalhistas. Iniciou-se então a articulação de uma entidade sindical, que representasse os servidores da UEM. A legislação vigente na época exigia que se criasse uma Associação Profissional, como primeiro passo para a criação de um sindicato.</p>
+			<p>No dia 26 de maio de 1984, no colégio Gastão Vidigal, em Maringá, aconteceu a Assembleia de Fundação da Associação Profissional dos Trabalhadores em Estabelecimentos de Ensino de Maringá e região. Foi aprovado por unanimidade o estatuto da entidade e eleita a primeira diretoria.</p>
+			<p>Em 22 de novembro de 1984 foi registrado a Associação Profissional dos Trabalhadores em Estabelecimentos de Ensino de Maringá. O presidente Eleutério Vaselai convoca nova Assembleia para o dia 11 de dezembro do mesmo ano, tendo como ponto de pauta a transformação da Associação em Sindicato. Nesse mesmo dia foi eleita a primeira diretoria provisória do Sindicato.</p>
+			<p>No dia 09 de julho de 1985, o Sindicato é reconhecido pelo Ministério do Trabalho, sob o número MTB – 24290- 014.944/84. A primeira diretoria eleita assumiu para um mandato de três anos no dia 10 de julho de 1986 até 10 de julho de 1989.</p>
+		</div>
+		{% if tuplas %}
+		<form action="{{ url_for('website.historico') }}" class="form-inline justify-content-center text-center" method="post">
+			<div class="form-group mx-sm-2 mt-3 mb-4">
+				<select class="custom-select" name="historico">
+					<option disabled value="">Selecione uma opção</option>
+					{% for tupla in tuplas %}
+					<option value="{{ tupla.id }}">{{ tupla.titulo }}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="form-group mx-sm-2 mt-3 mb-4">
+				<button class="btn bg-green text-white" type="submit">Visualizar</button>
+			</div>
+		</form>
+		{% endif %}
+	</div>
+
+{% endblock %}
