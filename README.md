@@ -12,6 +12,9 @@ Website com sistema de gerenciamento de conteúdo (CMS) desenvolvido para a publ
 No download, você encontrará os seguintes diretórios e arquivos:
 ```
 sinteemar/
+├── sgc/
+│   ├── insertions.sql 402
+│   └── persistence.sql 118
 └── README.md 122
 ```
 
