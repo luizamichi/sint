@@ -1,0 +1,15 @@
+# REDIRECIONAR HTTP PARA HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://sinteemar.com.br/$1
+
+# REDIRECIONAR EM CASO DE ERROS
+ErrorDocument 400 https://%{HTTP_HOST}/index.php
+ErrorDocument 403 https://%{HTTP_HOST}/index.php
+ErrorDocument 404 https://%{HTTP_HOST}/index.php
+ErrorDocument 500 https://%{HTTP_HOST}/index.php
+ErrorDocument 501 https://%{HTTP_HOST}/index.php
+ErrorDocument 502 https://%{HTTP_HOST}/index.php
+ErrorDocument 503 https://%{HTTP_HOST}/index.php
+ErrorDocument 504 https://%{HTTP_HOST}/index.php
+ErrorDocument 505 https://%{HTTP_HOST}/index.php

@@ -1,7 +1,0 @@
-Include
-Lib
-Scripts
-pyvenv.cfg
-**/__pycache__/
-sinteemar/config.py
-sinteemar/static/uploads/*
