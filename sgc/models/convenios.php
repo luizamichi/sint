@@ -10,7 +10,7 @@
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['DOCUMENTO', 'IMAGEM'];
+	$files = array('DOCUMENTO', 'IMAGEM');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -42,9 +42,9 @@
 		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 		'TEXTO'=> array('tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'required'=> 'required', 'rows'=> 4)),
-		'TELEFONE'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{4})-([0-9]{4})', 'placeholder'=> '(99) 9999-9999')),
-		'CELULAR'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{5})-([0-9]{4})', 'placeholder'=> '(99) 99999-9999')),
-		'EMAIL'=> array('tag'=> 'input', 'type'=> 'email', 'attributes'=> array('maxlength'=> 64, 'minlength'=> 4)),
+		'TELEFONE'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('data-mask'=> '(00) 0000-0000', 'maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{4})-([0-9]{4})', 'placeholder'=> 'Opcional')),
+		'CELULAR'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('data-mask'=> '(00) 00000-0000', 'maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{5})-([0-9]{4})', 'placeholder'=> 'Opcional')),
+		'EMAIL'=> array('tag'=> 'input', 'type'=> 'email', 'attributes'=> array('maxlength'=> 64, 'minlength'=> 4, 'placeholder'=> 'Opcional')),
 		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png', 'required'=> 'required')),
 		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf')),
 	);
@@ -52,7 +52,6 @@
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO
 	$update = $insert;
 	unset($update['IMAGEM']['attributes']['required']);
-	unset($update['DOCUMENTO']['attributes']['required']);
 
 	// INFORMAÇÕES PARA VISUALIZAÇÃO DE REGISTRO ÚNICO
 	$view = array(

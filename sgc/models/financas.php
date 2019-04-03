@@ -3,14 +3,14 @@
 	$title = 'Finanças';
 
 	// ÍCONE
-	$favicon = 'img/financas.svg';
+	$favicon = 'img/models/financa.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'FINANCAS';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['DOCUMENTO'];
+	$files = array('DOCUMENTO');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -29,7 +29,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 64, 'minlength'=> 4, 'required'=> 'required')),
 		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf', 'required'=> 'required')),
 	);

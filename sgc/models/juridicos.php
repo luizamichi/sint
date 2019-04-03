@@ -3,14 +3,14 @@
 	$title = 'Jurídicos';
 
 	// ÍCONE
-	$favicon = 'img/juridico.svg';
+	$favicon = 'img/models/juridico.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'JURIDICOS';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['DOCUMENTO'];
+	$files = array('DOCUMENTO');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -31,9 +31,9 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
-		'TEXTO'=> array('tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'rows'=> 4)),
+		'TEXTO'=> array('tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'placeholder'=> 'Opcional', 'rows'=> 4)),
 		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf', 'required'=> 'required')),
 	);
 

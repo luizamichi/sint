@@ -3,14 +3,14 @@
 	$title = 'Convenções';
 
 	// ÍCONE
-	$favicon = 'img/convencao.svg';
+	$favicon = 'img/models/convencao.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'CONVENCOES';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['DOCUMENTO'];
+	$files = array('DOCUMENTO');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -31,7 +31,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 		'TIPO'=> array('tag'=> 'select', 'attributes'=> array('required'=> 'required'), 'options'=> array(
 			array('label'=> 'VIGENTE', 'value'=> '1'),

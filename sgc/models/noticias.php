@@ -3,14 +3,14 @@
 	$title = 'Notícias';
 
 	// ÍCONE
-	$favicon = 'img/noticia.svg';
+	$favicon = 'img/models/noticia.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'NOTICIAS';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['IMAGEM'];
+	$files = array('IMAGEM');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -37,12 +37,12 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 		'TEXTO'=> array('id'=> 'richtexteditor', 'tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'required'=> 'required', 'rows'=> 6)),
 		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png')),
-		'DATA'=> array('tag'=> 'input', 'type'=> 'date'),
-		'HORA'=> array('tag'=> 'input', 'type'=> 'time'),
+		'DATA'=> array('tag'=> 'input', 'type'=> 'date', 'attributes'=> array('required'=> 'required')),
+		'HORA'=> array('tag'=> 'input', 'type'=> 'time', 'attributes'=> array('required'=> 'required')),
 		'STATUS'=> array('tag'=> 'select', 'attributes'=> array('required'=> 'required'), 'options'=> array(
 			array('label'=> 'INATIVO', 'value'=> '0'),
 			array('label'=> 'ATIVO', 'value'=> '1')),

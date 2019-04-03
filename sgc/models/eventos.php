@@ -3,7 +3,7 @@
 	$title = 'Eventos';
 
 	// ÍCONE
-	$favicon = 'img/evento.svg';
+	$favicon = 'img/models/evento.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'EVENTOS';
@@ -31,7 +31,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 		'TEXTO'=> array('id'=> 'richtexteditor', 'tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'rows'=> 6)),
 		'IMAGENS'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png', 'multiple'=> 'multiple', 'required'=> 'required')),
