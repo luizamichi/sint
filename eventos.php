@@ -1,86 +1,80 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 	$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'eventos.php';
 	$title = 'Eventos';
-	require_once('sgc/dao.php');
-	if($id)
-		$evento = sql_read($table='EVENTOS', $condition='ID=' . intval(base64_decode($id)), $unique=true);
+
+	if(!empty($id)) // FOI INFORMADO UM ID NA URL
+		$evento = sql_read($table='EVENTOS', $condition='ID=' . (int) base64_decode($id), $unique=true);
 	else {
-		$pages = ceil(sql_length($table='EVENTOS') / 24);
-		$eventos = sql_read($table='EVENTOS', $condition='ID ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ',24', $unique=false);
+		$pages = ceil(sql_length($table='EVENTOS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EVENTOS POR PÁGINA
+		$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+		$eventos = sql_read($table='EVENTOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 	}
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $evento['TITULO'] ?? $title ?></h1>
+		</div>
 <?php
-	require_once('cabecalho.php');
-?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= isset($evento['TITULO']) ? $evento['TITULO'] : $title ?></h1>
-			</div>
-			<div class="container content">
-<?php
-	if(isset($evento) && $evento) {
+	if(isset($evento) && !empty($evento)) { // EXIBE O EVENTO SOLICITADO
 		if($evento['TEXTO']) {
 ?>
-				<div class="mb-3"><?= $evento['TEXTO'] ?></div>
+		<div><?= $evento['TEXTO'] ?></div>
+		<br/><br/>
 <?php
 		}
-		if($evento['IMAGENS'] && is_dir($evento['IMAGENS'])) {
+		if(is_dir($evento['IMAGENS'])) { // O DIRETÓRIO COM AS IMAGENS EXISTE
+			foreach(array_slice(scandir($evento['IMAGENS']), 2) as $imagem) { // PERCORRE A LISTA DE IMAGENS
+				if(in_array(pathinfo($imagem)['extension'], array('jpeg', 'jpg', 'png'))) { // BLOQUEIA A INSERÇÃO DE IMAGENS COM EXTENSÕES NÃO PERMITIDAS
 ?>
-
-				<div class="columns is-multiline">
+		<img alt="Evento" class="responsive-img" src="<?= $website . $evento['IMAGENS'] . $imagem ?>" width="232"/>
 <?php
-			foreach(array_slice(scandir($evento['IMAGENS']), 2) as $imagem) {
-?>
-					<div class="column container is-half-tablet is-one-quarter-desktop">
-						<img alt="Evento" class="has-text-centered image" src="<?= $evento['IMAGENS'] . $imagem ?>"/>
-					</div>
-<?php
+				}
 			}
-?>
-				</div>
-<?php
 		}
 	}
-	elseif(isset($eventos) && $eventos) {
+	elseif(isset($eventos) && !empty($eventos)) { // HÁ EVENTOS CADASTRADOS
 ?>
-				<div class="columns is-multiline mb-2 mt-5">
+		<div class="row">
 <?php
-		foreach($eventos as $evento) {
+		foreach($eventos as $evento) { // PERCORRE A LISTA DE EVENTOS
 ?>
-					<div class="card column container is-half-tablet is-one-quarter-desktop">
-						<a href="eventos.php?id=<?= rtrim(strtr(base64_encode($evento['ID']), '+/', '-_'), '=') ?>">
-							<div class="card-content">
-								<div class="media">
-									<div class="media-content">
-										<p class="is-4 title"><?= $evento['TITULO'] ?></p>
-									</div>
-								</div>
-								<div class="content line-clamp line-clamp-3">
-									<?= strip_tags($evento['TEXTO']) . "\n" ?: '' ?>
-								</div>
-							</div>
-						</a>
+			<div class="col m4 s6">
+				<a href="<?= $website ?>eventos.php?id=<?= rtrim(strtr(base64_encode($evento['ID']), '+/', '-_'), '=') ?>">
+					<div class="card small">
+						<div class="card-content">
+							<span class="black-text card-title"><?= $evento['TITULO'] ?></span>
+							<div class="teal-text"><?= strip_tags($evento['TEXTO']) ?></div>
+						</div>
 					</div>
+				</a>
+			</div>
 
 <?php
 		}
 ?>
-				</div>
+		</div>
 <?php
 	}
 	else {
+		if(!empty($eventos)) { // AINDA NÃO HÁ EVENTOS CADASTRADOS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos eventos disponíveis :(</h3>
 <?php
+		}
+		else { // FOI INFORMADO UM ID INVÁLIDO
+?>
+		<h3 class="center-align">Não foi encontrado o evento solicitado :(</h3>
+<?php
+		}
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');

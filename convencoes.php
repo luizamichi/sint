@@ -1,67 +1,61 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'convencoes.php';
 	$title = 'Convenções';
-	require_once('sgc/dao.php');
-	$pages = ceil(sql_length($table='CONVENCOES') / 30);
-	$convencoes['VIGENTE'] = sql_read($table='CONVENCOES', $condition='TIPO=1 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ',15', $unique=false);
-	$convencoes['ANTERIOR'] = sql_read($table='CONVENCOES', $condition='TIPO=0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ',15', $unique=false);
+
+	$pages = ceil(sql_length($table='CONVENCOES') / 30); // QUANTIDADE DE PÁGINAS PARA 30 CONVENÇÕES POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$convencoes['VIGENTE'] = sql_read($table='CONVENCOES', $condition='TIPO=1 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
+	$convencoes['ANTERIOR'] = sql_read($table='CONVENCOES', $condition='TIPO=0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
-<?php
-	require_once('cabecalho.php');
-?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 
 <?php
-	if($convencoes['VIGENTE']) {
+	if(!empty($convencoes['VIGENTE'])) { // HÁ CONVENÇÕES VIGENTAS CADASTRADAS
 ?>
-				<h3 class="has-text-centered">Vigentes</h3>
-				<div class="columns is-multiline mb-2 mt-5">
+		<h3 class="center-align">Vigentes</h3>
+		<ul class="collection">
 <?php
-		foreach($convencoes['VIGENTE'] as $convencao) {
+		foreach($convencoes['VIGENTE'] as $convencao) { // PERCORRE A LISTA DE CONVENÇÕES VIGENTES CADASTRADAS
 ?>
-					<div class="card column container is-half">
-						<a href="<?= $convencao['DOCUMENTO'] ?>">
-							<h4><?= $convencao['TITULO'] ?></h4>
-						</a>
-					</div>
+			<li class="collection-item">
+				<a class="teal-text" href="<?= $website . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
+			</li>
 <?php
 		}
 	}
-	if($convencoes['ANTERIOR']) {
+	if(!empty($convencoes['ANTERIOR'])) { // HÁ CONVENÇÕES ANTERIORES CADASTRADAS
 ?>
-				</div>
-				<h3 class="has-text-centered">Anteriores</h3>
-				<div class="columns is-multiline mb-2 mt-5">
+		</ul>
+		<h3 class="center-align">Anteriores</h3>
+		<ul class="collection">
 <?php
-		foreach($convencoes['ANTERIOR'] as $convencao) {
+		foreach($convencoes['ANTERIOR'] as $convencao) { // PERCORRE A LISTA DE CONVENÇÕES ANTERIORES CADASTRADAS
 ?>
-					<div class="card column container is-half">
-						<a href="<?= $convencao['DOCUMENTO'] ?>">
-							<h4><?= $convencao['TITULO'] ?></h4>
-						</a>
-					</div>
+			<li class="collection-item">
+				<a class="teal-text" href="<?= $website . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
+			</li>
 <?php
 		}
 ?>
-				</div>
+		</ul>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ CONVENÇÕES CADASTRADAS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos convenções disponíveis :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');
