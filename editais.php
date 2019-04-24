@@ -1,80 +1,72 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 	$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'editais.php';
 	$title = 'Editais';
-	require_once('sgc/dao.php');
-	if($id)
-		$edital = sql_read($table='EDITAIS', $condition='ID=' . intval(base64_decode($id)), $unique=true);
+
+	if(!empty($id)) // FOI INFORMADO UM ID NA URL
+		$edital = sql_read($table='EDITAIS', $condition='ID=' . (int) base64_decode($id), $unique=true);
 	else {
-		$pages = ceil(sql_length($table='EDITAIS') / 24);
-		$editais = sql_read($table='EDITAIS', $condition='ID ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ',24', $unique=false);
+		$pages = ceil(sql_length($table='EDITAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EDITAIS POR PÁGINA
+		$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+		$editais = sql_read($table='EDITAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 	}
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $edital['TITULO'] ?? $title ?></h1>
+		</div>
 <?php
-	require_once('cabecalho.php');
+	if(isset($edital) && !empty($edital)) { // EXIBE O EDITAL SOLICITADO
 ?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= isset($edital['TITULO']) ? $edital['TITULO'] : $title ?></h1>
-			</div>
-			<div class="container content">
-<?php
-	if(isset($edital) && $edital) {
-?>
-				<figure class="image is-2by3">
-					<img alt="Edital" class="has-text-centered" src="<?= $edital['IMAGEM'] ?>"/>
-				</figure>
-				<div class="mb-3"><?= $edital['TEXTO'] ?></div>
-
+		<div class="center">
+			<img alt="Edital" class="materialboxed responsive-img" src="<?= $website . $edital['IMAGEM'] ?>" width="300"/>
+		</div>
+		<div class="flow-text"><?= $edital['TEXTO'] ?></div>
 <?php
 	}
-	elseif(isset($editais) && $editais) {
+	elseif(isset($editais) && !empty($editais)) { // HÁ EDITAIS CADASTRADOS
 ?>
-				<div class="columns is-multiline mb-2 mt-5">
+		<div class="row">
 <?php
-		foreach($editais as $edital) {
+		foreach($editais as $edital) { // PERCORRE A LISTA DE EDITAIS
 ?>
-					<div class="card column container is-half-tablet is-one-quarter-desktop">
-						<a href="editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
-<?php
-			if($edital['IMAGEM']) {
-?>
-							<div class="card-image">
-								<figure class="image is-4by3">
-									<img alt="Edital" src="<?= $edital['IMAGEM'] ?>"/>
-								</figure>
-							</div>
-<?php
-			}
-?>
-							<div class="card-content">
-								<div class="media">
-									<div class="media-content">
-										<p class="is-4 title"><?= $edital['TITULO'] ?></p>
-									</div>
-								</div>
-							</div>
-						</a>
+			<div class="col m4 s6">
+				<a href="<?= $website ?>editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
+					<div class="card small">
+						<div class="card-image">
+							<img alt="Edital" src="<?= $website . $edital['IMAGEM'] ?>"/>
+						</div>
+						<div class="card-content">
+							<span class="black-text card-title"><?= $edital['TITULO'] ?></span>
+						</div>
 					</div>
-
+				</a>
+			</div>
 <?php
 		}
 ?>
-				</div>
+		</div>
 <?php
 	}
 	else {
+		if(!empty($editais)) { // AINDA NÃO HÁ EDITAIS CADASTRADOS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos editais disponíveis :(</h3>
 <?php
+		}
+		else { // FOI INFORMADO UM ID INVÁLIDO
+?>
+		<h3 class="center-align">Não foi encontrado o edital solicitado :(</h3>
+<?php
+		}
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');

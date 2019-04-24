@@ -3,14 +3,14 @@
 	$title = 'Estatuto';
 
 	// ÍCONE
-	$favicon = 'img/estatuto.svg';
+	$favicon = 'img/models/estatuto.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'ESTATUTO';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['DOCUMENTO'];
+	$files = array('DOCUMENTO');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -27,7 +27,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf', 'autofocus'=> 'autofocus', 'required'=> 'required')),
 	);
 
