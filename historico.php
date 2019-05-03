@@ -1,46 +1,44 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'historico.php';
 	$title = 'Histórico';
-	require_once('sgc/dao.php');
-	$pages = ceil(sql_length($table='DIRETORIA', $condition='ID<(SELECT COUNT(*) FROM DIRETORIA)'));
-	$historico = sql_read($table='DIRETORIA', $condition='ID<(SELECT COUNT(*) FROM DIRETORIA)-'. ($page - 1) . ' ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	$pages = ceil(sql_length($table='DIRETORIA', $condition='ID < (SELECT COUNT(*) FROM DIRETORIA)')); // QUANTIDADE DE PÁGINAS PARA 1 HISTÓRICO POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$historico = sql_read($table='DIRETORIA', $condition='ID < (SELECT COUNT(*) FROM DIRETORIA) - ' . ($page - 1) . ' ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 <?php
-	require_once('cabecalho.php');
+	if(isset($historico) && !empty($historico)) { // EXIBE O HISTÓRICO SOLICITADO
 ?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
+		<h4 class="center-align"><?= $historico['TITULO'] ?></h4>
 <?php
-	if($historico) {
+		if($historico['IMAGEM']) { // HISTÓRICO POSSUI UMA IMAGEM CADASTRADA
 ?>
-				<h4 class="has-text-centered"><?= $historico['TITULO'] ?></h4>
-<?php
-		if($historico['IMAGEM']) {
-?>
-				<figure class="image is-3by1">
-					<img alt="Histórico" src="<?= $historico['IMAGEM'] ?>"/>
-				</figure>
+		<div class="center">
+			<img alt="Histórico" src="<?= $website . $historico['IMAGEM'] ?>" width="500"/>
+		</div>
 <?php
 		}
 ?>
-				<div><?= $historico['TEXTO'] ?></div>
+		<div><?= $historico['TEXTO'] ?></div>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ HISTÓRICO CADASTRADOS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos conteúdo disponível :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');

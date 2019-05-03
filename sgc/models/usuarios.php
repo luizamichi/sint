@@ -3,7 +3,7 @@
 	$title = 'Usuários';
 
 	// ÍCONE
-	$favicon = 'img/usuario.svg';
+	$favicon = 'img/models/usuario.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'USUARIOS';
@@ -19,6 +19,7 @@
 		'EMAIL'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'E-MAIL', 'name'=> 'email', 'unique'=> true),
 		'SENHA'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'SENHA', 'name'=> 'senha', 'hash'=> true, 'unique'=> false),
 		'PERMISSAO'=> array('default'=> array(), 'domain'=> 'list', 'label'=> 'PERMISSÃO', 'name'=> 'permissao[]', 'unique'=> false,
+			'ARQUIVOS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'ARQUIVOS', 'mask'=> array('0'=> '', '1'=> 'ARQUIVOS'), 'name'=> 'permissao[]'),
 			'BANNERS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'BANNERS', 'mask'=> array('0'=> '', '1'=> 'BANNERS'), 'name'=> 'permissao[]'),
 			'BOLETINS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'BOLETINS', 'mask'=> array('0'=> '', '1'=> 'BOLETINS'), 'name'=> 'permissao[]'),
 			'CONVENCOES'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'CONVENÇÕES', 'mask'=> array('0'=> '', '1'=> 'CONVENÇÕES'), 'name'=> 'permissao[]'),
@@ -32,6 +33,7 @@
 			'JORNAIS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'JORNAIS', 'mask'=> array('0'=> '', '1'=> 'JORNAIS'), 'name'=> 'permissao[]'),
 			'JURIDICOS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'JURÍDICO', 'mask'=> array('0'=> '', '1'=> 'JURÍDICO'), 'name'=> 'permissao[]'),
 			'NOTICIAS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'NOTÍCIAS', 'mask'=> array('0'=> '', '1'=> 'NOTÍCIAS'), 'name'=> 'permissao[]'),
+			'PODCASTS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'PODCASTS', 'mask'=> array('0'=> '', '1'=> 'PODCASTS'), 'name'=> 'permissao[]'),
 			'USUARIOS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'USUÁRIOS', 'mask'=> array('0'=> '', '1'=> 'USUÁRIOS'), 'name'=> 'permissao[]'),
 			'VIDEOS'=> array('default'=> 0, 'domain'=> 'boolean', 'label'=> 'VÍDEOS', 'mask'=> array('0'=> '', '1'=> 'VÍDEOS'), 'name'=> 'permissao[]'),
 		),
@@ -43,6 +45,7 @@
 		`NOME` VARCHAR(64) NOT NULL,
 		`EMAIL` VARCHAR(64) NOT NULL UNIQUE,
 		`SENHA` VARCHAR(32) NOT NULL,
+		`ARQUIVOS` TINYINT(1) NOT NULL DEFAULT 0,
 		`BANNERS` TINYINT(1) NOT NULL DEFAULT 0,
 		`BOLETINS` TINYINT(1) NOT NULL DEFAULT 0,
 		`CONVENCOES` TINYINT(1) NOT NULL DEFAULT 0,
@@ -56,17 +59,18 @@
 		`JORNAIS` TINYINT(1) NOT NULL DEFAULT 0,
 		`JURIDICOS` TINYINT(1) NOT NULL DEFAULT 0,
 		`NOTICIAS` TINYINT(1) NOT NULL DEFAULT 0,
+		`PODCASTS` TINYINT(1) NOT NULL DEFAULT 0,
 		`USUARIOS` TINYINT(1) NOT NULL DEFAULT 0,
 		`VIDEOS` TINYINT(1) NOT NULL DEFAULT 0
 	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'NOME'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 64, 'minlength'=> 4, 'required'=> 'required')),
 		'EMAIL'=> array('tag'=> 'input', 'type'=> 'email', 'attributes'=> array('maxlength'=> 64, 'minlength'=> 4, 'required'=> 'required')),
 		'SENHA'=> array('tag'=> 'input', 'type'=> 'password', 'attributes'=> array('minlength'=> 4, 'required'=> 'required')),
-		'PERMISSAO'=> array('tag'=> 'input', 'type'=> 'checkbox', 'labels'=> array('Banners', 'Boletins', 'Convenções', 'Convênios', 'Diretoria', 'Editais', 'Estatuto', 'Eventos', 'Finanças', 'Histórico', 'Jornais', 'Jurídicos', 'Notícias', 'Usuários', 'Vídeos'), 'names'=> array('BANNERS', 'BOLETINS', 'CONVENCOES', 'CONVENIOS', 'DIRETORIA', 'EDITAIS', 'ESTATUTO', 'EVENTOS', 'FINANCAS', 'HISTORICO', 'JORNAIS', 'JURIDICOS', 'NOTICIAS', 'USUARIOS', 'VIDEOS'), 'values'=> array('banners', 'boletins', 'convencoes', 'convenios', 'diretoria', 'editais', 'estatuto', 'eventos', 'financas', 'historico', 'jornais', 'juridicos', 'noticias', 'usuarios', 'videos'), 'attributes'=> array('multiple'=> 'multiple')),
+		'PERMISSAO'=> array('tag'=> 'input', 'type'=> 'checkbox', 'labels'=> array('Arquivos', 'Banners', 'Boletins', 'Convenções', 'Convênios', 'Diretoria', 'Editais', 'Estatuto', 'Eventos', 'Finanças', 'Histórico', 'Jornais', 'Jurídicos', 'Notícias', 'Podcasts', 'Usuários', 'Vídeos'), 'names'=> array('ARQUIVOS', 'BANNERS', 'BOLETINS', 'CONVENCOES', 'CONVENIOS', 'DIRETORIA', 'EDITAIS', 'ESTATUTO', 'EVENTOS', 'FINANCAS', 'HISTORICO', 'JORNAIS', 'JURIDICOS', 'NOTICIAS', 'PODCASTS', 'USUARIOS', 'VIDEOS'), 'values'=> array('arquivos', 'banners', 'boletins', 'convencoes', 'convenios', 'diretoria', 'editais', 'estatuto', 'eventos', 'financas', 'historico', 'jornais', 'juridicos', 'noticias', 'podcasts', 'usuarios', 'videos'), 'attributes'=> array('multiple'=> 'multiple')),
 	);
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO
@@ -79,7 +83,7 @@
 		'NOME'=> array('tag'=> 'p'),
 		'EMAIL'=> array('tag'=> 'p'),
 		'SENHA'=> array('tag'=> 'p'),
-		'PERMISSAO'=> array('BANNERS', 'BOLETINS', 'CONVENCOES', 'CONVENIOS', 'DIRETORIA', 'EDITAIS', 'ESTATUTO', 'EVENTOS', 'FINANCAS', 'HISTORICO', 'JORNAIS', 'JURIDICOS', 'NOTICIAS', 'USUARIOS', 'VIDEOS'),
+		'PERMISSAO'=> array('ARQUIVOS', 'BANNERS', 'BOLETINS', 'CONVENCOES', 'CONVENIOS', 'DIRETORIA', 'EDITAIS', 'ESTATUTO', 'EVENTOS', 'FINANCAS', 'HISTORICO', 'JORNAIS', 'JURIDICOS', 'NOTICIAS', 'PODCASTS', 'USUARIOS', 'VIDEOS'),
 	);
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS

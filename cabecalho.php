@@ -1,75 +1,90 @@
 <?php
-	$website = ($_SERVER['REQUEST_SCHEME'] ?? 'http') . '://' . $_SERVER['HTTP_HOST'] . '/';
+	if(count(get_included_files()) <= 1) { // DESABILITA O ACESSO A PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
+		header('Location: index.php');
+		return false;
+	}
+
+	$title = isset($title) ? $title : 'Sinteemar'; // VARIÁVEL OBTIDA NA INCLUSÃO
+	if(isset($_SERVER['REQUEST_SCHEME'])) { // DEFINE A URL BASE DO WEBSITE
+		$website = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+		$website = stristr($website, 'sinteemar.com.br') ? $website : $website . explode('/', $_SERVER['REQUEST_URI'])[1] . '/';
+	}
+	else
+		$website = '';
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
-	<link rel="icon" href="img/sinteemar.svg"/>
-	<link rel="stylesheet" type="text/css" href="css/bulma.min.css"/>
 	<meta charset="utf-8"/>
 	<meta name="author" content="Luiz Joaquim Aderaldo Amichi"/>
-	<meta name="description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
+	<meta name="description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 	<title>Sinteemar - <?= $title ?></title>
 
-	<meta property="og:description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
-	<meta property="og:image" content="<?= $website . "img/card.png" ?>"/>
-	<meta property="og:image:secure_url" content="<?= $website . "img/card.png" ?>"/>
+	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
+	<meta property="og:image" content="<?= $website ?>img/card.png"/>
+	<meta property="og:image:secure_url" content="<?= $website ?>img/card.png"/>
 	<meta property="og:locale" content="pt_BR"/>
 	<meta property="og:site_name" content="Sinteemar"/>
 	<meta property="og:type" content="website"/>
 	<meta property="og:title" content="Sinteemar - <?= $title ?>"/>
-	<meta property="og:url" content="<?= $website . "convenios.php" ?>"/>
+	<meta property="og:url" content="<?= $website ?>"/>
 
 	<meta name="twitter:card" content="summary"/>
-	<meta name="twitter:description" content="Sindicato Dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
-	<meta name="twitter:image" content="<?= $website . "img/card.png" ?>"/>
+	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
+	<meta name="twitter:image" content="<?= $website ?>img/card.png"/>
 	<meta name="twitter:title" content="Sinteemar - <?= $title ?>"/>
+
+	<link rel="icon" href="<?= $website ?>img/sinteemar.svg"/>
+	<link rel="stylesheet" type="text/css" href="<?= $website ?>css/materialize.min.css"/>
 </head>
 
 <body>
-	<nav class="is-fixed-top is-success navbar">
-		<div class="navbar-brand">
-			<a class="navbar-item" href="index.php" title="Sinteemar">
-				<img alt="Sinteemar" src="img/sinteemar.svg" width="30"/>
-				<h2 class="mx-3">SINTEEMAR</h2>
+	<nav class="darken-4 green nav-extended">
+		<div class="nav-wrapper">
+			<a class="brand-logo" href="<?= $website ?>index.php" title="Sinteemar">
+				<img alt="Sinteemar" src="<?= $website ?>img/sinteemar.svg" style="margin-left: 10px;" width="25"/>
+				<span class="hide-on-small-only">SINTEEMAR</span>
 			</a>
-			<div class="burger navbar-burger" data-target="header">
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
-		</div>
-
-		<div class="navbar-menu" id="header">
-			<div class="navbar-end">
-				<a class="<?= strcmp($title, 'Início') == 0 ? 'is-active' : '' ?> navbar-item" href="index.php">Início</a>
-				<a class="<?= strcmp($title, 'Boletins') == 0 ? 'is-active' : '' ?> navbar-item" href="boletins.php">Boletins</a>
-				<a class="<?= strcmp($title, 'Convenções') == 0 ? 'is-active' : '' ?> navbar-item" href="convencoes.php">Convenções</a>
-				<a class="<?= strcmp($title, 'Convênios') == 0 ? 'is-active' : '' ?> navbar-item" href="convenios.php">Convênios</a>
-				<a class="<?= strcmp($title, 'Editais') == 0 ? 'is-active' : '' ?> navbar-item" href="editais.php">Editais</a>
-				<a class="<?= strcmp($title, 'Eventos') == 0 ? 'is-active' : '' ?> navbar-item" href="eventos.php">Eventos</a>
-				<a class="<?= strcmp($title, 'Finanças') == 0 ? 'is-active' : '' ?> navbar-item" href="financas.php">Finanças</a>
-				<div class="has-dropdown is-hoverable navbar-item">
-					<a class="<?= in_array($title, array('Diretoria', 'Estatuto', 'Histórico', 'Sobre nós')) ? 'is-active' : '' ?> navbar-link" href="#">Institucional</a>
-					<div class="is-boxed navbar-dropdown">
-						<a class="<?= strcmp($title, 'Diretoria') == 0 ? 'is-active' : '' ?> navbar-item" href="diretoria.php">Diretoria</a>
-						<a class="<?= strcmp($title, 'Estatuto') == 0 ? 'is-active' : '' ?> navbar-item" href="estatuto.php">Estatuto</a>
-						<a class="<?= strcmp($title, 'Histórico') == 0 ? 'is-active' : '' ?> navbar-item" href="historico.php">Histórico</a>
-						<a class="<?= strcmp($title, 'Sobre nós') == 0 ? 'is-active' : '' ?> navbar-item" href="sobre.php">Sobre nós</a>
-					</div>
-				</div>
-				<a class="<?= strcmp($title, 'Jornais') == 0 ? 'is-active' : '' ?> navbar-item" href="jornais.php">Jornais</a>
-				<a class="<?= strcmp($title, 'Jurídicos') == 0 ? 'is-active' : '' ?> navbar-item" href="juridicos.php">Jurídicos</a>
-				<a class="<?= strcmp($title, 'Notícias') == 0 ? 'is-active' : '' ?> navbar-item" href="noticias.php">Notícias</a>
-				<a class="<?= strcmp($title, 'Vídeos') == 0 ? 'is-active' : '' ?> navbar-item" href="videos.php">Vídeos</a>
-				<div class="navbar-item">
-					<a class="mx-2" href="https://www.facebook.com/sinteemar" target="_blank" title="Siga-nos no Facebook"><img alt="Facebook" src="img/facebook.svg" width="25"/></a>
-					<a class="mx-2" href="https://wa.me/554499613561" target="_blank" title="Entre em contato conosco pelo WhatsApp"><img alt="WhatsApp" src="img/whatsapp.svg" width="25"/></a>
-					<a class="mx-2" href="https://www.youtube.com/user/sinteemar" target="_blank" title="Acompanhe o nosso canal no YouTube"><img alt="YouTube" src="img/youtube.svg" width="25"/></a>
-				</div>
-			</div>
+			<a class="sidenav-trigger" data-target="mobile-demo" href="#">&#9776;</a>
+			<ul class="dropdown-content" id="dropdown-menu">
+				<li class="<?= strcmp($title, 'Diretoria') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>diretoria.php">Diretoria</a></li>
+				<li class="<?= strcmp($title, 'Estatuto') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>estatuto.php">Estatuto</a></li>
+				<li class="<?= strcmp($title, 'Histórico') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>historico.php">Histórico</a></li>
+			</ul>
+			<ul class="hide-on-med-and-down right">
+				<li class="<?= strcmp($title, 'Início') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>index.php">Início</a></li>
+				<li class="<?= strcmp($title, 'Boletins') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>boletins.php">Boletins</a></li>
+				<li class="<?= strcmp($title, 'Convenções') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>convencoes.php">Convenções</a></li>
+				<li class="<?= strcmp($title, 'Convênios') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>convenios.php">Convênios</a></li>
+				<li class="<?= strcmp($title, 'Editais') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>editais.php">Editais</a></li>
+				<li class="<?= strcmp($title, 'Eventos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>eventos.php">Eventos</a></li>
+				<li class="<?= strcmp($title, 'Finanças') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>financas.php">Finanças</a></li>
+				<li class="<?= in_array($title, array('Diretoria', 'Estatuto', 'Histórico')) ? 'active' : '' ?>"><a class="dropdown-trigger" href="#" data-target="dropdown-menu">Institucional</a></li>
+				<li class="<?= strcmp($title, 'Jornais') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>jornais.php">Jornais</a></li>
+				<li class="<?= strcmp($title, 'Jurídicos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>juridicos.php">Jurídicos</a></li>
+				<li class="<?= strcmp($title, 'Notícias') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>noticias.php">Notícias</a></li>
+				<li class="<?= strcmp($title, 'Podcasts') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>podcasts.php">Podcasts</a></li>
+				<li class="<?= strcmp($title, 'Vídeos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>videos.php">Vídeos</a></li>
+			</ul>
+			<ul class="sidenav" id="mobile-demo">
+				<li class="<?= strcmp($title, 'Início') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>index.php">Início</a></li>
+				<li class="<?= strcmp($title, 'Boletins') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>boletins.php">Boletins</a></li>
+				<li class="<?= strcmp($title, 'Convenções') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>convencoes.php">Convenções</a></li>
+				<li class="<?= strcmp($title, 'Convênios') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>convenios.php">Convênios</a></li>
+				<li class="<?= strcmp($title, 'Diretoria') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>diretoria.php">Diretoria</a></li>
+				<li class="<?= strcmp($title, 'Editais') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>editais.php">Editais</a></li>
+				<li class="<?= strcmp($title, 'Estatuto') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>estatuto.php">Estatuto</a></li>
+				<li class="<?= strcmp($title, 'Eventos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>eventos.php">Eventos</a></li>
+				<li class="<?= strcmp($title, 'Finanças') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>financas.php">Finanças</a></li>
+				<li class="<?= strcmp($title, 'Histórico') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>historico.php">Histórico</a></li>
+				<li class="<?= strcmp($title, 'Jornais') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>jornais.php">Jornais</a></li>
+				<li class="<?= strcmp($title, 'Jurídicos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>juridicos.php">Jurídicos</a></li>
+				<li class="<?= strcmp($title, 'Notícias') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>noticias.php">Notícias</a></li>
+				<li class="<?= strcmp($title, 'Podcasts') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>podcasts.php">Podcasts</a></li>
+				<li class="<?= strcmp($title, 'Vídeos') == 0 ? 'active' : '' ?>"><a href="<?= $website ?>videos.php">Vídeos</a></li>
+			</ul>
 		</div>
 	</nav>

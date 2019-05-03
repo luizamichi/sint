@@ -3,14 +3,14 @@
 	$title = 'Banners';
 
 	// ÍCONE
-	$favicon = 'img/banner.svg';
+	$favicon = 'img/models/banner.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'BANNERS';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = ['IMAGEM'];
+	$files = array('IMAGEM');
 	$hasFolder = false;
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
@@ -27,7 +27,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png', 'autofocus'=> 'autofocus', 'required'=> 'required')),
 	);
 

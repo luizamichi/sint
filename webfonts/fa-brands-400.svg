@@ -1,23 +1,20 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-<metadata>
-Copyright (c) Font Awesome
-</metadata>
-<defs>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"><defs>
 <font id="FontAwesome5Brands-Regular" horiz-adv-x="448">
 	<font-face 
-	font-family="Font Awesome 5 Brands Regular"
-	font-weight="400"
-	font-stretch="normal"
-	units-per-em="512"
-	panose-1="2 0 5 3 0 0 0 0 0 0"
-	ascent="448"
-	descent="-64"
-	bbox="-0.200195 -66.9505 641.5 448.3"
-	underline-thickness="25"
-	underline-position="-50"
-	unicode-range="U+0020-F8E8"/>
+		font-family="Font Awesome 5 Brands Regular"
+		font-weight="400"
+		font-stretch="normal"
+		units-per-em="512"
+		panose-1="2 0 5 3 0 0 0 0 0 0"
+		ascent="448"
+		descent="-64"
+		bbox="-0.200195 -66.9505 641.5 448.3"
+		underline-thickness="25"
+		underline-position="-50"
+		unicode-range="U+0020-F8E8"
+	/>
 	<missing-glyph/>
 	<glyph glyph-name="firefox-browser" unicode="&#xe007;" horiz-adv-x="512" 
 d="M130.63 324.51c0.160156 -0.00976562 0.0800781 -0.00976562 0 0zM482.05 279.16c15.2803 -36.7598 20.6709 -80.748 15.8213 -122.578c-0.370117 -3.15039 -0.700195 -6.29004 -1.11035 -9.41016c-19.6094 -115.04 -119.79 -202.62 -240.43 -202.62

@@ -3,7 +3,7 @@
 	$title = 'Vídeos';
 
 	// ÍCONE
-	$favicon = 'img/video.svg';
+	$favicon = 'img/models/video.png';
 
 	// TABELA NO BANCO DE DADOS
 	$table = 'VIDEOS';
@@ -28,7 +28,7 @@
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('readonly'=> 'readonly')),
+		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 		'URL'=> array('tag'=> 'input', 'type'=> 'url', 'attributes'=> array('maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
 	);
@@ -40,7 +40,7 @@
 	$view = array(
 		'ID'=> array('tag'=> 'p'),
 		'TITULO'=> array('tag'=> 'p'),
-		'URL'=> array('tag'=> 'a'),
+		'URL'=> array('tag'=> 'iframe'),
 	);
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS

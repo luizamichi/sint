@@ -1,44 +1,41 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$name = 'diretoria.php';
 	$title = 'Diretoria';
-	require_once('sgc/dao.php');
-	$diretoria = sql_read($table='DIRETORIA', $condition='ID ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	$diretoria = sql_read($table='DIRETORIA', $condition='ID > 0 ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 <?php
-	require_once('cabecalho.php');
+	if(!empty($diretoria)) { // EXIBE A ÚNICA DIRETORIA CADASTRADA
 ?>
+		<h4 class="center-align"><?= $diretoria['TITULO'] ?></h4>
+<?php
+		if($diretoria['IMAGEM']) { // DIRETORIA POSSUI UMA IMAGEM CADASTRADA
+?>
+		<div class="center">
+			<img alt="Diretoria" class="responsive-img" src="<?= $website . $diretoria['IMAGEM'] ?>" width="500"/>
+		</div>
 
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
-<?php
-	if($diretoria) {
-?>
-				<h4 class="has-text-centered"><?= $diretoria['TITULO'] ?></h4>
-<?php
-		if($diretoria['IMAGEM']) {
-?>
-				<figure class="image is-3by1">
-					<img alt="Diretoria" src="<?= $diretoria['IMAGEM'] ?>"/>
-				</figure>
 <?php
 		}
 ?>
-				<div><?= $diretoria['TEXTO'] ?></div>
+		<div><?= $diretoria['TEXTO'] ?></div>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ DIRETORIA CADASTRADA
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos uma diretoria disponível :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('rodape.php');

@@ -1,66 +1,70 @@
 <?php
+	if(count(get_included_files()) <= 1) { // DESABILITA O ACESSO A PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
+		header('Location: index.php');
+		return false;
+	}
+
 	if(isset($pages) && $pages > 1) {
 ?>
-	<div class="container mb-7">
-		<nav class="is-rounded pagination" aria-label="pagination">
-			<a class="pagination-previous" <?= $page == 1 ? 'disabled' : 'href="' . $name . '?p=' . ($page - 1) .'"' ?>>Anterior</a>
-			<a class="pagination-next" <?= $page == $pages ? 'disabled' : 'href="' . $name . '?p=' . ($page + 1) .'"' ?>>Próximo</a>
-			<ul class="pagination-list">
+	<div class="center">
+		<ul class="pagination">
+			<li class="<?= $page == 1 ? 'disabled' : 'waves-effect' ?>"><a href="<?= $page != 1 ? ($website . $name . '?p=' . ($page - 1)) : '#' ?>">&lsaquo;</a></li>
 <?php
 		if($pages <= 8) {
 			for($p = 1; $p <= $pages; $p++) {
 ?>
-				<li><a aria-label="Ir para a página <?= $p ?>" class="<?= $p == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . $p ?>"><?= $p ?></a></li>
+			<li class="<?= $p == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . $p ?>"><?= $p ?></a></li>
 <?php
 			}
 		}
 		else {
 ?>
-				<li><a aria-label="Ir para a página 1" class="<?= 1 == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name ?>?p=1">1</a></li>
-				<li><a aria-label="Ir para a página 2" class="<?= 2 == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name ?>?p=2">2</a></li>
+			<li class="<?= $page == 1 ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name ?>?p=1">1</a></li>
+			<li class="<?= $page == 2 ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name ?>?p=2">2</a></li>
 <?php
 			if($page <= 3) {
 ?>
-				<li><a aria-label="Ir para a página 3" class="<?= 3 == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name ?>?p=3">3</a></li>
-				<li><a aria-label="Ir para a página 4" class="<?= 4 == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name ?>?p=4">4</a></li>
+			<li class="<?= $page == 3 ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name ?>?p=3">3</a></li>
+			<li class="<?= $page == 4 ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name ?>?p=4">4</a></li>
 <?php
 			}
 			if($page > 4) {
 ?>
-				<li><span class="pagination-ellipsis">&hellip;</span></li>
+			<li class="waves-effect">&hellip;</li>
 <?php
 			}
 			if($page > 3 && $page <= ($pages - 3)) {
 ?>
-				<li><a aria-label="Ir para a página <?= ($page - 1) ?>" class="pagination-link" href="<?= $name . '?p=' . ($page - 1) ?>"><?= ($page - 1) ?></a></li>
-				<li><a aria-label="Ir para a página <?= $page ?>" class="is-current pagination-link" href="<?= $name . '?p=' . $page ?>"><?= $page ?></a></li>
-				<li><a aria-label="Ir para a página <?= ($page + 1) ?>" class="pagination-link" href="<?= $name . '?p=' . ($page + 1) ?>"><?= ($page + 1) ?></a></li>
+			<li class="waves-effect"><a href="<?= $website . $name . '?p=' . ($page - 1) ?>"><?= ($page - 1) ?></a></li>
+			<li class="active"><a href="<?= $website . $name . '?p=' . $page ?>"><?= $page ?></a></li>
+			<li class="waves-effect"><a href="<?= $website . $name . '?p=' . ($page + 1) ?>"><?= ($page + 1) ?></a></li>
 <?php
 			}
 			else {
 ?>
-				<li><a aria-label="Ir para a página <?= ceil($pages / 2) ?>" class="<?= ceil($pages / 2) == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . ceil($pages / 2) ?>"><?= ceil($pages / 2) ?></a></li>
+			<li class="<?= ceil($pages / 2) == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . ceil($pages / 2) ?>"><?= ceil($pages / 2) ?></a></li>
 <?php
 			}
 			if($page < ($pages - 3)) {
 ?>
-				<li><span class="pagination-ellipsis">&hellip;</span></li>
+			<li class="waves-effect">&hellip;</li>
 <?php
 			}
 			if($page > ($pages - 3)) {
 ?>
-				<li><a aria-label="Ir para a página <?= ($pages - 3) ?>" class="<?= ($pages - 3) == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . ($pages - 3) ?>"><?= $pages - 3 ?></a></li>
-				<li><a aria-label="Ir para a página <?= ($pages - 2) ?>" class="<?= ($pages - 2) == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . ($pages - 2) ?>"><?= $pages - 2 ?></a></li>
+			<li class="<?= ($pages - 3) == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . ($pages - 3) ?>"><?= $pages - 3 ?></a></li>
+			<li class="<?= ($pages - 2) == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . ($pages - 2) ?>"><?= $pages - 2 ?></a></li>
+
 <?php
 			}
 ?>
-				<li><a aria-label="Ir para a página <?= ($pages - 1) ?>" class="<?= ($pages - 1) == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . ($pages - 1) ?>"><?= $pages - 1 ?></a></li>
-				<li><a aria-label="Ir para a página <?= $pages ?>" class="<?= $pages == $page ? 'is-current' : '' ?> pagination-link" href="<?= $name . '?p=' . $pages ?>"><?= $pages ?></a></li>
+			<li class="<?= ($pages - 1) == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . ($pages - 1) ?>"><?= $pages - 1 ?></a></li>
+			<li class="<?= $pages == $page ? 'active' : 'waves-effect' ?>"><a href="<?= $website . $name . '?p=' . $pages ?>"><?= $pages ?></a></li>
 <?php
 		}
 ?>
-			</ul>
-		</nav>
+			<li class="<?= $page == $pages ? 'disabled' : 'waves-effect' ?>"><a href="<?= $page != $pages ? ($website . $name . '?p=' . ($page + 1)) : '#' ?>">&rsaquo;</a></li>
+		</ul>
 	</div>
 <?php
 	}

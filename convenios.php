@@ -1,61 +1,83 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'convenios.php';
 	$title = 'Convênios';
-	require_once('sgc/dao.php');
-	$pages = ceil(sql_length($table='CONVENIOS') / 15);
-	$convenios = sql_read($table='CONVENIOS', $condition='ID ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ',15', $unique=false);
+
+	$pages = ceil(sql_length($table='CONVENIOS') / 15); // QUANTIDADE DE PÁGINAS PARA 15 CONVÊNIOS POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$convenios = sql_read($table='CONVENIOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
-<?php
-	require_once('cabecalho.php');
-?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 
 <?php
-	if($convenios) {
+	if(!empty($convenios)) { // HÁ CONVÊNIOS CADASTRADOS
 ?>
-				<div class="columns is-multiline mb-2 mt-5">
+		<div class="row">
 <?php
-		foreach($convenios as $convenio) {
+		foreach($convenios as $convenio) { // PERCORRE A LISTA DE CONVÊNIOS CADASTRADOS
 ?>
-					<div class="card column container is-one-third">
-						<div class="card-image">
-							<figure class="image is-3by1">
-								<img alt="Convênio" src="<?= $convenio['IMAGEM'] ?>"/>
-							</figure>
-						</div>
-						<div class="card-content">
-							<h4 class="title is-4"><?= $convenio['TITULO'] ?></h4>
-							<div class="content">
-								<?= $convenio['TELEFONE'] ? '<strong>Telefone</strong>: ' . $convenio['TELEFONE'] . '<br/>' : '' ?>
-								<?= $convenio['CELULAR'] ? '<strong>Celular</strong>: ' . $convenio['CELULAR'] . '<br/>' : '' ?>
-								<?= $convenio['TEXTO'] ?>
-								<?= $convenio['DOCUMENTO'] ? '<br/><a href="' . $convenio['DOCUMENTO'] . '">Documento com detalhes.</a>': '' ?>
-								<br/>
-							</div>
-						</div>
+			<div class="col m4 s6">
+				<div class="card">
+					<div class="card-image">
+						<img alt="Convênio" src="<?= $website . $convenio['IMAGEM'] ?>"/>
 					</div>
+					<div class="card-content">
+						<span class="black-text card-title"><?= $convenio['TITULO'] ?></span>
+<?php
+			if($convenio['TELEFONE']) {
+?>
+						<b>Telefone</b>: <span><?= $convenio['TELEFONE'] ?></span>
+						<br/>
+<?php
+			}
+			if($convenio['CELULAR']) {
+?>
+						<b>Celular</b>: <span><?= $convenio['CELULAR'] ?></span>
+						<br/>
+<?php
+			}
+			if($convenio['EMAIL']) {
+?>
+						<b>E-mail</b>: <a class="teal-text" href="mailto:<?= $convenio['EMAIL'] ?>"><?= $convenio['EMAIL'] ?></a>
+						<br/>
+<?php
+			}
+?>
+						<span><?= $convenio['TEXTO'] ?></span>
+						<br/>
+<?php
+			if($convenio['DOCUMENTO']) {
+?>
+						<a class="teal-text" href="<?= $website . $convenio['DOCUMENTO'] ?>">Documento com detalhes</a>
+						<br/>
+<?php
+			}
+?>
+
+					</div>
+				</div>
+			</div>
 <?php
 		}
 ?>
-				</div>
+		</div>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ CONVÊNIOS CADASTRADOS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos convênios disponíveis :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');

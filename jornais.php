@@ -1,63 +1,55 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
 	$name = 'jornais.php';
 	$title = 'Jornais';
-	require_once('sgc/dao.php');
-	$pages = ceil(sql_length($table='JORNAIS') / 24);
-	$jornais = sql_read($table='JORNAIS', $condition='ID ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ',24', $unique=false);
+
+	$pages = ceil(sql_length($table='JORNAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 JORNAIS POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$jornais = sql_read($table='JORNAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 <?php
-	require_once('cabecalho.php');
+	if(isset($jornais) && !empty($jornais)) { // HÁ JORNAIS CADASTRADOS
 ?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
+		<div class="row">
 <?php
-	if($jornais) {
+		foreach($jornais as $jornal) { // PERCORRE A LISTA DE JORNAIS
 ?>
-				<div class="columns is-multiline mb-2 mt-5">
-<?php
-		foreach($jornais as $jornal) {
-?>
-					<div class="card column container is-half-tablet is-one-quarter-desktop">
-						<a href="<?= $jornal['DOCUMENTO'] ?>">
-							<div class="card-image">
-								<figure class="image is-3by1">
-									<img alt="Jornal" src="<?= $jornal['IMAGEM'] ?? 'img/jornal.jpg' ?>"/>
-								</figure>
-							</div>
-							<div class="card-content">
-								<div class="media">
-									<div class="media-content">
-										<p class="title is-4"><?= $jornal['TITULO'] ?></p>
-									</div>
-								</div>
-								<div class="content">
-									<?= $jornal['EDICAO'] ?>ª edição
-								</div>
-							</div>
-						</a>
+			<div class="col m4 s6">
+				<a href="<?= $website . $jornal['DOCUMENTO'] ?>">
+					<div class="card small">
+						<div class="card-image">
+							<img alt="Jornal" src="<?= $website . ($jornal['IMAGEM'] ?? 'img/jornal.jpg') ?>"/>
+						</div>
+						<div class="card-content">
+							<span class="black-text card-title"><?= $jornal['TITULO'] ?></span>
+							<div class="teal-text"><?= $jornal['EDICAO'] ?>ª edição</div>
+						</div>
 					</div>
+				</a>
+			</div>
 
 <?php
 		}
 ?>
-				</div>
+		</div>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ JORNAIS CADASTRADOS
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos jornais disponíveis :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('navegador.php');

@@ -1,36 +1,36 @@
 <?php
+	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
 	$name = 'estatuto.php';
 	$title = 'Estatuto';
-	require_once('sgc/dao.php');
-	$estatuto = sql_read($table='ESTATUTO', $condition='ID ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	$estatuto = sql_read($table='ESTATUTO', $condition='ID > 0 ORDER BY ID DESC LIMIT 1', $unique=true);
+
+	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
+
+	<div class="container">
+		<div class="col darken-4 green">
+			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+		</div>
 
 <?php
-	require_once('cabecalho.php');
+	if(!empty($estatuto)) { // EXIBE O ÚLTIMO ESTATUTO CADASTRADO
 ?>
-
-	<div class="container is-fluid">
-		<section class="section">
-			<div class="has-background-success has-text-centered my-5 px-3 py-3">
-				<h1 class="has-text-white is-1 title"><?= $title ?></h1>
-			</div>
-			<div class="container content">
-
-<?php
-	if($estatuto) {
-?>
-				<a href="<?= $estatuto['DOCUMENTO'] ?>"><img alt="Estatuto" class="has-text-centered image" src="img/document.svg" width="75"/></a>
-				<p class="has-text-centered mt-2">Clique no documento para visualizar.</p>
+		<div class="center">
+			<a href="<?= $website . $estatuto['DOCUMENTO'] ?>">
+				<img alt="Estatuto" class="responsive-img" src="<?= $website ?>img/document.svg" width="75"/>
+			</a>
+		</div>
+		<p class="center-align">Clique no documento para visualizar.</p>
 <?php
 	}
-	else {
+	else { // AINDA NÃO HÁ ESTATUTO CADASTRADO
 ?>
-				<h3 class="has-text-centered mt-5">Ainda não temos conteúdo disponível :(</h3>
+		<h3 class="center-align">Ainda não temos um estatuto disponível :(</h3>
 <?php
 	}
 ?>
-			</div>
-		</section>
 	</div>
 <?php
 	require_once('rodape.php');
