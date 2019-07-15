@@ -1,36 +1,37 @@
 <?php
 	// TÍTULO DA PÁGINA
-	$title = 'Diretoria';
+	$title = 'Avisos';
 
 	// ÍCONE
-	$favicon = 'img/models/diretoria.png';
+	$favicon = 'img/models/aviso.png';
 
 	// TABELA NO BANCO DE DADOS
-	$table = 'DIRETORIA';
+	$table = 'AVISOS';
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
-	$hasFiles = true;
-	$files = array('IMAGEM');
+	$hasFiles = false;
 	$hasFolder = false;
 
 	// TEXTO DE AJUDA
-	$help = 'As diretorias são exibidas em duas páginas. A última diretoria publicada é exibida na página de diretores e as demais na página de histórico.';
+	$help = 'Os avisos são muito úteis para a exibição de uma mensagem importante na página inicial. Só é exibido o último aviso com a data vigente válida.';
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
 	$columns = array(
 		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
 		'TITULO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'TÍTULO', 'name'=> 'titulo', 'unique'=> false),
-		'IMAGEM'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'IMAGEM', 'name'=> 'imagem', 'unique'=> false),
 		'TEXTO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'TEXTO', 'name'=> 'texto', 'unique'=> false),
+		'INICIO'=> array('default'=> date('Y-m-d'), 'domain'=> 'string', 'label'=> 'INÍCIO', 'name'=> 'inicio', 'unique'=> false),
+		'FIM'=> array('default'=> date('Y-m-d'), 'domain'=> 'string', 'label'=> 'FIM', 'name'=> 'fim', 'unique'=> false),
 		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
 	);
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
-	$sql = 'CREATE TABLE IF NOT EXISTS `DIRETORIA` (
+	$sql = 'CREATE TABLE IF NOT EXISTS `AVISOS` (
 		`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		`TITULO` VARCHAR(128) NOT NULL,
-		`IMAGEM` VARCHAR(64) NULL,
 		`TEXTO` TEXT NOT NULL,
+		`INICIO` DATE NOT NULL DEFAULT CURRENT_DATE,
+		`FIM` DATE NOT NULL DEFAULT CURRENT_DATE,
 		`TEMPO` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
@@ -38,8 +39,9 @@
 	$insert = array(
 		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
 		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
-		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png')),
-		'TEXTO'=> array('id'=> 'richtexteditor', 'tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'required'=> 'required', 'rows'=> 6)),
+		'TEXTO'=> array('tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'required'=> 'required', 'rows'=> 4)),
+		'INICIO'=> array('tag'=> 'input', 'type'=> 'date', 'attributes'=> array('required'=> 'required')),
+		'FIM'=> array('tag'=> 'input', 'type'=> 'date', 'attributes'=> array('required'=> 'required')),
 		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
 	);
 
@@ -50,8 +52,9 @@
 	$view = array(
 		'ID'=> array('tag'=> 'p'),
 		'TITULO'=> array('tag'=> 'p'),
-		'IMAGEM'=> array('tag'=> 'img'),
 		'TEXTO'=> array('tag'=> 'p'),
+		'INICIO'=> array('tag'=> 'p'),
+		'FIM'=> array('tag'=> 'p'),
 	);
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS
