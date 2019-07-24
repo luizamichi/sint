@@ -7,7 +7,7 @@
 	$title = 'Finanças';
 
 	$pages = ceil(sql_length($table='FINANCAS') / 33); // QUANTIDADE DE PÁGINAS PARA 33 FINANÇAS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$financas = sql_read($table='FINANCAS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 33 . ', 33', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -15,11 +15,11 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 
 <?php
-	if(isset($financas) && !empty($financas)) { // HÁ FINANÇAS CADASTRADAS
+	if(!empty($financas)) { // HÁ FINANÇAS CADASTRADAS
 ?>
 		<div class="row">
 <?php
@@ -36,7 +36,7 @@
 <?php
 			if(strstr(strtoupper($financa['TITULO']), 'TRIMESTRE')) { // DESTACA AS FINANÇAS TRIMESTRAIS
 ?>
-							<h6><b><?= $financa['TITULO'] ?></b></h6>
+							<h6><strong><?= $financa['TITULO'] ?></strong></h6>
 <?php
 			}
 			else {

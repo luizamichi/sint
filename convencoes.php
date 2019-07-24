@@ -7,7 +7,7 @@
 	$title = 'Convenções';
 
 	$pages = ceil(sql_length($table='CONVENCOES') / 30); // QUANTIDADE DE PÁGINAS PARA 30 CONVENÇÕES POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$convencoes['VIGENTE'] = sql_read($table='CONVENCOES', $condition='TIPO=1 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
 	$convencoes['ANTERIOR'] = sql_read($table='CONVENCOES', $condition='TIPO=0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
 
@@ -16,11 +16,11 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 
 <?php
-	if(!empty($convencoes['VIGENTE'])) { // HÁ CONVENÇÕES VIGENTAS CADASTRADAS
+	if(!empty($convencoes['VIGENTE'])) { // HÁ CONVENÇÕES VIGENTES CADASTRADAS
 ?>
 		<h3 class="center-align">Vigentes</h3>
 		<ul class="collection">

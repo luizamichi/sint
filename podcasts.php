@@ -8,7 +8,7 @@
 	$title = 'Podcasts';
 
 	$pages = ceil(sql_length($table='PODCASTS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 PODCASTS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$podcasts = sql_read($table='PODCASTS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -16,7 +16,7 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 
 <?php
@@ -35,7 +35,7 @@
 						</audio>
 					</div>
 					<div class="black-text card-action">
-						<a class="black-text" href="#">Áudio postado em: <time datetime="<?= $podcast['DATA'] . ' ' . $podcast['HORA'] ?>"><?= date_format(date_create($podcast['DATA'] . ' ' . $podcast['HORA']), 'd/m/Y - H:i') ?></time></a>
+						<a class="black-text" href="javascript:void(0)">Áudio postado em: <time datetime="<?= $podcast['DATA'] . ' ' . $podcast['HORA'] ?>"><?= date_format(date_create($podcast['DATA'] . ' ' . $podcast['HORA']), 'd/m/Y - H:i') ?></time></a>
 						<a class="darken-4 green-text" download href="<?= $website . $podcast['AUDIO'] ?>">Download</a>
 					</div>
 				</div>

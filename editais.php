@@ -6,11 +6,13 @@
 	$name = 'editais.php';
 	$title = 'Editais';
 
-	if(!empty($id)) // FOI INFORMADO UM ID NA URL
+	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
 		$edital = sql_read($table='EDITAIS', $condition='ID=' . (int) base64_decode($id), $unique=true);
+		$title = empty($edital) ? 'Editais' : 'Editais - ' . $edital['TITULO'];
+	}
 	else {
 		$pages = ceil(sql_length($table='EDITAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EDITAIS POR PÁGINA
-		$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+		$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 		$editais = sql_read($table='EDITAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 	}
 
@@ -19,7 +21,7 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $edital['TITULO'] ?? $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $edital['TITULO'] ?? $title ?></h1>
 		</div>
 <?php
 	if(isset($edital) && !empty($edital)) { // EXIBE O EDITAL SOLICITADO
@@ -27,7 +29,12 @@
 		<div class="center">
 			<img alt="Edital" class="materialboxed responsive-img" src="<?= $website . $edital['IMAGEM'] ?>" width="300"/>
 		</div>
-		<div class="flow-text"><?= $edital['TEXTO'] ?></div>
+		<div id="text-content"><?= $edital['TEXTO'] ?></div>
+		<div class="fixed-action-btn">
+			<a class="btn-floating btn-large tooltipped" data-id="text-content" data-position="left" data-tooltip="Alterar o tamanho da fonte" id="button-toggle" href="javascript:void(0)">
+				<img alt="Alterar o tamanho da fonte" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
+			</a>
+		</div>
 <?php
 	}
 	elseif(isset($editais) && !empty($editais)) { // HÁ EDITAIS CADASTRADOS
@@ -38,7 +45,7 @@
 ?>
 			<div class="col m4 s6">
 				<a href="<?= $website ?>editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
-					<div class="card small">
+					<div class="card hoverable small">
 						<div class="card-image">
 							<img alt="Edital" src="<?= $website . $edital['IMAGEM'] ?>"/>
 						</div>
@@ -55,7 +62,7 @@
 <?php
 	}
 	else {
-		if(!empty($editais)) { // AINDA NÃO HÁ EDITAIS CADASTRADOS
+		if(isset($editais) || empty($editais)) { // AINDA NÃO HÁ EDITAIS CADASTRADOS
 ?>
 		<h3 class="center-align">Ainda não temos editais disponíveis :(</h3>
 <?php

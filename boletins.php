@@ -17,7 +17,7 @@
 	}
 
 	$pages = ceil(sql_length($table='BOLETINS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 BOLETINS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$boletins = sql_read($table='BOLETINS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -25,10 +25,10 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 <?php
-	if(isset($boletins) && !empty($boletins)) { // HÁ BOLETINS CADASTRADOS
+	if(!empty($boletins)) { // HÁ BOLETINS CADASTRADOS
 ?>
 		<div class="row">
 <?php
@@ -36,7 +36,7 @@
 ?>
 			<div class="col m4 s6">
 				<a href="<?= $website . $boletim['IMAGEM'] ?>">
-					<div class="card small">
+					<div class="card hoverable small">
 						<div class="card-image">
 							<img alt="Boletim" src="<?= $website . $boletim['IMAGEM'] ?>"/>
 						</div>

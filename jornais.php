@@ -7,18 +7,18 @@
 	$title = 'Jornais';
 
 	$pages = ceil(sql_length($table='JORNAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 JORNAIS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
-	$jornais = sql_read($table='JORNAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
+	$jornais = sql_read($table='JORNAIS', $condition='ID > 0 ORDER BY EDICAO DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 <?php
-	if(isset($jornais) && !empty($jornais)) { // HÁ JORNAIS CADASTRADOS
+	if(!empty($jornais)) { // HÁ JORNAIS CADASTRADOS
 ?>
 		<div class="row">
 <?php
@@ -26,7 +26,7 @@
 ?>
 			<div class="col m4 s6">
 				<a href="<?= $website . $jornal['DOCUMENTO'] ?>">
-					<div class="card small">
+					<div class="card hoverable small">
 						<div class="card-image">
 							<img alt="Jornal" src="<?= $website . ($jornal['IMAGEM'] ?? 'img/jornal.jpg') ?>"/>
 						</div>

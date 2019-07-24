@@ -4,7 +4,7 @@
 		return false;
 	}
 
-	$website = isset($website) ? $website : ''; // VARIÁVEL OBTIDA NA INCLUSÃO
+	$website ??= ''; // VARIÁVEL OBTIDA NA INCLUSÃO
 ?>
 	<footer class="darken-4 green page-footer">
 		<div class="container">
@@ -27,20 +27,20 @@
 				<div class="col l4 offset-l2 s12">
 					<h5 class="white-text">CONTATO</h5>
 					<ul>
-						<li class="grey-text text-lighten-4"><b>Endereço:</b> Rua Prof. Itamar Orlando Soares, 357</li>
-						<li class="grey-text text-lighten-4"><b>Bairro:</b> Jardim Universitário</li>
-						<li class="grey-text text-lighten-4"><b>Cidade:</b> Maringá, PR</li>
-						<li class="grey-text text-lighten-4"><b>CEP:</b> 87020-270</li>
-						<li class="grey-text text-lighten-4"><b>Telefone:</b> (44) 3225-1611</li>
-						<li class="grey-text text-lighten-4"><b>E-mail:</b> sinteemar@sinteemar.com.br</li>
+						<li class="grey-text text-lighten-4"><strong>Endereço:</strong> Rua Prof. Itamar Orlando Soares, 357</li>
+						<li class="grey-text text-lighten-4"><strong>Bairro:</strong> Jardim Universitário</li>
+						<li class="grey-text text-lighten-4"><strong>Cidade:</strong> Maringá, PR</li>
+						<li class="grey-text text-lighten-4"><strong>CEP:</strong> 87020-270</li>
+						<li class="grey-text text-lighten-4"><strong>Telefone:</strong> (44) 3225-1611</li>
+						<li class="grey-text text-lighten-4"><strong>E-mail:</strong> sinteemar@sinteemar.com.br</li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		<div class="footer-copyright">
 			<div class="container">
-				Copyright &copy; 2017 - <?= date("Y") ?> Sinteemar. Todos os direitos reservados.
-				<a class="grey-text right text-lighten-4" href="https://luizamichi.com.br" target="_blank" title="Desenvolvido por Luiz Joaquim Aderaldo Amichi">
+				Copyright &copy; 2017 - <?= date('Y') ?> Sinteemar. Todos os direitos reservados.
+				<a class="grey-text right text-lighten-4 tooltipped" data-position="top" data-tooltip="Desenvolvido por Luiz Joaquim Aderaldo Amichi" href="https://luizamichi.com.br" target="_blank">
 					<img alt="Luiz Joaquim Aderaldo Amichi" class="mx-2" src="<?= $website ?>img/luizamichi.svg" width="30"/>
 				</a>
 			</div>
@@ -50,15 +50,22 @@
 	<script src="<?= $website ?>js/jquery.min.js"></script>
 	<script src="<?= $website ?>js/materialize.min.js"></script>
 	<script>
-		$(document).ready(function(){
+		$(document).ready(function() {
 			$(".dropdown-trigger").dropdown();
 			$(".materialboxed").materialbox();
 			$(".sidenav").sidenav();
+			$(".modal").modal().modal("open");
+			$(".tooltipped").tooltip();
 			$(".carousel").carousel({ fullWidth: true });
 
 			setInterval(function() {
 				$(".carousel").carousel("next");
 			}, 5000);
+
+			$("#button-toggle").click(function() {
+				$("#" + $(this).data("id")).toggleClass("flow-text");
+				M.toast({ html: "O tamanho da fonte foi alterado" });
+			});
 		});
 	</script>
 </body>
