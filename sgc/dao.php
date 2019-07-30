@@ -7,7 +7,7 @@
 
 	// LIMPA CARACTERES MALICIOSOS
 	function anti_injection($query) {
-		$query = preg_replace('/(from|select|insert|delete|where|drop table|show tables|--|\\\\)/i', '', $sql); // REMOVE PALAVRAS QUE CONTENHAM SINTAXE SQL
+		$query = mysqli_real_escape_string(mysql(), $query); // REMOVE PALAVRAS QUE CONTENHAM SINTAXE SQL
 		$query = trim($query); // LIMPA ESPAÇOS VAZIOS
 		$query = strip_tags($query); // REMOVE TAGS HTML E PHP
 		$query = addslashes($query); // ADICIONA BARRAS INVERTIDAS
@@ -26,11 +26,11 @@
 		$host = 'sinteemar.com.br';
 		$user = 'sint';
 		$password = 'Senha do banco de dados';
-		$name = 'sint_2019';
+		$schema = 'sint_2019';
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 		try {
-			$connection = new mysqli($host, $user, $password, $name);
+			$connection = new mysqli($host, $user, $password, $schema);
 			$connection->set_charset('utf8');
 		}
 		catch(Exception $e) {
@@ -50,12 +50,12 @@
 		if($sql = mysql()) {
 			try {
 				$sql->query($query);
+				$result = $sql->affected_rows > 0;
 			}
 			catch(Exception $e) {
-				return false;
+				$result = false;
 			}
 			finally {
-				$result = $sql->affected_rows > 0;
 				mysqli_close($sql);
 			}
 		}
@@ -73,6 +73,9 @@
 			try {
 				$result = $sql->query($query);
 				$rows = $result->fetch_assoc()['COUNT(*)'];
+			}
+			catch(Exception $e) {
+				$rows = -1;
 			}
 			finally {
 				mysqli_close($sql);
@@ -93,6 +96,9 @@
 				$result = $sql->query($query);
 				$rows = $result->fetch_assoc()['MAX(ID)'];
 			}
+			catch(Exception $e) {
+				$rows = -1;
+			}
 			finally {
 				mysqli_close($sql);
 			}
@@ -110,12 +116,18 @@
 		if($sql = mysql()) {
 			try {
 				$result = $sql->query($query);
-				if($result->num_rows == 0)
+				if($result->num_rows == 0) {
 					$rows = array();
-				elseif($result->num_rows == 1)
+				}
+				elseif($result->num_rows == 1) {
 					$rows = $unique ? $result->fetch_assoc() : array($result->fetch_assoc());
-				else
+				}
+				else {
 					$rows = $unique ? $result->fetch_all(MYSQLI_ASSOC)[0] : $result->fetch_all(MYSQLI_ASSOC);
+				}
+			}
+			catch(Exception $e) {
+				$rows = null;
 			}
 			finally {
 				mysqli_close($sql);
@@ -134,10 +146,12 @@
 		if($sql = mysql()) {
 			try {
 				$sql->query($query);
+				$result = $sql->affected_rows > 0;
+			}
+			catch(Exception $e) {
+				$result = false;
 			}
 			finally {
-				$result = true;
-				$result = $sql->affected_rows > 0;
 				mysqli_close($sql);
 			}
 		}
@@ -148,7 +162,10 @@
 
 	// LISTA TODAS AS TABELAS DEFINIDAS NOS MODELOS
 	function sql_tables() {
-		return array_map(function($p) { include_once('models/' . $p); return $table; }, array_slice(scandir('models'), 2));
+		return array_map(function($p) {
+			include_once('models/' . $p);
+			return $table;
+		}, array_slice(scandir('models'), 2));
 	}
 
 
@@ -160,12 +177,12 @@
 		if($sql = mysql()) {
 			try {
 				$sql->query($query);
+				$result = $sql->affected_rows > 0;
 			}
 			catch(Exception $e) {
-				return false;
+				$result = false;
 			}
 			finally {
-				$result = $sql->num_rows > 0;
 				mysqli_close($sql);
 			}
 		}

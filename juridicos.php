@@ -6,8 +6,8 @@
 	$name = 'juridicos.php';
 	$title = 'Jurídicos';
 
-	$pages = ceil(sql_length($table='JURIDICOS') / 30); // QUANTIDADE DE PÁGINAS PARA 24 JURÍDICOS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$pages = ceil(sql_length($table='JURIDICOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 JURÍDICOS POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$juridicos = sql_read($table='JURIDICOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -15,11 +15,11 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 
 <?php
-	if(isset($juridicos) && !empty($juridicos)) { // HÁ JURÍDICOS CADASTRADOS
+	if(!empty($juridicos)) { // HÁ JURÍDICOS CADASTRADOS
 ?>
 		<div class="collection">
 <?php
@@ -27,7 +27,7 @@
 ?>
 			<a class="collection-item" href="<?= $website . $juridico['DOCUMENTO'] ?>">
 				<h5 class="black-text"><?= $juridico['TITULO'] ?></h5>
-				<p><?= $juridico['TEXTO'] ?: '' ?></p>
+				<p><?= nl2br($juridico['TEXTO']) ?: '' ?></p>
 			</a>
 <?php
 		}

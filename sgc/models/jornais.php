@@ -13,6 +13,9 @@
 	$files = array('DOCUMENTO', 'IMAGEM');
 	$hasFolder = false;
 
+	// TEXTO DE AJUDA
+	$help = 'Os jornais se assemelham aos boletins. São ordenados pela edição, que deve ser única.';
+
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
 	$columns = array(
 		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
@@ -20,16 +23,18 @@
 		'EDICAO'=> array('default'=> '', 'domain'=> 'integer', 'label'=> 'EDIÇÃO', 'name'=> 'edicao', 'unique'=> true),
 		'DOCUMENTO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'DOCUMENTO', 'name'=> 'documento', 'unique'=> false),
 		'IMAGEM'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'IMAGEM', 'name'=> 'imagem', 'unique'=> false),
+		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
 	);
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
-	$sql = 'CREATE TABLE IF NOT EXISTS `JORNAIS`(
+	$sql = 'CREATE TABLE IF NOT EXISTS `JORNAIS` (
 		`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		`TITULO` VARCHAR(128) NOT NULL,
 		`EDICAO` INT NOT NULL,
 		`DOCUMENTO` VARCHAR(64) NOT NULL,
-		`IMAGEM` VARCHAR(64) NULL
-	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
+		`IMAGEM` VARCHAR(64) NULL,
+		`TEMPO` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
@@ -38,6 +43,7 @@
 		'EDICAO'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('min'=> 1, 'required'=> 'required')),
 		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf', 'required'=> 'required')),
 		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png')),
+		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
 	);
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO

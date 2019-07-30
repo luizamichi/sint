@@ -13,6 +13,9 @@
 	$files = array('IMAGEM');
 	$hasFolder = false;
 
+	// TEXTO DE AJUDA
+	$help = 'As notícias possuem características diferentes das demais opções. Nela é possível informar se deverá ou não ser exibida, além de ser ordenada de acordo com a data e hora informados. Na página principal são exibidas até 29 notícias.';
+
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
 	$columns = array(
 		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
@@ -22,18 +25,20 @@
 		'DATA'=> array('default'=> date('Y-m-d'), 'domain'=> 'string', 'label'=> 'DATA', 'name'=> 'data', 'unique'=> false),
 		'HORA'=> array('default'=> date('H:i'), 'domain'=> 'string', 'label'=> 'HORA', 'name'=> 'hora', 'unique'=> false),
 		'STATUS'=> array('default'=> true, 'domain'=> 'boolean', 'label'=> 'STATUS', 'mask'=> array('0'=> 'INATIVO', '1'=> 'ATIVO'), 'name'=> 'status', 'unique'=> false),
+		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
 	);
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
-	$sql = 'CREATE TABLE IF NOT EXISTS `NOTICIAS`(
+	$sql = 'CREATE TABLE IF NOT EXISTS `NOTICIAS` (
 		`ID` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		`TITULO` VARCHAR(128) NOT NULL,
 		`TEXTO` TEXT NOT NULL,
 		`IMAGEM` VARCHAR(64) NULL,
-		`DATA` DATE NOT NULL,
-		`HORA` TIME NOT NULL,
-		`STATUS` TINYINT(1) NOT NULL DEFAULT 1
-	)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
+		`DATA` DATE NOT NULL DEFAULT CURRENT_DATE,
+		`HORA` TIME NOT NULL DEFAULT CURRENT_TIME,
+		`STATUS` TINYINT(1) NOT NULL DEFAULT 1,
+		`TEMPO` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
 	$insert = array(
@@ -47,6 +52,7 @@
 			array('label'=> 'INATIVO', 'value'=> '0'),
 			array('label'=> 'ATIVO', 'value'=> '1')),
 		),
+		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
 	);
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO

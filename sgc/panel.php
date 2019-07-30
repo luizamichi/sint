@@ -4,15 +4,17 @@
 		session_start();
 	}
 
-	if(isset($_SESSION['user'])) { // USUÁRIO AUTENTICADO
+	if(isset($_SESSION['user'])) { // VERIFICA SE O USUÁRIO ESTÁ LOGADO
 		$user = unserialize($_SESSION['user']);
-		date_default_timezone_set('America/Sao_Paulo');
-		setlocale(LC_ALL, 'pt_BR', 'pt_BR.utf-8', 'portuguese', 'pt_BR.iso-8859-1');
 	}
 	else { // USUÁRIO NÃO AUTENTICADO
 		header('Location: index.php');
 		return false;
 	}
+
+	// DEFINE FUSO HORÁRIO E IDIOMA
+	date_default_timezone_set('America/Sao_Paulo');
+	setlocale(LC_ALL, 'pt_BR', 'pt_BR.utf-8', 'portuguese', 'pt_BR.iso-8859-1');
 
 	// AÇÕES PERMITIDAS NO PAINEL DE GERENCIAMENTO
 	$actions = array('list', 'insert', 'update', 'view');
@@ -24,7 +26,10 @@
 	$pages = array_slice(scandir('models'), 2);
 
 	// TÍTULOS DEFINIDOS PARA CADA MODELO
-	$models = array_map(function($p) { include_once('models/' . $p); return $title; }, $pages);
+	$models = array_map(function($p) {
+		include_once('models/' . $p);
+		return $title;
+	}, $pages);
 
 	// PARÂMETROS RECEBIDOS VIA GET
 	$action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
@@ -40,7 +45,7 @@
 		if($column && $value && !(array_key_exists(strtoupper($column), $columns))) { // INFORMOU A COLUNA E VALOR PARA VISUALIZAÇÃO, PORÉM A COLUNA ESTÁ ERRADA
 			$action = 'logged';
 			$title = 'Sistema de Gerenciamento de Conteúdo';
-			$subtitles[$action] = 'O SGC é um sistema gestor de websites, portais e intranets que integra ferramentas necessárias para criar, gerir (editar e inserir) conteúdos em tempo real, sem a necessidade de programação de código, cujo objetivo é estruturar e facilitar a criação, administração, distribuição, publicação e disponibilidade da informação. A sua maior característica é a grande quantidade de funções presentes.';
+			$subtitles[$action] = 'O SGC é um sistema gestor de websites, portais e intranets que integra ferramentas necessárias para criar, gerir (editar e remover) conteúdos em tempo real, sem a necessidade de programação de código, cujo objetivo é estruturar e facilitar a criação, administração, distribuição, publicação e disponibilidade da informação. A sua maior característica é a grande quantidade de funções presentes.';
 		}
 		if(!$user[$table]) { // PERMISSÃO NÃO CONCEDIDA AO USUÁRIO
 			$action = 'blocked';
@@ -51,12 +56,12 @@
 	else { // PÁGINA INICIAL OU PÁGINA DE AJUDA
 		$action = strcmp($action, 'help') == 0 ? 'help' : 'logged';
 		$title = strcmp($action, 'help') == 0 ? 'Ajuda' : 'Sistema de Gerenciamento de Conteúdo';
-		$subtitles[$action] = strcmp($action, 'help') == 0 ? 'Especificações de propriedades dos registros.' : 'O SGC é um sistema gestor de websites, portais e intranets que integra ferramentas necessárias para criar, gerir (editar e inserir) conteúdos em tempo real, sem a necessidade de programação de código, cujo objetivo é estruturar e facilitar a criação, administração, distribuição, publicação e disponibilidade da informação. A sua maior característica é a grande quantidade de funções presentes.';
+		$subtitles[$action] = strcmp($action, 'help') == 0 ? 'Especificações de propriedades dos registros.' : 'O SGC é um sistema gestor de websites, portais e intranets que integra ferramentas necessárias para criar, gerir (editar e remover) conteúdos em tempo real, sem a necessidade de programação de código, cujo objetivo é estruturar e facilitar a criação, administração, distribuição, publicação e disponibilidade da informação. A sua maior característica é a grande quantidade de funções presentes.';
 	}
 ?>
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" style="min-height: 100%; position: relative;">
 
 <head>
 	<meta charset="utf-8"/>
@@ -98,7 +103,10 @@
 				</li>
 				<li class="divider"></li>
 				<li>
-					<a href="index.php?logout=1">Sair</a>
+					<a href="index.php?renew=1">Atualizar</a>
+				</li>
+				<li>
+					<a class="red-text" href="index.php?logout=1">Sair</a>
 				</li>
 			</ul>
 			<ul class="hide-on-med-and-down right">
@@ -118,6 +126,14 @@
 				</li>
 			</ul>
 			<ul class="sidenav" id="mobile-demo">
+				<li>
+					<div class="user-view">
+						<div class="background darken-4 green"></div>
+						<a href="javascript:void(0)"><img alt="<?= $user['NOME'] ?>" class="circle" src="../img/usuario.png" style="filter: hue-rotate(300deg);"></a>
+						<a href="javascript:void(0)"><span class="white-text name"><strong><?= $user['NOME'] ?></strong></span></a>
+						<a href="javascript:void(0)"><span class="white-text email"><?= $user['EMAIL'] ?></span></a>
+					</div>
+				</li>
 <?php
 	foreach($models as $m => $model) { // CRIAÇÃO DO MENU SUPERIOR (MOBILE)
 		if($user[strtoupper(explode('.php', $pages[$m])[0])]) { // VERIFICAÇÃO DE PERMISSÕES DO USUÁRIO (MOBILE)
@@ -138,6 +154,9 @@
 					<a href="../index.php" target="_blank">Website</a>
 				</li>
 				<li>
+					<a href="index.php?renew=1">Atualizar</a>
+				</li>
+				<li>
 					<a class="darken-3 red white-text" href="index.php?logout=1">Sair</a>
 				</li>
 			</ul>
@@ -149,7 +168,7 @@
 		<div class="indeterminate"></div>
 	</div>
 
-	<div class="container" style="margin-bottom: 90px;">
+	<div class="container" style="margin-bottom: 100px;">
 		<blockquote class="green lighten-5">
 			<h2>
 <?php
@@ -169,7 +188,7 @@
 	if(strcmp($action, 'logged') == 0) { // EXIBIR INFORMAÇÕES DO SERVIDOR
 		$rows = array_slice((array) sql_read($table='REGISTROS', $condition='USUARIO=' . $user['ID'] . ' ORDER BY ID DESC', $unique=false), 0, 20);
 ?>
-		<h5 class="center-align">Bem-vindo, <b><?= $user['NOME'] ?></b>.</h5>
+		<h5 class="center-align">Bem-vindo, <strong><?= $user['NOME'] ?></strong>.</h5>
 		<br/>
 
 		<div class="row">
@@ -181,7 +200,7 @@
 <?php
 			} //! EXIBIR PRIMEIRA COLUNA DE REGISTROS
 ?>
-				<p><b><?= date_format(new DateTime($row['DATA']), 'd/m/Y - H:i:s') ?>:</b> <?= $row['OPERACAO'] ?> <a class="teal-text" href="?action=view&page=<?= strtolower($row['TABELA']) ?>&column=id&value=<?= $row['REGISTRO'] ?>" title="Visualizar registro"><?= $row['TABELA'] . ' (' . $row['REGISTRO'] . ')' ?></a></p>
+				<p><strong><?= date_format(new DateTime($row['DATA']), 'd/m/Y - H:i:s') ?>:</strong> <?= $row['OPERACAO'] ?> <a class="teal-text" href="?action=view&page=<?= strtolower($row['TABELA']) ?>&column=id&value=<?= $row['REGISTRO'] ?>" title="Visualizar registro"><?= $row['TABELA'] . ' (' . $row['REGISTRO'] . ')' ?></a></p>
 <?php
 			if(intdiv(count($rows) - 1, 2) == $r || count($rows) == $r + 1) { // EXIBIR SEGUNDA COLUNA DE REGISTROS
 ?>
@@ -205,14 +224,15 @@
 ?>
 		<h5 id="<?= strtolower($table) ?>"><?= $title ?></h5>
 		<p><em><a class="teal-text" href="?action=list&page=<?= strtolower($table) ?>">Visualizar</a></em></p>
+		<p><em><?= $help ?></em></p>
 <?php
 			foreach($columns as $c => $column) { // EXIBIR ATRIBUTOS DOS MODELOS
 ?>
-		<p><b><?= $column['label'] ?></b>: <?= str_replace(' ,', '', trim(implode(', ', [isset($insert[$c]['type']) ? ['checkbox'=> 'caixa de seleção', 'date'=> 'data', 'email'=> 'e-mail', 'file'=> 'arquivo', 'number'=> 'número', 'password'=> 'senha', 'tel'=> 'telefone', 'text'=> 'texto', 'time'=> 'horário', 'url'=> 'URL'][$insert[$c]['type']] : ['a'=> 'âncora', 'audio'=> 'áudio', 'iframe'=> 'quadro', 'img'=> 'imagem', 'input'=> 'campo', 'p'=> 'parágrafo', 'select'=> 'selecionador', 'textarea'=> 'área de texto'][$insert[$c]['tag']], isset($columns[$c]['unique']) && $columns[$c]['unique'] ? 'único' : '', isset($insert[$c]['attributes']['required']) ? 'obrigatório' : '', isset($insert[$c]['attributes']['maxlength']) ? 'tamanho máximo de ' . $insert[$c]['attributes']['maxlength'] . ' caracteres' : '', isset($insert[$c]['attributes']['minlength']) ? 'tamanho mínimo de ' . $insert[$c]['attributes']['minlength'] . ' caracteres' : '']), ' ,')) ?>.</p>
+		<p><strong><?= $column['label'] ?>:</strong> <?= str_replace(' ,', '', trim(implode(', ', [isset($insert[$c]['type']) ? ['checkbox'=> 'caixa de seleção', 'date'=> 'data', 'email'=> 'e-mail', 'file'=> 'arquivo', 'hidden'=> 'oculto', 'number'=> 'número', 'password'=> 'senha', 'tel'=> 'telefone', 'text'=> 'texto', 'time'=> 'horário', 'url'=> 'URL'][$insert[$c]['type']] : ['a'=> 'âncora', 'audio'=> 'áudio', 'iframe'=> 'quadro', 'img'=> 'imagem', 'input'=> 'campo', 'p'=> 'parágrafo', 'select'=> 'selecionador', 'textarea'=> 'área de texto'][$insert[$c]['tag']], isset($columns[$c]['unique']) && $columns[$c]['unique'] ? 'único' : '', isset($insert[$c]['attributes']['required']) ? 'obrigatório' : '', isset($insert[$c]['attributes']['maxlength']) ? 'tamanho máximo de ' . $insert[$c]['attributes']['maxlength'] . ' caracteres' : '', isset($insert[$c]['attributes']['minlength']) ? 'tamanho mínimo de ' . $insert[$c]['attributes']['minlength'] . ' caracteres' : '']), ' ,')) ?>.</p>
 <?php
 			} //! EXIBIR ATRIBUTOS DOS MODELOS
 ?>
-		<hr/>
+		<div class="divider"></div>
 
 <?php
 		} //! PERCORRER MODELOS
@@ -251,6 +271,13 @@
 			<br/>
 <?php
 				} //! INPUT DO TIPO DATE
+				elseif(strcmp($field['type'], 'hidden') == 0) { // INPUT DO TIPO HIDDEN
+?>
+			<div>
+				<input id="<?= $columns[$i]['name'] ?>" name="<?= $columns[$i]['name'] ?>" type="hidden" <?= isset($field['attributes']) ? implode(' ', array_map('associative', array_keys($field['attributes']), array_values($field['attributes']))) : '' ?> value="<?= $columns[$i]['default']?>"/>
+			</div>
+<?php
+				} //! INPUT DO TIPO HIDDEN
 				elseif(strcmp($field['type'], 'time') == 0) { // INPUT DO TIPO TIME
 ?>
 			<div class="input-field col s12">
@@ -299,7 +326,7 @@
 			elseif(strcmp($field['tag'], 'select') == 0) { // TAG DO TIPO SELECT
 ?>
 
-			<div class="input-field col s12" style="z-index: 0;">
+			<div class="input-field col s12">
 				<select id="<?= $columns[$i]['name'] ?>" name="<?= $columns[$i]['name'] ?>" <?= isset($field['attributes']) ? implode(' ', array_map('associative', array_keys($field['attributes']), array_values($field['attributes']))) : '' ?>>
 					<option disabled value="">Selecione uma opção</option>
 <?php
@@ -341,7 +368,7 @@
 		</form>
 
 		<div class="fixed-action-btn">
-			<a class="btn-floating btn-large tooltipped" data-position="top" data-tooltip="Ajuda" href="?action=help#<?= strtolower($table) ?>">
+			<a class="btn-floating btn-large pulse tooltipped" data-position="top" data-tooltip="Ajuda" id="help-button" href="?action=help#<?= strtolower($table) ?>">
 				<img alt="Ajuda" src="../img/ajuda.png" style="filter: invert(1); margin: 3px;" width="50"/>
 			</a>
 		</div>
@@ -356,7 +383,8 @@
 			<a class="btn darken-3 green waves-effect" href="panel.php?action=insert&page=<?= $page ?>">Cadastrar</a>
 		</div>
 
-		<table class="highlight responsive-table striped table">
+		<table class="highlight responsive-table striped">
+			<caption></caption>
 			<thead class="darken-3 green">
 				<tr>
 
@@ -364,13 +392,13 @@
 		foreach($list as $l => $field) { // PERCORRER CAMPOS DE ATRIBUTOS
 ?>
 
-					<th class="white-text"><?= $columns[$l]['label'] ?></th>
+					<th scope="col" class="white-text"><?= $columns[$l]['label'] ?></th>
 
 <?php
 		} //! PERCORRER CAMPOS DE ATRIBUTOS
 ?>
 
-					<th class="white-text">GERENCIAR</th>
+					<th scope="col" class="white-text">GERENCIAR</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -381,9 +409,20 @@
 				<tr>
 <?php
 			foreach($list as $l => $field) { // PERCORRER ATRIBUTOS
+				if(!isset($field['tag'])) { // EXIBIR CAMPO PERSONALIZADO
+					$attr = array_map(function($a) {
+						global $columns, $row, $l;
+						return isset($columns[$l][$a]['mask']) ? $columns[$l][$a]['mask'][$row[$a]] : $row[$a];
+					}, $field);
+?>
+					<td><?= str_replace(' ,', '', trim(implode(', ', $attr), ' ,')) ?></td>
+<?php
+				} //! EXIBIR CAMPO PERSONALIZADO
+				else {
 ?>
 					<td><?= isset($columns[$l]['mask']) ? $columns[$l]['mask'][$row[$l]] : strip_tags($row[$l]) ?></td>
 <?php
+				}
 			} //! PERCORRER ATRIBUTOS
 ?>
 
@@ -440,6 +479,13 @@
 			<br/>
 <?php
 					} //! INPUT DO TIPO DATE
+					elseif(strcmp($field['type'], 'hidden') == 0) { // INPUT DO TIPO HIDDEN
+?>
+			<div>
+				<input id="<?= $columns[$i]['name'] ?>" name="<?= $columns[$i]['name'] ?>" type="hidden" <?= isset($field['attributes']) ? implode(' ', array_map('associative', array_keys($field['attributes']), array_values($field['attributes']))) : '' ?> value="<?= $columns[$i]['default']?>"/>
+			</div>
+<?php
+					} //! INPUT DO TIPO HIDDEN
 					elseif(strcmp($field['type'], 'time') == 0) { // INPUT DO TIPO TIME
 ?>
 			<div class="input-field col s12">
@@ -498,7 +544,7 @@
 				elseif(strcmp($field['tag'], 'select') == 0) { // TAG DO TIPO SELECT
 ?>
 
-			<div class="input-field col s12" style="z-index: 0;">
+			<div class="input-field col s12">
 				<select id="<?= $columns[$i]['name'] ?>" name="<?= $columns[$i]['name'] ?>" <?= isset($field['attributes']) ? implode(' ', array_map('associative', array_keys($field['attributes']), array_values($field['attributes']))) : '' ?>>
 					<option disabled value="">Selecione uma opção</option>
 <?php
@@ -540,7 +586,7 @@
 		</form>
 
 		<div class="fixed-action-btn">
-			<a class="btn-floating btn-large tooltipped" data-position="top" data-tooltip="Ajuda" href="?action=help#<?= strtolower($table) ?>">
+			<a class="btn-floating btn-large pulse tooltipped" data-position="top" data-tooltip="Ajuda" id="help-button" href="?action=help#<?= strtolower($table) ?>">
 				<img alt="Ajuda" src="../img/ajuda.png" style="filter: invert(1); margin: 3px;" width="50"/>
 			</a>
 		</div>
@@ -562,23 +608,26 @@
 		<h5><?= $columns[$v]['label'] ?></h5>
 <?php
 				if(!isset($tag['tag'])) { // EXIBIR CAMPO PERSONALIZADO
-					$attr = array_map(function($a) { global $columns, $row, $v; return isset($columns[$v][$a]['mask']) ? $columns[$v][$a]['mask'][$row[$a]] : $row[$a]; }, $tag);
+					$attr = array_map(function($a) {
+						global $columns, $row, $v;
+						return isset($columns[$v][$a]['mask']) ? $columns[$v][$a]['mask'][$row[$a]] : $row[$a];
+					}, $tag);
 ?>
 		<p><?= str_replace(' ,', '', trim(implode(', ', $attr), ' ,')) ?></p>
 <?php
 				} //! EXIBIR CAMPO PERSONALIZADO
-				elseif(strcmp($tag['tag'], 'p') == 0) { // EXIBIR PARÁGRAFO
+				elseif(strcmp($tag['tag'], 'p') == 0 && strlen($row[$v]) != 0) { // EXIBIR PARÁGRAFO
 ?>
 		<p><?= isset($columns[$v]['mask']) ? $columns[$v]['mask'][$row[$v]] : $row[$v] ?></p>
 <?php
 				} //! EXIBIR PARÁGRAFO
-				elseif(strcmp($tag['tag'], 'a') == 0) { // EXIBIR ÂNCORA
+				elseif(strcmp($tag['tag'], 'a') == 0 && strlen($row[$v]) != 0) { // EXIBIR ÂNCORA
 ?>
 		<a class="teal-text" href="../<?= $row[$v] ?>"><?= $row[$v] ?></a>
 		<br/><br/>
 <?php
 				} //! EXIBIR ÂNCORA
-				elseif(strcmp($tag['tag'], 'audio') == 0) { // EXIBIR ÁUDIO
+				elseif(strcmp($tag['tag'], 'audio') == 0 && strlen($row[$v]) != 0) { // EXIBIR ÁUDIO
 ?>
 		<audio controls>
 			<source src="../<?= $row[$v] ?>" type="audio/mp3"/>
@@ -586,17 +635,17 @@
 		</audio>
 <?php
 				} //! EXIBIR ÁUDIO
-				elseif(strcmp($tag['tag'], 'img') == 0 && $row[$v]) { // EXIBIR IMAGEM
+				elseif(strcmp($tag['tag'], 'img') == 0 && strlen($row[$v]) != 0) { // EXIBIR IMAGEM
 ?>
 		<img alt="Imagem" class="materialboxed" src="../<?= $row[$v] ?>" width="300"/>
 		<br/>
 <?php
 				} //! EXIBIR IMAGEM
-				elseif(strcmp($tag['tag'], 'iframe') == 0 && $row[$v]) { // EXIBIR VÍDEO
+				elseif(strcmp($tag['tag'], 'iframe') == 0 && strlen($row[$v]) != 0) { // EXIBIR VÍDEO
 					if(stristr($row[$v], 'youtube.com')) { // EXIBIR IFRAME DO YOUTUBE
 ?>
 		<div class="video-container">
-			<iframe allowfullscreen height="480" frameborder="0" src="<?= str_replace('watch?v=', 'embed/', $row[$v]) ?>" width="854"></iframe>
+			<iframe allowfullscreen height="480" src="<?= str_replace('watch?v=', 'embed/', $row[$v]) ?>" title="YouTube" width="854"></iframe>
 		</div>
 		<a class="teal-text" href="<?= $row[$v] ?>"><?= $row[$v] ?></a>
 		<br/><br/>
@@ -610,8 +659,9 @@
 					} //! EXIBIR ÂNCORA DE UMA PÁGINA WEB
 					else { // EXIBIR CAIXA DE VÍDEO
 ?>
-		<video class="responsive-video" controls>
+		<video class="responsive-video" controls preload="metadata">
 			<source src="../<?= $row[$v] ?>" type="video/mp4"/>
+			<track kind="captions" label="Português (Brasil)" src="../uploads/video.vtt" srclang="pt-br">
 		</video>
 		<br/>
 		<a class="teal-text" href="<?= $row[$v] ?>"><?= $row[$v] ?></a>
@@ -619,9 +669,15 @@
 <?php
 					} //! EXIBIR CAIXA DE VÍDEO
 				} //! EXIBIR VÍDEO
+				else { // EXIBIR VALOR NULO
+?>
+		<p class="grey-text">Indefinido</p>
+<?php
+				} //! EXIBIR VALOR NULO
 			} //! PERCORRER CAMPOS DE ATRIBUTOS
 ?>
-		<a class="btn darken-3 red waves-effect" data-id="<?= $row['ID'] ?>" data-page="<?= strtolower($table) ?>" data-table="<?= strtolower($title) ?>" href="#" style="z-index: 0;">Remover</a>
+		<a class="blue btn waves-effect" href="panel.php?action=update&page=<?= $page ?>&column=id&value=<?= $row['ID'] ?>" style="z-index: 0;">Alterar</a>
+		<a class="btn darken-3 red waves-effect" data-id="<?= $row['ID'] ?>" data-page="<?= strtolower($table) ?>" data-table="<?= strtolower($title) ?>" href="javascript:void(0)" style="z-index: 0;">Remover</a>
 <?php
 		} //! CASO ENCONTROU UM REGISTRO
 		else { // O REGISTRO PARA VISUALIZAÇÃO É INVÁLIDO
@@ -633,12 +689,12 @@
 ?>
 	</div>
 
-	<footer class="darken-4 green page-footer" style="bottom: 0; position: fixed; width: 100%; margin: 0; margin-top: 5px;">
+	<footer class="darken-4 green page-footer" style="bottom: 0; position: absolute; width: 100%; margin: 0;">
 		<div class="footer-copyright">
 			<div class="container">
 				Copyright &copy; 2017 - <?= date('Y') ?>. Todos os direitos reservados para Luiz Joaquim Aderaldo Amichi.
 				<br/>
-				<small>Versão 1.1</small>
+				<small title="Atualização: 01/12/2021">Versão 1.2.0</small>
 				<a class="grey-text right text-lighten-4" href="https://luizamichi.com.br" target="_blank" title="Desenvolvido por Luiz Joaquim Aderaldo Amichi"><img alt="Luiz Joaquim Aderaldo Amichi" class="mx-2" src="../img/luizamichi.svg" width="30"/></a>
 			</div>
 		</div>
@@ -702,6 +758,11 @@
 				});
 			});
 
+			// ANIMAÇÃO BOTÃO FLUTUANTE DE AJUDA
+			setTimeout(function() {
+				$("#help-button").removeClass("pulse");
+			}, 3000);
+
 <?php
 	if(isset($action) && in_array($action, array('list', 'view'))) { // DATATABLES E CONFIRMAÇÃO DE REMOÇÃO
 		if(strcmp($action, 'list') == 0) { // DATATABLES
@@ -711,7 +772,7 @@
 				"columnDefs": [{
 					"targets": [1, 2, -1, -2, -3],
 					"render": function(data, type, row) {
-						return data.length > 450 ? data.substr(0, 447) + "..." : data;
+						return data.length > 500 ? data.substr(0, 497) + "..." : data;
 					}
 				}],
 				"order": [[0, "desc"]]

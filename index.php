@@ -4,7 +4,8 @@
 	$name = 'index.php';
 	$title = 'Início';
 
-	$banners = (array) sql_read($table='BANNERS', $condition='ID > 0 ORDER BY ID DESC', $unique=false);
+	$aviso = (array) sql_read($table='AVISOS', $condition='INICIO <= "' . date('Y-m-d') . '" AND FIM >= "' . date('Y-m-d') . '" ORDER BY ID DESC LIMIT 1', $unique=true);
+	$banners = (array) sql_read($table='BANNERS', $condition='ID > 0 ORDER BY ID DESC LIMIT 5', $unique=false);
 	$boletins = (array) sql_read($table='BOLETINS', $condition='ID > 0 ORDER BY ID DESC LIMIT 6', $unique=false);
 	$editais = (array) sql_read($table='EDITAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT 6', $unique=false);
 	$eventos = (array) sql_read($table='EVENTOS', $condition='ID > 0 ORDER BY ID DESC LIMIT 3', $unique=false);
@@ -12,7 +13,9 @@
 	$podcasts = (array) sql_read($table='PODCASTS', $condition='ID > 0 ORDER BY ID DESC LIMIT 1', $unique=false);
 
 	$noticias_podcasts = array_merge($noticias, $podcasts);
-	usort($noticias_podcasts, function($a, $b) { return (($a["DATA"] . " - " . $a["HORA"]) > ($b["DATA"] . " - " . $b["HORA"])) ? -1 : 1; });
+	usort($noticias_podcasts, function($a, $b) {
+		return (($a['DATA'] . ' - ' . $a['HORA']) > ($b['DATA'] . ' - ' . $b['HORA'])) ? -1 : 1;
+	});
 	$tuplas = array_merge($noticias_podcasts, $editais, $boletins, $eventos);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -21,13 +24,27 @@
 	<div class="container">
 
 <?php
-	if(isset($banners) && !empty($banners)) { // HÁ BANNERS CADASTRADOS
+	if(!empty($aviso)) { // HÁ UM AVISO CADASTRADO
+?>
+		<div class="modal" id="aviso">
+			<div class="modal-content">
+				<h4 class="center-align"><?= $aviso['TITULO'] ?></h4>
+				<p><?= nl2br($aviso['TEXTO']) ?></p>
+			</div>
+			<div class="modal-footer">
+				<a class="btn-flat modal-close waves-effect waves-green" href="javascript:void(0)">Fechar</a>
+			</div>
+		</div>
+
+<?php
+	}
+	if(!empty($banners)) { // HÁ BANNERS CADASTRADOS
 ?>
 		<div class="carousel carousel-slider" data-indicators="true">
 <?php
 		foreach($banners as $banner) { // PERCORRE A LISTA DE BANNERS CADASTRADOS
 ?>
-			<a class="carousel-item">
+			<a class="carousel-item" href="<?= $banner['LINK'] ?: 'javascript:void(0)' ?>">
 				<img alt="Banner" src="<?= $website . $banner['IMAGEM'] ?>"/>
 			</a>
 <?php
@@ -37,21 +54,26 @@
 
 <?php
 	}
-	if(isset($tuplas) && !empty($tuplas)) { // HÁ BOLETINS, EDITAIS, EVENTOS, NOTÍCIAS OU PODCASTS CADASTRADOS
+	if(!empty($tuplas)) { // HÁ BOLETINS, EDITAIS, EVENTOS, NOTÍCIAS OU PODCASTS CADASTRADOS
 ?>
 		<div class="row">
 <?php
 		foreach($tuplas as $tupla) { // PERCORRE A LISTA DE REGISTROS
-			if(array_key_exists('STATUS', $tupla)) // SOMENTE AS NOTÍCIAS POSSUEM STATUS
+			if(array_key_exists('STATUS', $tupla)) { // SOMENTE AS NOTÍCIAS POSSUEM STATUS
 				$tipo = 'noticias';
-			elseif(array_key_exists('IMAGENS', $tupla)) // SOMENTE OS EVENTOS POSSUEM DIRETÓRIO DE IMAGENS
+			}
+			elseif(array_key_exists('IMAGENS', $tupla)) { // SOMENTE OS EVENTOS POSSUEM DIRETÓRIO DE IMAGENS
 				$tipo = 'eventos';
-			elseif(array_key_exists('AUDIO', $tupla)) // SOMENTE OS PODCASTS POSSUEM ÁUDIO
+			}
+			elseif(array_key_exists('AUDIO', $tupla)) { // SOMENTE OS PODCASTS POSSUEM ÁUDIO
 				$tipo = 'podcasts';
-			elseif(array_key_exists('TEXTO', $tupla)) // SOMENTE OS EDITAIS E NOTÍCIAS (DESCARTADO ANTERIORMENTE) POSSUEM TEXTO
+			}
+			elseif(array_key_exists('TEXTO', $tupla)) { // SOMENTE OS EDITAIS E NOTÍCIAS (DESCARTADO ANTERIORMENTE) POSSUEM TEXTO
 				$tipo = 'editais';
-			else
+			}
+			else {
 				$tipo = 'boletins';
+			}
 ?>
 			<div class="col m4 s12">
 				<a href="<?= $website . $tipo ?>.php?id=<?= rtrim(strtr(base64_encode($tupla['ID']), '+/', '-_'), '=') ?>">

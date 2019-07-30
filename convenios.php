@@ -7,7 +7,7 @@
 	$title = 'Convênios';
 
 	$pages = ceil(sql_length($table='CONVENIOS') / 15); // QUANTIDADE DE PÁGINAS PARA 15 CONVÊNIOS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO À PÁGINAS INEXISTENTES
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
 	$convenios = sql_read($table='CONVENIOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
 
 	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
@@ -15,7 +15,7 @@
 
 	<div class="container">
 		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-1"><?= $title ?></h1>
+			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
 		</div>
 
 <?php
@@ -35,24 +35,30 @@
 <?php
 			if($convenio['TELEFONE']) {
 ?>
-						<b>Telefone</b>: <span><?= $convenio['TELEFONE'] ?></span>
+						<strong>Telefone:</strong> <span><?= $convenio['TELEFONE'] ?></span>
 						<br/>
 <?php
 			}
 			if($convenio['CELULAR']) {
 ?>
-						<b>Celular</b>: <span><?= $convenio['CELULAR'] ?></span>
+						<strong>Celular:</strong> <a class="teal-text" href="tel:<?= $convenio['CELULAR'] ?>"><?= $convenio['CELULAR'] ?></a>
 						<br/>
 <?php
 			}
 			if($convenio['EMAIL']) {
 ?>
-						<b>E-mail</b>: <a class="teal-text" href="mailto:<?= $convenio['EMAIL'] ?>"><?= $convenio['EMAIL'] ?></a>
+						<strong>E-mail:</strong> <a class="teal-text" href="mailto:<?= $convenio['EMAIL'] ?>"><?= $convenio['EMAIL'] ?></a>
+						<br/>
+<?php
+			}
+			if($convenio['URL']) {
+?>
+						<strong>Website:</strong> <a class="teal-text" href="<?= $convenio['URL'] ?>"><?= $convenio['URL'] ?></a>
 						<br/>
 <?php
 			}
 ?>
-						<span><?= $convenio['TEXTO'] ?></span>
+						<span><?= nl2br($convenio['TEXTO']) ?></span>
 						<br/>
 <?php
 			if($convenio['DOCUMENTO']) {
