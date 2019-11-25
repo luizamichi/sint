@@ -1,16 +1,18 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
 
 	$name = 'convenios.php';
 	$title = 'Convênios';
 
-	$pages = ceil(sql_length($table='CONVENIOS') / 15); // QUANTIDADE DE PÁGINAS PARA 15 CONVÊNIOS POR PÁGINA
+	$pages = ceil(sqlLength('CONVENIOS') / 15); // QUANTIDADE DE PÁGINAS PARA 15 CONVÊNIOS POR PÁGINA
 	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$convenios = sql_read($table='CONVENIOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
+	$convenios = sqlRead(table: 'CONVENIOS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15');
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -28,7 +30,7 @@
 			<div class="col m4 s6">
 				<div class="card">
 					<div class="card-image">
-						<img alt="Convênio" src="<?= $website . $convenio['IMAGEM'] ?>"/>
+						<img alt="Convênio" loading="lazy" src="<?= BASE_URL . $convenio['IMAGEM'] ?>"/>
 					</div>
 					<div class="card-content">
 						<span class="black-text card-title"><?= $convenio['TITULO'] ?></span>
@@ -41,7 +43,7 @@
 			}
 			if($convenio['CELULAR']) {
 ?>
-						<strong>Celular:</strong> <a class="teal-text" href="tel:<?= $convenio['CELULAR'] ?>"><?= $convenio['CELULAR'] ?></a>
+						<strong>Celular:</strong> <a class="teal-text" href="tel:<?= preg_replace('/\D/', '', $convenio['CELULAR']) ?>"><?= $convenio['CELULAR'] ?></a>
 						<br/>
 <?php
 			}
@@ -63,7 +65,7 @@
 <?php
 			if($convenio['DOCUMENTO']) {
 ?>
-						<a class="teal-text" href="<?= $website . $convenio['DOCUMENTO'] ?>">Documento com detalhes</a>
+						<a class="teal-text" href="<?= BASE_URL . $convenio['DOCUMENTO'] ?>">Documento com detalhes</a>
 						<br/>
 <?php
 			}
@@ -86,6 +88,5 @@
 ?>
 	</div>
 <?php
-	require_once('navegador.php');
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

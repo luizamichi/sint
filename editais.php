@@ -1,22 +1,25 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
-	$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
+	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
 
 	$name = 'editais.php';
 	$title = 'Editais';
 
 	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
-		$edital = sql_read($table='EDITAIS', $condition='ID=' . (int) base64_decode($id), $unique=true);
+		$edital = sqlRead(table: 'EDITAIS', condition: 'ID = ' . (int) base64_decode($id), unique: true);
 		$title = empty($edital) ? 'Editais' : 'Editais - ' . $edital['TITULO'];
 	}
 	else {
-		$pages = ceil(sql_length($table='EDITAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EDITAIS POR PÁGINA
+		$pages = ceil(sqlLength('EDITAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EDITAIS POR PÁGINA
 		$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-		$editais = sql_read($table='EDITAIS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24', $unique=false);
+		$editais = sqlRead(table: 'EDITAIS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24');
 	}
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -27,12 +30,12 @@
 	if(isset($edital) && !empty($edital)) { // EXIBE O EDITAL SOLICITADO
 ?>
 		<div class="center">
-			<img alt="Edital" class="materialboxed responsive-img" src="<?= $website . $edital['IMAGEM'] ?>" width="300"/>
+			<img alt="Edital" loading="lazy" class="materialboxed responsive-img" src="<?= BASE_URL . $edital['IMAGEM'] ?>" width="300"/>
 		</div>
 		<div id="text-content"><?= $edital['TEXTO'] ?></div>
 		<div class="fixed-action-btn">
 			<a class="btn-floating btn-large tooltipped" data-id="text-content" data-position="left" data-tooltip="Alterar o tamanho da fonte" id="button-toggle" href="javascript:void(0)">
-				<img alt="Alterar o tamanho da fonte" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
+				<img alt="Alterar o tamanho da fonte" loading="lazy" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
 			</a>
 		</div>
 <?php
@@ -44,10 +47,10 @@
 		foreach($editais as $edital) { // PERCORRE A LISTA DE EDITAIS
 ?>
 			<div class="col m4 s6">
-				<a href="<?= $website ?>editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
+				<a href="<?= BASE_URL ?>editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
 					<div class="card hoverable small">
 						<div class="card-image">
-							<img alt="Edital" src="<?= $website . $edital['IMAGEM'] ?>"/>
+							<img alt="Edital" loading="lazy" src="<?= BASE_URL . $edital['IMAGEM'] ?>"/>
 						</div>
 						<div class="card-content">
 							<span class="black-text card-title"><?= $edital['TITULO'] ?></span>
@@ -76,6 +79,5 @@
 ?>
 	</div>
 <?php
-	require_once('navegador.php');
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

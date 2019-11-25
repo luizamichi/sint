@@ -1,11 +1,15 @@
 <?php
-	if(count(get_included_files()) <= 1) { // DESABILITA O ACESSO A PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
-		header('Location: index.php');
-		return false;
-	}
 
-	$website ??= ''; // VARIÁVEL OBTIDA NA INCLUSÃO
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	// DESABILITA O ACESSO À PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
+	if(count(get_included_files()) <= 1) {
+		header('Location: index.php');
+		exit;
+	}
 ?>
+
 	<footer class="darken-4 green page-footer">
 		<div class="container">
 			<div class="row">
@@ -14,13 +18,19 @@
 					<p class="grey-text text-lighten-4">O Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá é uma instituição com atuação voltada para os interesses dos professores e funcionários de redes de ensino público e privado de Maringá.</p>
 					<div class="row">
 						<div class="col s2">
-							<a href="https://www.facebook.com/sinteemar" target="_blank" title="Siga-nos no Facebook."><img src="<?= $website ?>img/facebook.svg" alt="Facebook" width="35"/></a>
+							<a href="https://www.facebook.com/sinteemar" target="_blank" title="Siga-nos no Facebook.">
+								<img alt="Facebook" loading="lazy" src="<?= BASE_URL ?>img/facebook.svg" width="35"/>
+							</a>
 						</div>
 						<div class="col s2">
-							<a href="https://wa.me/554499613561" target="_blank" title="Entre em contato conosco pelo WhatsApp."><img src="<?= $website ?>img/whatsapp.svg" alt="WhatsApp" width="35"/></a>
+							<a href="https://wa.me/554499613561" target="_blank" title="Entre em contato conosco pelo WhatsApp.">
+								<img alt="WhatsApp" loading="lazy" src="<?= BASE_URL ?>img/whatsapp.svg" width="35"/>
+							</a>
 						</div>
 						<div class="col s2">
-							<a href="https://www.youtube.com/user/sinteemar" target="_blank" title="Acompanhe o nosso canal no YouTube."><img src="<?= $website ?>img/youtube.svg" alt="YouTube" width="35"/></a>
+							<a href="https://www.youtube.com/user/sinteemar" target="_blank" title="Acompanhe o nosso canal no YouTube.">
+								<img alt="YouTube" loading="lazy" src="<?= BASE_URL ?>img/youtube.svg" width="35"/>
+							</a>
 						</div>
 					</div>
 				</div>
@@ -41,14 +51,14 @@
 			<div class="container">
 				Copyright &copy; 2017 - <?= date('Y') ?> Sinteemar. Todos os direitos reservados.
 				<a class="grey-text right text-lighten-4 tooltipped" data-position="top" data-tooltip="Desenvolvido por Luiz Joaquim Aderaldo Amichi" href="https://luizamichi.com.br" target="_blank">
-					<img alt="Luiz Joaquim Aderaldo Amichi" class="mx-2" src="<?= $website ?>img/luizamichi.svg" width="30"/>
+					<img alt="Luiz Joaquim Aderaldo Amichi" class="mx-2" loading="lazy" src="<?= BASE_URL ?>img/luizamichi.svg" width="30"/>
 				</a>
 			</div>
 		</div>
 	</footer>
 
-	<script src="<?= $website ?>js/jquery.min.js"></script>
-	<script src="<?= $website ?>js/materialize.min.js"></script>
+	<script src="<?= BASE_URL ?>js/jquery.min.js"></script>
+	<script src="<?= BASE_URL ?>js/materialize.min.js"></script>
 	<script>
 		$(document).ready(function() {
 			$(".dropdown-trigger").dropdown();
