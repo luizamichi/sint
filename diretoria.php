@@ -1,12 +1,14 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
 
 	$name = 'diretoria.php';
 	$title = 'Diretoria';
 
-	$diretoria = sql_read($table='DIRETORIA', $condition='ID > 0 ORDER BY ID DESC LIMIT 1', $unique=true);
+	$diretoria = sqlRead(table: 'DIRETORIA', condition: 'ID > 0 ORDER BY ID DESC LIMIT 1', unique: true);
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -21,7 +23,7 @@
 		if($diretoria['IMAGEM']) { // DIRETORIA POSSUI UMA IMAGEM CADASTRADA
 ?>
 		<div class="center">
-			<img alt="Diretoria" class="responsive-img" src="<?= $website . $diretoria['IMAGEM'] ?>" width="500"/>
+			<img alt="Diretoria" loading="lazy" class="responsive-img" src="<?= BASE_URL . $diretoria['IMAGEM'] ?>" width="500"/>
 		</div>
 
 <?php
@@ -30,7 +32,7 @@
 		<div id="text-content"><?= $diretoria['TEXTO'] ?></div>
 		<div class="fixed-action-btn">
 			<a class="btn-floating btn-large tooltipped" data-id="text-content" data-position="left" data-tooltip="Alterar o tamanho da fonte" id="button-toggle" href="javascript:void(0)">
-				<img alt="Alterar o tamanho da fonte" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
+				<img alt="Alterar o tamanho da fonte" loading="lazy" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
 			</a>
 		</div>
 <?php
@@ -43,5 +45,4 @@
 ?>
 	</div>
 <?php
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

@@ -1,153 +1,145 @@
 <?php
-	if(session_status() != PHP_SESSION_ACTIVE) { // ACESSO SOMENTE COM UMA SESSÃO CRIADA COM OS DADOS DO USUÁRIO
-		session_name('SINTEEMAR');
-		session_start();
-	}
 
-	if(isset($_SESSION['user'])) { // VERIFICA SE O USUÁRIO ESTÁ LOGADO
-		$user = unserialize($_SESSION['user']);
-	}
-	else { // USUÁRIO NÃO AUTENTICADO
-		header('Location: index.php');
-		return false;
-	}
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/load.php');
 
-	// DEFINE FUSO HORÁRIO E IDIOMA
-	date_default_timezone_set('America/Sao_Paulo');
-	setlocale(LC_ALL, 'pt_BR', 'pt_BR.utf-8', 'portuguese', 'pt_BR.iso-8859-1');
+	// ROTA RETORNA APENAS JSON COMO RESPOSTA
+	header('Content-type: application/json; charset=utf-8');
 
-	// INSERE IMAGEM E COR DE FUNDO
-	echo '<style>html { background-attachment: fixed; background-color: #1b5e20; background-image: url("../img/sgc.svg"); background-position: center; background-repeat: no-repeat; background-size: 300px 300px; }</style>';
+	// INFORMOU A AÇÃO E PÁGINA CERTA, TAMBÉM POSSUI PERMISSÃO PARA GERENCIAMENTO DO MODELO
+	if(in_array(REQUIRED_ACTION, CRUD_ACTIONS) && in_array(REQUIRED_PAGE, SYSTEM_MODELS) && LOGGED_USER[REQUIRED_PAGE]) {
+		include(__DIR__ . '/models/' . mb_strtolower(REQUIRED_PAGE) . '.php');
 
-	// AÇÕES PERMITIDAS NO CRUD
-	$actions = array('insert', 'remove', 'update');
-
-	// NOME DAS PÁGINAS DISPONÍVEIS
-	$models = array_map(function($p) {
-		return explode('.php', $p)[0];
-	}, array_slice(scandir('models'), 2));
-
-	// VALORES PASSADOS POR GET
-	$action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-	$page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-
-
-	if(isset($_REQUEST) && $action && in_array($action, $actions) && $page && in_array($page, $models) && $user[strtoupper($page)]) { // INFORMOU A AÇÃO E PÁGINA CERTA, TAMBÉM POSSUI PERMISSÃO PARA GERENCIAMENTO DO MODELO
-		include('models/' . $page . '.php');
-		include('dao.php');
-
-		$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
-		$id = $id ? $id : filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
-
-		if(!validate($_POST, $_FILES, $action, $page, $id)) { // VALIDA SE O USUÁRIO NÃO QUIS BURLAR OS DADOS
-			return false;
+		// VALIDA SE O USUÁRIO NÃO QUIS BURLAR OS DADOS
+		$message = validate($_POST, $_FILES, REQUIRED_ACTION);
+		if($message) {
+			http_response_code(400);
+			exit(json_encode([
+				'message' => 'Não foi possível ' . mb_strtolower(CRUD_SUBTITLE) . ' o registro na tabela de ' . mb_strtolower($title) . '!' . PHP_EOL . PHP_EOL . implode(',' . PHP_EOL, $message) . '.'
+			]));
 		}
 
-		if(strcmp($action, 'insert') == 0 && !empty($_POST) && $id && $id > 0) { // OPERAÇÃO DE INSERÇÃO DE REGISTRO
-			if(insert($table=$table, $attributes=$_POST, $files_upload=empty($_FILES) ? null : $_FILES, $id)) {
-				echo '<script>
-					alert("O registro foi inserido na tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=insert";
-					</script>';
-				return true;
+		// OPERAÇÃO DE LISTAGEM DE REGISTRO
+		if(in_array(REQUIRED_ACTION, ['LIST', 'SHOW'])) {
+			$rows = sqlRead(REQUIRED_PAGE);
+			exit(json_encode([
+				'message' => 'Foram encontrados: ' . count($rows) . ' ' . (count($rows) === 1 ? 'registro.' : 'registros.'),
+				'data' => $rows
+			]));
+		}
+
+		// OPERAÇÃO DE CONSULTA DE REGISTRO
+		elseif(in_array(REQUIRED_ACTION, ['SELECT', 'VIEW']) && REQUIRED_ID > 0) {
+			$rows = sqlRead(table: REQUIRED_PAGE, condition: 'ID = ' . REQUIRED_ID, unique: true);
+			exit(json_encode([
+				'message' => empty($rows) ? 'Não foi encontrado nenhum registro.' : 'O registro solicitado foi encontrado.',
+				'data' => $rows
+			]));
+		}
+
+		// OPERAÇÃO DE INSERÇÃO DE REGISTRO
+		elseif(in_array(REQUIRED_ACTION, ['CREATE', 'INSERT']) && !empty(POST_PARAMS) && REQUIRED_ID > 0) {
+			if(insert(table: REQUIRED_PAGE, attributes: $_POST, filesUpload: empty($_FILES) ? null : $_FILES, id: REQUIRED_ID)) {
+				http_response_code(201);
+				exit(json_encode([
+					'message' => 'O registro foi inserido na tabela de ' . mb_strtolower($title) . '!'
+				]));
 			}
 
 			else {
-				echo '<script>
-					alert("Não foi possível inserir o registro na tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=insert";
-					</script>';
-				return false;
+				http_response_code(400);
+				exit(json_encode([
+					'message' => 'Não foi possível inserir o registro na tabela de ' . mb_strtolower($title)
+				]));
 			}
 		}
 
-		elseif(strcmp($action, 'remove') == 0 && $id && $id > 0) { // OPERAÇÃO DE REMOÇÃO DE REGISTRO
-			if(remove($table, $id)) {
-				echo '<script>
-					alert("O registro ' . $id . ' foi removido da tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=list";
-					</script>';
-				return true;
+		// OPERAÇÃO DE REMOÇÃO DE REGISTRO
+		elseif(in_array(REQUIRED_ACTION, ['DELETE', 'REMOVE']) && REQUIRED_ID > 0) {
+			if(remove(REQUIRED_PAGE, REQUIRED_ID)) {
+				http_response_code(200);
+				exit(json_encode([
+					'message' => 'O registro ' . REQUIRED_ID . ' foi removido da tabela de ' . mb_strtolower($title) . '!'
+				]));
 			}
 
 			else {
-				echo '<script>
-					alert("Não foi possível remover o registro ' . $id . ' da tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=list";
-					</script>';
-				return false;
+				http_response_code(400);
+				exit(json_encode([
+					'message' => 'Não foi possível remover o registro ' . REQUIRED_ID . ' da tabela de ' . mb_strtolower($title) . '!'
+				]));
 			}
 		}
 
-		elseif(strcmp($action, 'update') == 0 && !empty($_POST) && $id && $id > 0) { // OPERAÇÃO DE ATUALIZAÇÃO DE REGISTRO
-			if(update($table=$table, $attributes=$_POST, $files_upload=empty($_FILES) ? null : $_FILES, $id)) {
-				echo '<script>
-					alert("O registro foi atualizado na tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=update&column=id&value=' . $id . '";
-					</script>';
-				return true;
+		// OPERAÇÃO DE ATUALIZAÇÃO DE REGISTRO
+		elseif(in_array(REQUIRED_ACTION, ['UPDATE', 'CHANGE']) && !empty(POST_PARAMS) && REQUIRED_ID > 0) {
+			if(update(table: REQUIRED_PAGE, attributes: $_POST, filesUpload: empty($_FILES) ? null : $_FILES, id: REQUIRED_ID)) {
+				http_response_code(200);
+				exit(json_encode([
+					'message' => 'O registro foi atualizado na tabela de ' . mb_strtolower($title) . '!'
+				]));
 			}
 
 			else {
-				echo '<script>
-					alert("Não foi possível atualizar o registro na tabela de ' . mb_strtolower($title) . '!");
-					window.location.href = "panel.php?page=' . $page . '&action=update&column=id&value=' . $id . '";
-					</script>';
-				return false;
+				http_response_code(400);
+				exit(json_encode([
+					'message' => 'Não foi possível atualizar o registro na tabela de ' . mb_strtolower($title) . '!'
+				]));
 			}
 		}
 
-		echo '<script>
-			alert("Não foi possível modificar o registro da tabela de ' . mb_strtolower($title) . '!");
-			window.location.href = "panel.php?page=' . $page . '&action=' . $action . '";
-			</script>';
-		return false;
+		http_response_code(400);
+		exit(json_encode([
+			'message' => 'Não foi possível modificar o registro da tabela de ' . mb_strtolower($title) . '!'
+		]));
 	}
 
-	else { // USUÁRIO NÃO POSSUI PERMISSÃO OU INFORMOU A PÁGINA E AÇÃO INCORRETAS
-		echo '<script>window.location.href = "panel.php";</script>';
+	// USUÁRIO NÃO POSSUI PERMISSÃO OU INFORMOU A PÁGINA E AÇÃO INCORRETAS
+	else {
+		http_response_code(400);
+		exit(json_encode([
+			'message' => 'A requisição está mal formulada ou você não possui permissão para realizar esta operação!'
+		]));
 	}
 
 
 	// CRIA UM NOVO REGISTRO NO BANCO DE DADOS
-	function insert($table, $attributes, $files_upload, $id) {
-		global $hasFiles, $hasFolder, $columns, $insert, $user;
+	function insert(string $table, array $attributes, ?array $filesUpload, int $id): bool {
+		global $hasFiles, $hasFolder, $columns, $insert;
 		$directory = 'uploads/';
-		$tuples = array();
+		$tuples = [];
 
 		foreach($attributes as $attribute => $value) { // ATRIBUI REGISTROS DO VETOR PARA O MODELO
-			if($columns[strtoupper($attribute)]['unique']) { // VERIFICA SE O ATRIBUTO É EXCLUSIVO (ÚNICO)
-				if(sql_read($table=$table, $condition=strtoupper($attribute) . '="' . $value . '"', $unique=true)) {
-					return false;
-				}
+			if($columns[mb_strtoupper($attribute)]['unique'] && sqlRead(table: $table, condition: mb_strtoupper($attribute) . ' = "' . $value . '"', unique: true)) { // VERIFICA SE O ATRIBUTO É EXCLUSIVO (ÚNICO)
+				return false;
 			}
 
-			if(isset($insert[strtoupper($attribute)]['attributes']['multiple']) && $insert[strtoupper($attribute)]['attributes']['multiple']) { // O ATRIBUTO É UM VETOR
+			if(isset($insert[mb_strtoupper($attribute)]['attributes']['multiple']) && $insert[mb_strtoupper($attribute)]['attributes']['multiple']) { // O ATRIBUTO É UM VETOR
 				foreach($attributes[$attribute] as $attr) {
-					if(strcmp($insert[strtoupper($attribute)]['type'], 'checkbox') == 0) {
-						$tuples[strtoupper($attr)] = '"1"';
+					if($insert[mb_strtoupper($attribute)]['type'] === 'checkbox') {
+						$tuples[mb_strtoupper($attr)] = '"1"';
 					}
 				}
 			}
 
-			elseif(isset($columns[strtoupper($attribute)]['hash'])) { // O ATRIBUTO DEVE SER CRIPTOGRAFADO
-				$tuples[strtoupper($attribute)] = '"' . md5($_POST[$attribute]) . '"';
+			elseif(isset($columns[mb_strtoupper($attribute)]['hash'])) { // O ATRIBUTO DEVE SER CRIPTOGRAFADO
+				$tuples[mb_strtoupper($attribute)] = '"' . md5($_POST[$attribute]) . '"';
 			}
 
 			else {
-				$tuples[strtoupper($attribute)] = strlen($_POST[$attribute]) == 0 ? 'NULL' : trim('"' . addslashes($_POST[$attribute]) . '"');
+				$tuples[mb_strtoupper($attribute)] = strlen($_POST[$attribute]) === 0 ? 'NULL' : '"' . trim(addslashes($_POST[$attribute])) . '"';
 			}
 		}
 
 		if($hasFolder) { // INSERE ARQUIVOS EM UM NOVO DIRETÓRIO
 			global $folder;
-			$directory = 'uploads/' . strtolower($table) . date('YmdHis') . bin2hex(random_bytes(10)) . '/';
+			$directory = 'uploads/' . mb_strtolower($table) . date('YmdHis') . bin2hex(random_bytes(10)) . '/';
 			mkdir('../' . $directory);
 
-			for($i = 0; $i < count($files_upload[strtolower($folder)]['name']); $i++) {
-				$filename = explode('.', $files_upload[strtolower($folder)]['name'][$i]);
+			for($i = 0; $i < count($filesUpload[mb_strtolower($folder)]['name']); $i++) {
+				$filename = explode('.', $filesUpload[mb_strtolower($folder)]['name'][$i]);
 				$filename = $directory . date('YmdHis') . bin2hex(random_bytes(10)) . '.' . end($filename);
-				upload_file($files_upload[strtolower($folder)]['tmp_name'][$i], '../' . $filename);
+				uploadFile($filesUpload[mb_strtolower($folder)]['tmp_name'][$i], '../' . $filename);
 			}
 			$tuples[$folder] = '"' . $directory . '"';
 		}
@@ -156,11 +148,11 @@
 			global $files;
 
 			foreach($files as $file) {
-				$filename = explode('.', $files_upload[strtolower($file)]['name']);
+				$filename = explode('.', $filesUpload[mb_strtolower($file)]['name']);
 				$filename = $directory . date('YmdHis') . bin2hex(random_bytes(10)) . '.' . end($filename);
-				upload_file($files_upload[strtolower($file)]['tmp_name'], '../' . $filename);
+				uploadFile($filesUpload[mb_strtolower($file)]['tmp_name'], '../' . $filename);
 
-				if(!empty($files_upload[strtolower($file)]['name'])) {
+				if(!empty($filesUpload[mb_strtolower($file)]['name'])) {
 					$tuples[$file] = '"' . $filename . '"';
 				}
 			}
@@ -168,64 +160,64 @@
 
 		$fields = implode(', ', array_keys($tuples));
 		$values = implode(', ', array_values($tuples));
-		$result = sql_insert($table=$table, $fields=$fields, $values=$values);
+		$result = sqlInsert(table: $table, fields: $fields, values: $values);
 
 		if($result) {
-			sql_insert($table='REGISTROS', $fields='OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', $values='"CADASTRO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . $user['ID'] . ', "' . date('Y-m-d H:i:s') . '"'); // GRAVA O LOG DA OPERAÇÃO DE INSERÇÃO
+			sqlInsert(table: 'REGISTROS', fields: 'OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', values: '"CADASTRO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . LOGGED_USER['ID'] . ', "' . SYSDATE . '"'); // GRAVA O LOG DA OPERAÇÃO DE INSERÇÃO
 		}
 		return (bool) $result;
 	}
 
 
 	// ALTERA UM REGISTRO DO BANCO DE DADOS
-	function update($table, $attributes, $files_upload, $id) {
-		global $hasFiles, $hasFolder, $columns, $update, $user;
+	function update(string $table, array $attributes, ?array $filesUpload, int $id): bool {
+		global $hasFiles, $hasFolder, $columns, $update;
 		$directory = 'uploads/';
-		$tuples = array();
+		$tuples = [];
 
 		foreach($attributes as $attribute => $value) { // ATRIBUI REGISTROS DO VETOR PARA O MODELO
-			if($columns[strtoupper($attribute)]['unique']) { // VERIFICA SE O ATRIBUTO É EXCLUSIVO (ÚNICO)
-				$tuple = sql_read($table=$table, $condition=strtoupper($attribute) . '="' . $value . '"', $unique=true);
-				if($tuple && $tuple['ID'] != $id) {
+			if($columns[mb_strtoupper($attribute)]['unique']) { // VERIFICA SE O ATRIBUTO É EXCLUSIVO (ÚNICO)
+				$tuple = sqlRead(table: $table, condition: mb_strtoupper($attribute) . ' = "' . $value . '"', unique: true);
+				if($tuple && (int) $tuple['ID'] !== $id) {
 					return false;
 				}
 			}
 
-			if(isset($update[strtoupper($attribute)]['attributes']['multiple']) && $update[strtoupper($attribute)]['attributes']['multiple']) { // O ATRIBUTO É UM VETOR
-				foreach($update[strtoupper($attribute)]['names'] as $i) {
+			if(isset($update[mb_strtoupper($attribute)]['attributes']['multiple']) && $update[mb_strtoupper($attribute)]['attributes']['multiple']) { // O ATRIBUTO É UM VETOR
+				foreach($update[mb_strtoupper($attribute)]['names'] as $i) {
 					$tuples[$i] = 0;
 				}
 				foreach($attributes[$attribute] as $attr) {
-					if(strcmp($update[strtoupper($attribute)]['type'], 'checkbox') == 0) {
-						$tuples[strtoupper($attr)] = '"1"';
+					if($update[mb_strtoupper($attribute)]['type'] === 'checkbox') {
+						$tuples[mb_strtoupper($attr)] = '"1"';
 					}
 				}
 			}
 
-			elseif(isset($columns[strtoupper($attribute)]['hash'])) { // O ATRIBUTO DEVE SER CRIPTOGRAFADO
-				if(strlen($_POST[$attribute]) != 0) {
-					$tuples[strtoupper($attribute)] = '"' . md5($_POST[$attribute]) . '"';
+			elseif(isset($columns[mb_strtoupper($attribute)]['hash'])) { // O ATRIBUTO DEVE SER CRIPTOGRAFADO
+				if(strlen($_POST[$attribute]) !== 0) {
+					$tuples[mb_strtoupper($attribute)] = '"' . md5($_POST[$attribute]) . '"';
 				}
 				else {
-					$tuples[strtoupper($attribute)] = '"' . sql_read($table=$table, $condition='ID="' . $id . '"', $unique=true)[strtoupper($attribute)] . '"';
+					$tuples[mb_strtoupper($attribute)] = '"' . sqlRead(table: $table, condition: 'ID = "' . $id . '"', unique: true)[mb_strtoupper($attribute)] . '"';
 				}
 			}
 
 			else {
-				$tuples[strtoupper($attribute)] = strlen($_POST[$attribute]) == 0 ? 'NULL' : trim('"'. addslashes($_POST[$attribute]) . '"');
+				$tuples[mb_strtoupper($attribute)] = strlen($_POST[$attribute]) === 0 ? 'NULL' : '"'. trim(addslashes($_POST[$attribute])) . '"';
 			}
 		}
 
-		$register = sql_read($table=$table, $condition='ID="' . $id . '"', $unique=true);
+		$register = sqlRead(table: $table, condition: 'ID = "' . $id . '"', unique: true);
 
 		if($hasFolder) { // INSERE ARQUIVOS EM UM NOVO DIRETÓRIO
 			global $folder;
 			$directory = $register[$folder];
 
-			for($i = 0; $i < count($files_upload[strtolower($folder)]['name']); $i++) {
-				$filename = explode('.', $files_upload[strtolower($folder)]['name'][$i]);
+			for($i = 0; $i < count($filesUpload[mb_strtolower($folder)]['name']); $i++) {
+				$filename = explode('.', $filesUpload[mb_strtolower($folder)]['name'][$i]);
 				$filename = $directory . date('YmdHis') . bin2hex(random_bytes(10)) . '.' . end($filename);
-				upload_file($files_upload[strtolower($folder)]['tmp_name'][$i], '../' . $filename);
+				uploadFile($filesUpload[mb_strtolower($folder)]['tmp_name'][$i], '../' . $filename);
 			}
 			$tuples[$folder] = '"' . $directory . '"';
 		}
@@ -234,54 +226,53 @@
 			global $files;
 
 			foreach($files as $file) {
-				$filename = explode('.', $files_upload[strtolower($file)]['name']);
+				$filename = explode('.', $filesUpload[mb_strtolower($file)]['name']);
 				$filename = $directory . date('YmdHis') . bin2hex(random_bytes(10)) . '.' . end($filename);
-				upload_file($files_upload[strtolower($file)]['tmp_name'], '../' . $filename);
+				uploadFile($filesUpload[mb_strtolower($file)]['tmp_name'], '../' . $filename);
 
-				if(!empty($files_upload[strtolower($file)]['name'])) {
+				if(!empty($filesUpload[mb_strtolower($file)]['name'])) {
 					$tuples[$file] = '"' . $filename . '"';
 				}
 			}
 		}
 
-		$fields = implode(', ', array_map(function($x, $y) {
-			return $x . '=' . $y;
-		}, array_keys($tuples), array_values($tuples)));
-		$result = sql_update($table=$table, $fields=$fields, $condition='ID=' . $id);
+		$tuples = array_diff_key($tuples, ['ID' => REQUIRED_ID]);
+		$fields = implode(', ', array_map(fn(string $key, int|string $value) => associative($key, $value, true), array_keys($tuples), array_values($tuples)));
+
+		$result = sqlUpdate(table: $table, fields: $fields, condition: 'ID = ' . $id);
 
 		if($result) {
-			sql_insert($table='REGISTROS', $fields='OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', $values='"ALTERAÇÃO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . $user['ID'] . ', "' . date('Y-m-d H:i:s') . '"'); // GRAVA O LOG DA OPERAÇÃO DE ALTERAÇÃO
+			sqlInsert(table: 'REGISTROS', fields: 'OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', values: '"ALTERAÇÃO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . LOGGED_USER['ID'] . ', "' . SYSDATE . '"'); // GRAVA O LOG DA OPERAÇÃO DE ALTERAÇÃO
 		}
 		return (bool) $result;
 	}
 
 
 	// REMOVE UM REGISTRO DO BANCO DE DADOS
-	function remove($table, $id) {
-		global $user;
-		$register = sql_read($table=$table, $condition='ID=' . $id, $unique=true);
+	function remove(string $table, int $id): bool {
+		$register = sqlRead(table: $table, condition: 'ID = ' . $id, unique: true);
 
 		if($register) {
 			global $hasFiles, $hasFolder;
 			if($hasFiles) { // POSSUI ALGUM ARQUIVO SALVO EM DISCO
 				global $files;
 				foreach($files as $file) {
-					remove_file('../' . $register[$file]);
+					removeFile('../' . $register[$file]);
 				}
 			}
 
 			elseif($hasFolder) { // POSSUI ALGUM DIRETÓRIO COM ARQUIVOS
 				global $folder;
-				foreach(array_slice(scandir('../' . $register[$folder]), 2) as $file) {
-					remove_file('../' . $register[$folder] . $file);
+				foreach(array_slice(scandir(__DIR__ . '/../' . $register[$folder]), 2) as $file) {
+					removeFile('../' . $register[$folder] . $file);
 				}
-				remove_folder('../' . $register[$folder]);
+				removeFolder('../' . $register[$folder]);
 			}
 
-			$result = sql_remove($table=$table, $field='ID', $value=$id);
+			$result = sqlRemove(table: $table, field: 'ID', value: $id);
 
 			if($result) {
-				sql_insert($table='REGISTROS', $fields='OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', $values='"REMOÇÃO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . $user['ID'] . ', "' . date('Y-m-d H:i:s') . '"'); // GRAVA O LOG DA OPERAÇÃO DE REMOÇÃO
+				sqlInsert(table: 'REGISTROS', fields: 'OPERACAO, TABELA, ERRO, REGISTRO, USUARIO, DATA', values: '"REMOÇÃO", "' . $table . '", "' . print_r(error_get_last(), true) . '", ' . $id . ', ' . LOGGED_USER['ID'] . ', "' . SYSDATE . '"'); // GRAVA O LOG DA OPERAÇÃO DE REMOÇÃO
 			}
 			return (bool) $result;
 		}
@@ -291,49 +282,39 @@
 
 
 	// REMOVE UM ARQUIVO FÍSICO DO SERVIDOR
-	function remove_file($file) {
-		if(is_file($file) && unlink($file)) { // EXISTE O ARQUIVO E CONSEGUIU REMOVÊ-LO
-			return true;
-		}
-		return false;
+	function removeFile(string $file): bool {
+		return is_file($file) && unlink($file);
 	}
 
 
 	// REMOVE UM DIRETÓRIO DO SERVIDOR
-	function remove_folder($folder) {
-		if(is_dir($folder) && rmdir($folder)) { // EXISTE O DIRETÓRIO E CONSEGUIU REMOVÊ-LO
-			return true;
-		}
-		return false;
+	function removeFolder(string $folder): bool {
+		return is_dir($folder) && rmdir($folder);
 	}
 
 
 	// SALVA UM ARQUIVO TEMPORÁRIO ENVIADO AO SERVIDOR
-	function upload_file($tmp_name, $dest_name) {
-		if(move_uploaded_file($tmp_name, $dest_name)) {
-			return true;
-		}
-		return false;
+	function uploadFile(string $temporaryName, string $destinyName): bool {
+		return move_uploaded_file($temporaryName, $destinyName);
 	}
 
 
 	// VALIDA OS ATRIBUTOS (DADOS) FORNECIDOS PELO USUÁRIO
-	function validate($attributes, $files, $action, $page, $id) {
-		global $columns, $title;
-		$message = array();
+	function validate(array $attributes, array $files, string $action): array {
+		global $columns;
+		$message = [];
 
-		if(strcmp($action, 'insert') == 0) {
+		if(in_array($action, ['CREATE', 'INSERT'])) {
 			global $insert;
 			$rules = $insert;
 		}
-
-		elseif(strcmp($action, 'update') == 0) {
+		elseif(in_array($action, ['UPDATE', 'CHANGE'])) {
 			global $update;
 			$rules = $update;
 		}
 
 		foreach($attributes as $attribute => $value) {
-			$attr = strtoupper($attribute);
+			$attr = mb_strtoupper($attribute);
 
 			if(in_array($attr, array_keys($columns))) {
 				$maxlength = $rules[$attr]['attributes']['maxlength'] ?? INF;
@@ -343,7 +324,7 @@
 				$required = $rules[$attr]['attributes']['required'] ?? false;
 
 				if(isset($rules[$attr]['type'])) { // VALIDA SE OS TIPOS (INPUT) ESTÃO CORRETOS (COLOR, DATE, DATETIME-LOCAL, EMAIL, FILE, HIDDEN, NUMBER, PASSWORD, RADIO, RANGE, SEARCH, TEL, TEXT, TIME, URL, WEEK)
-					if(in_array($rules[$attr]['type'], array('password', 'search', 'tel', 'text'))) {
+					if(in_array($rules[$attr]['type'], ['password', 'search', 'tel', 'text'])) {
 						if(!is_string($value)) {
 							array_push($message, $columns[$attr]['label'] . ' não é um texto');
 						}
@@ -352,7 +333,7 @@
 						}
 					}
 
-					elseif(in_array($rules[$attr]['type'], array('number', 'range'))) {
+					elseif(in_array($rules[$attr]['type'], ['number', 'range'])) {
 						if(!is_numeric($value) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é um número');
 						}
@@ -361,7 +342,7 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'email') == 0) {
+					elseif($rules[$attr]['type'] === 'email') {
 						if(!filter_var($value, FILTER_VALIDATE_EMAIL) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é um e-mail');
 						}
@@ -370,7 +351,7 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'url') == 0) {
+					elseif($rules[$attr]['type'] === 'url') {
 						if(!filter_var($value, FILTER_VALIDATE_URL) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é uma URL');
 						}
@@ -379,14 +360,14 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'time') == 0) {
-						if($min == 0) {
+					elseif($rules[$attr]['type'] === 'time') {
+						if($min === 0) {
 							unset($min);
 						}
-						if($max == INF) {
+						if($max === INF) {
 							unset($max);
 						}
-						if(!preg_match('/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/', $value) && ($required || !empty($value))) {
+						if(!preg_match('/^(?:2[0-3]|[01]\d):[0-5]\d$/', $value) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é um horário');
 						}
 						elseif(isset($min, $max) && (strtotime($value) > strtotime($max) || strtotime($value) < strtotime($min))) {
@@ -394,15 +375,15 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'date') == 0) {
-						if($min == 0) {
+					elseif($rules[$attr]['type'] === 'date') {
+						if($min === 0) {
 							unset($min);
 						}
-						if($max == INF) {
+						if($max === INF) {
 							unset($max);
 						}
 						$date = explode('-', $value);
-						if((count($date) != 3 || !checkdate($date[1], $date[2], $date[0])) && ($required || !empty($value))) {
+						if((count($date) !== 3 || !checkdate((int) $date[1], (int) $date[2], (int) $date[0])) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é uma data');
 						}
 						elseif(isset($min, $max) && (strtotime($value) > strtotime($max) || strtotime($value) < strtotime($min))) {
@@ -410,17 +391,17 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'datetime-local') == 0) {
-						if($min == 0) {
+					elseif($rules[$attr]['type'] === 'datetime-local') {
+						if($min === 0) {
 							unset($min);
 						}
-						if($max == INF) {
+						if($max === INF) {
 							unset($max);
 						}
 						$date = substr($value, 0, 10);
 						$time = substr($value, 11, 5);
 						$token = explode('-', $date);
-						if((count($token) != 3 || !checkdate($token[1], $token[2], $token[0]) || !preg_match('/^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/', $time)) && ($required || !empty($value))) {
+						if((count($token) !== 3 || !checkdate((int) $token[1], (int) $token[2], (int) $token[0]) || !preg_match('/^(?:2[0-3]|[01]\d):[0-5]\d$/', $time)) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é um tempo');
 						}
 						elseif(isset($min, $max) && (strtotime($date . $time) > strtotime($max) || strtotime($date . $time) < strtotime($min))) {
@@ -428,14 +409,14 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'week') == 0) {
-						if($min == 0) {
+					elseif($rules[$attr]['type'] === 'week') {
+						if($min === 0) {
 							unset($min);
 						}
-						if($max == INF) {
+						if($max === INF) {
 							unset($max);
 						}
-						if(strcmp(date('Y-m-d', strtotime($value)), '1969-12-31') == 0 && ($required || !empty($value))) {
+						if(date('Y-m-d', strtotime($value)) === '1969-12-31' && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é uma semana');
 						}
 						elseif(isset($min, $max) && (strtotime($value) > strtotime($max) || strtotime($value) < strtotime($min))) {
@@ -443,27 +424,27 @@
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'color') == 0) {
+					elseif($rules[$attr]['type'] === 'color') {
 						$color = substr($value, 1);
-						if((!ctype_xdigit($color) || !in_array(strlen($color), array(3, 6))) && ($required || !empty($value))) {
+						if((!ctype_xdigit($color) || !in_array(strlen($color), [3, 6])) && ($required || !empty($value))) {
 							array_push($message, $columns[$attr]['label'] . ' não é uma cor');
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'radio') == 0) {
+					elseif($rules[$attr]['type'] === 'radio') {
 						if($required && empty($value)) {
 							array_push($message, $columns[$attr]['label'] . ' não foi selecionado');
 						}
 					}
 
-					elseif(strcmp($rules[$attr]['type'], 'hidden') == 0) {
+					elseif($rules[$attr]['type'] === 'hidden') {
 						if($required && empty($value)) {
 							array_push($message, $columns[$attr]['label'] . ' não possui valor');
 						}
 					}
 				}
 
-				elseif(strcmp($rules[$attr]['tag'], 'textarea') == 0) { // VALIDA SE O TAMANHO DO CAMPO (TEXTAREA) É VÁLIDO
+				elseif($rules[$attr]['tag'] === 'textarea') { // VALIDA SE O TAMANHO DO CAMPO (TEXTAREA) É VÁLIDO
 					$value = trim(strip_tags(html_entity_decode($value)));
 					if(!is_string($value)) {
 						array_push($message, $columns[$attr]['label'] . ' não é um texto');
@@ -475,25 +456,25 @@
 			}
 		}
 
-		if(count($files) > 0) {
-			$problems = array();
+		if(!empty($files)) {
+			$problems = [];
 			foreach($files as $attr => $file) {
 				if(is_array($file['name'])) {
 					foreach($file['error'] as $error) {
-						if($error != UPLOAD_ERR_OK) {
+						if($error !== UPLOAD_ERR_OK) {
 							$problems[$attr] = isset($problems[$attr]) ? [...$problems[$attr], $error] : [$error];
 						}
 					}
 				}
-				elseif($file['error'] != UPLOAD_ERR_OK) {
+				elseif($file['error'] !== UPLOAD_ERR_OK) {
 					$problems[$attr] = isset($problems[$attr]) ? [...$problems[$attr], $file['error']] : [$file['error']];
 				}
 			}
 			if(!empty($problems)) {
 				foreach($problems as $attribute => $problem) {
-					$text = array();
+					$text = [];
 					$required = $rules[$attr]['attributes']['required'] ?? false;
-					$attr = strtoupper($attribute);
+					$attr = mb_strtoupper($attribute);
 					$problem = array_count_values($problem);
 
 					array_push($text, isset($problem[UPLOAD_ERR_INI_SIZE]) ? $problem[UPLOAD_ERR_INI_SIZE] . ' arquivo(s) enviado(s) que excede(m) o limite do PHP' : '');
@@ -512,13 +493,5 @@
 			}
 		}
 
-		if(count($message) > 0) {
-			echo '<script>
-				alert("Não foi possível ' . (strcmp($action, 'insert') == 0 ? 'inserir' : 'atualizar') . ' o registro na tabela de ' . mb_strtolower($title) . '!' . PHP_EOL . PHP_EOL . implode(',' . PHP_EOL, $message) . '.");
-				window.location.href = "panel.php?page=' . $page . '&action=' . $action . (strcmp($action, 'insert') == 0 ? '' : '&column=id&value=' . $id) . '";
-				</script>';
-			return false;
-		}
-		return true;
+		return $message;
 	}
-?>

@@ -1,12 +1,14 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
+
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
 
 	$name = 'estatuto.php';
 	$title = 'Estatuto';
 
-	$estatuto = sql_read($table='ESTATUTO', $condition='ID > 0 ORDER BY ID DESC LIMIT 1', $unique=true);
+	$estatuto = sqlRead(table: 'ESTATUTO', condition: 'ID > 0 ORDER BY ID DESC LIMIT 1', unique: true);
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -18,8 +20,8 @@
 	if(!empty($estatuto)) { // EXIBE O ÚLTIMO ESTATUTO CADASTRADO
 ?>
 		<div class="center">
-			<a href="<?= $website . $estatuto['DOCUMENTO'] ?>">
-				<img alt="Estatuto" class="responsive-img" src="<?= $website ?>img/document.svg" width="75"/>
+			<a href="<?= BASE_URL . $estatuto['DOCUMENTO'] ?>">
+				<img alt="Estatuto" class="responsive-img" loading="lazy" src="<?= BASE_URL ?>img/document.svg" width="75"/>
 			</a>
 		</div>
 		<p class="center-align">Clique no documento para visualizar.</p>
@@ -33,5 +35,4 @@
 ?>
 	</div>
 <?php
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

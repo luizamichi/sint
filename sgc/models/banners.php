@@ -1,4 +1,5 @@
 <?php
+
 	// TÍTULO DA PÁGINA
 	$title = 'Banners';
 
@@ -10,19 +11,19 @@
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = array('IMAGEM');
+	$files = ['IMAGEM'];
 	$hasFolder = false;
 
 	// TEXTO DE AJUDA
 	$help = 'Os banners dão dinâmica à página inicial, abrindo a possibilidade de inserir até 5 imagens deslizantes para exibição.';
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
-	$columns = array(
-		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
-		'IMAGEM'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'IMAGEM', 'name'=> 'imagem', 'unique'=> false),
-		'LINK'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'LINK', 'name'=> 'link', 'unique'=> false),
-		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
-	);
+	$columns = [
+		'ID' => ['default' => 1, 'domain' => 'integer', 'label' => 'ID', 'name' => 'id', 'unique' => true],
+		'IMAGEM' => ['default' => '', 'domain' => 'string', 'label' => 'IMAGEM', 'name' => 'imagem', 'unique' => false],
+		'LINK' => ['default' => '', 'domain' => 'string', 'label' => 'LINK', 'name' => 'link', 'unique' => false],
+		'TEMPO' => ['default' => date('Y-m-d H:i:s'), 'domain' => 'string', 'label' => 'TEMPO', 'name' => 'tempo', 'unique' => false]
+	];
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
 	$sql = 'CREATE TABLE IF NOT EXISTS `BANNERS` (
@@ -33,23 +34,22 @@
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
-	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
-		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png', 'autofocus'=> 'autofocus', 'required'=> 'required')),
-		'LINK'=> array('tag'=> 'input', 'type'=> 'url', 'attributes'=> array('maxlength'=> 128, 'minlength'=> 4, 'placeholder'=> 'Opcional')),
-		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
-	);
+	$insert = [
+		'ID' => ['tag' => 'input', 'type' => 'number', 'attributes' => ['disabled' => 'disabled', 'readonly' => 'readonly']],
+		'IMAGEM' => ['tag' => 'input', 'type' => 'file', 'attributes' => ['accept' => 'image/jpeg,image/x-png', 'autofocus' => 'autofocus', 'required' => 'required']],
+		'LINK' => ['tag' => 'input', 'type' => 'url', 'attributes' => ['maxlength' => 128, 'minlength' => 4, 'placeholder' => 'Opcional']],
+		'TEMPO' => ['tag' => 'input', 'type' => 'hidden']
+	];
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO
 	$update = $insert;
 
 	// INFORMAÇÕES PARA VISUALIZAÇÃO DE REGISTRO ÚNICO
-	$view = array(
-		'ID'=> array('tag'=> 'p'),
-		'IMAGEM'=> array('tag'=> 'img'),
-		'LINK'=> array('tag'=> 'a'),
-	);
+	$view = [
+		'ID' => ['tag' => 'p'],
+		'IMAGEM' => ['tag' => 'img'],
+		'LINK' => ['tag' => 'a']
+	];
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS
 	$list = $view;
-?>
