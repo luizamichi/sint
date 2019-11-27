@@ -1,4 +1,5 @@
 <?php
+
 	// TÍTULO DA PÁGINA
 	$title = 'Convênios';
 
@@ -10,25 +11,25 @@
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = array('DOCUMENTO', 'IMAGEM');
+	$files = ['DOCUMENTO', 'IMAGEM'];
 	$hasFolder = false;
 
 	// TEXTO DE AJUDA
 	$help = 'Os convênios são ordenadas de acordo com a data da publicação. A quantidade de palavras no texto influencia na disposição dos elementos na página.';
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
-	$columns = array(
-		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
-		'TITULO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'TÍTULO', 'name'=> 'titulo', 'unique'=> false),
-		'TEXTO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'TEXTO', 'name'=> 'texto', 'unique'=> false),
-		'TELEFONE'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'TELEFONE', 'name'=> 'telefone', 'unique'=> false),
-		'CELULAR'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'CELULAR', 'name'=> 'celular', 'unique'=> false),
-		'EMAIL'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'E-MAIL', 'name'=> 'email', 'unique'=> false),
-		'URL'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'URL', 'name'=> 'url', 'unique'=> false),
-		'IMAGEM'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'IMAGEM', 'name'=> 'imagem', 'unique'=> false),
-		'DOCUMENTO'=> array('default'=> null, 'domain'=> 'string', 'label'=> 'DOCUMENTO', 'name'=> 'documento', 'unique'=> false),
-		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
-	);
+	$columns = [
+		'ID' => ['default' => 1, 'domain' => 'integer', 'label' => 'ID', 'name' => 'id', 'unique' => true],
+		'TITULO' => ['default' => '', 'domain' => 'string', 'label' => 'TÍTULO', 'name' => 'titulo', 'unique' => false],
+		'TEXTO' => ['default' => '', 'domain' => 'string', 'label' => 'TEXTO', 'name' => 'texto', 'unique' => false],
+		'TELEFONE' => ['default' => null, 'domain' => 'string', 'label' => 'TELEFONE', 'name' => 'telefone', 'unique' => false],
+		'CELULAR' => ['default' => null, 'domain' => 'string', 'label' => 'CELULAR', 'name' => 'celular', 'unique' => false],
+		'EMAIL' => ['default' => null, 'domain' => 'string', 'label' => 'E-MAIL', 'name' => 'email', 'unique' => false],
+		'URL' => ['default' => '', 'domain' => 'string', 'label' => 'URL', 'name' => 'url', 'unique' => false],
+		'IMAGEM' => ['default' => '', 'domain' => 'string', 'label' => 'IMAGEM', 'name' => 'imagem', 'unique' => false],
+		'DOCUMENTO' => ['default' => null, 'domain' => 'string', 'label' => 'DOCUMENTO', 'name' => 'documento', 'unique' => false],
+		'TEMPO' => ['default' => date('Y-m-d H:i:s'), 'domain' => 'string', 'label' => 'TEMPO', 'name' => 'tempo', 'unique' => false]
+	];
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
 	$sql = 'CREATE TABLE IF NOT EXISTS `CONVENIOS` (
@@ -45,37 +46,36 @@
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
-	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
-		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
-		'TEXTO'=> array('tag'=> 'textarea', 'attributes'=> array('minlength'=> 4, 'required'=> 'required', 'rows'=> 4)),
-		'TELEFONE'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('data-mask'=> '(00) 0000-0000', 'maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{4})-([0-9]{4})', 'placeholder'=> 'Opcional')),
-		'CELULAR'=> array('tag'=> 'input', 'type'=> 'tel', 'attributes'=> array('data-mask'=> '(00) 00000-0000', 'maxlength'=> 16, 'minlength'=> 4, 'pattern'=> '(\([0-9]{2}\))\s([9]{1})?([0-9]{5})-([0-9]{4})', 'placeholder'=> 'Opcional')),
-		'EMAIL'=> array('tag'=> 'input', 'type'=> 'email', 'attributes'=> array('maxlength'=> 64, 'minlength'=> 4, 'placeholder'=> 'Opcional')),
-		'URL'=> array('tag'=> 'input', 'type'=> 'url', 'attributes'=> array('maxlength'=> 128, 'minlength'=> 4, 'placeholder'=> 'Opcional')),
-		'IMAGEM'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'image/jpeg,image/x-png', 'required'=> 'required')),
-		'DOCUMENTO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'application/pdf')),
-		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
-	);
+	$insert = [
+		'ID' => ['tag' => 'input', 'type' => 'number', 'attributes' => ['disabled' => 'disabled', 'readonly' => 'readonly']],
+		'TITULO' => ['tag' => 'input', 'type' => 'text', 'attributes' => ['autofocus' => 'autofocus', 'maxlength' => 128, 'minlength' => 4, 'required' => 'required']],
+		'TEXTO' => ['tag' => 'textarea', 'attributes' => ['minlength' => 4, 'required' => 'required', 'rows' => 4]],
+		'TELEFONE' => ['tag' => 'input', 'type' => 'tel', 'attributes' => ['data-mask' => '(00) 0000-0000', 'maxlength' => 16, 'minlength' => 4, 'pattern' => '(\([0-9]{2}\))\s([9]{1})?([0-9]{4})-([0-9]{4})', 'placeholder' => 'Opcional']],
+		'CELULAR' => ['tag' => 'input', 'type' => 'tel', 'attributes' => ['data-mask' => '(00) 00000-0000', 'maxlength' => 16, 'minlength' => 4, 'pattern' => '(\([0-9]{2}\))\s([9]{1})?([0-9]{5})-([0-9]{4})', 'placeholder' => 'Opcional']],
+		'EMAIL' => ['tag' => 'input', 'type' => 'email', 'attributes' => ['maxlength' => 64, 'minlength' => 4, 'placeholder' => 'Opcional']],
+		'URL' => ['tag' => 'input', 'type' => 'url', 'attributes' => ['maxlength' => 128, 'minlength' => 4, 'placeholder' => 'Opcional']],
+		'IMAGEM' => ['tag' => 'input', 'type' => 'file', 'attributes' => ['accept' => 'image/jpeg,image/x-png', 'required' => 'required']],
+		'DOCUMENTO' => ['tag' => 'input', 'type' => 'file', 'attributes' => ['accept' => 'application/pdf']],
+		'TEMPO' => ['tag' => 'input', 'type' => 'hidden']
+	];
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO
 	$update = $insert;
 	unset($update['IMAGEM']['attributes']['required']);
 
 	// INFORMAÇÕES PARA VISUALIZAÇÃO DE REGISTRO ÚNICO
-	$view = array(
-		'ID'=> array('tag'=> 'p'),
-		'TITULO'=> array('tag'=> 'p'),
-		'TEXTO'=> array('tag'=> 'p'),
-		'TELEFONE'=> array('tag'=> 'p'),
-		'CELULAR'=> array('tag'=> 'p'),
-		'EMAIL'=> array('tag'=> 'p'),
-		'URL'=> array('tag'=> 'a'),
-		'IMAGEM'=> array('tag'=> 'img'),
-		'DOCUMENTO'=> array('tag'=> 'a'),
-	);
+	$view = [
+		'ID' => ['tag' => 'p'],
+		'TITULO' => ['tag' => 'p'],
+		'TEXTO' => ['tag' => 'p'],
+		'TELEFONE' => ['tag' => 'p'],
+		'CELULAR' => ['tag' => 'p'],
+		'EMAIL' => ['tag' => 'p'],
+		'URL' => ['tag' => 'a'],
+		'IMAGEM' => ['tag' => 'img'],
+		'DOCUMENTO' => ['tag' => 'a']
+	];
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS
 	$list = $view;
 	unset($list['URL'], $list['IMAGEM'], $list['DOCUMENTO']);
-?>

@@ -1,16 +1,18 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
 
 	$name = 'juridicos.php';
 	$title = 'Jurídicos';
 
-	$pages = ceil(sql_length($table='JURIDICOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 JURÍDICOS POR PÁGINA
+	$pages = ceil(sqlLength('JURIDICOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 JURÍDICOS POR PÁGINA
 	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$juridicos = sql_read($table='JURIDICOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30', $unique=false);
+	$juridicos = sqlRead(table: 'JURIDICOS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30');
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -25,7 +27,7 @@
 <?php
 		foreach($juridicos as $juridico) { // PERCORRE A LISTA DE JURÍDICOS
 ?>
-			<a class="collection-item" href="<?= $website . $juridico['DOCUMENTO'] ?>">
+			<a class="collection-item" href="<?= BASE_URL . $juridico['DOCUMENTO'] ?>">
 				<h5 class="black-text"><?= $juridico['TITULO'] ?></h5>
 				<p><?= nl2br($juridico['TEXTO']) ?: '' ?></p>
 			</a>
@@ -43,6 +45,5 @@
 ?>
 	</div>
 <?php
-	require_once('navegador.php');
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

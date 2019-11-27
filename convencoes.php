@@ -1,17 +1,29 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
+	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
 
 	$name = 'convencoes.php';
 	$title = 'Convenções';
 
-	$pages = ceil(sql_length($table='CONVENCOES') / 30); // QUANTIDADE DE PÁGINAS PARA 30 CONVENÇÕES POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$convencoes['VIGENTE'] = sql_read($table='CONVENCOES', $condition='TIPO=1 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
-	$convencoes['ANTERIOR'] = sql_read($table='CONVENCOES', $condition='TIPO=0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15', $unique=false);
+	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
+		$convencao = sqlRead(table: 'CONVENCOES', condition: 'ID = ' . (int) base64_decode($id), unique: true);
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+		if(!empty($convencao)) { // REDIRECIONA PARA O CAMINHO DO DOCUMENTO
+			header('Location: ' . BASE_URL . $convencao['DOCUMENTO']);
+			return true;
+		}
+	}
+
+	$pages = ceil(sqlLength('CONVENCOES') / 30); // QUANTIDADE DE PÁGINAS PARA 30 CONVENÇÕES POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
+	$convencoes['VIGENTE'] = sqlRead(table: 'CONVENCOES', condition: 'TIPO = 1 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15');
+	$convencoes['ANTERIOR'] = sqlRead(table: 'CONVENCOES', condition: 'TIPO = 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15');
+
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -28,7 +40,7 @@
 		foreach($convencoes['VIGENTE'] as $convencao) { // PERCORRE A LISTA DE CONVENÇÕES VIGENTES CADASTRADAS
 ?>
 			<li class="collection-item">
-				<a class="teal-text" href="<?= $website . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
+				<a class="teal-text" href="<?= BASE_URL . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
 			</li>
 <?php
 		}
@@ -36,13 +48,14 @@
 	if(!empty($convencoes['ANTERIOR'])) { // HÁ CONVENÇÕES ANTERIORES CADASTRADAS
 ?>
 		</ul>
+
 		<h3 class="center-align">Anteriores</h3>
 		<ul class="collection">
 <?php
 		foreach($convencoes['ANTERIOR'] as $convencao) { // PERCORRE A LISTA DE CONVENÇÕES ANTERIORES CADASTRADAS
 ?>
 			<li class="collection-item">
-				<a class="teal-text" href="<?= $website . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
+				<a class="teal-text" href="<?= BASE_URL . $convencao['DOCUMENTO'] ?>"><?= $convencao['TITULO'] ?></a>
 			</li>
 <?php
 		}
@@ -58,6 +71,5 @@
 ?>
 	</div>
 <?php
-	require_once('navegador.php');
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

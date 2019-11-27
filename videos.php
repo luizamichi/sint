@@ -1,16 +1,28 @@
 <?php
-	require_once('sgc/dao.php'); // IMPORTA AS FUNÇÕES DE MANIPULAÇÃO DO BANCO DE DADOS
 
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT));
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/sgc/load.php');
+
+	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
+	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
 
 	$name = 'videos.php';
 	$title = 'Vídeos';
 
-	$pages = ceil(sql_length($table='VIDEOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 VÍDEOS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$videos = sql_read($table='VIDEOS', $condition='ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30', $unique=false);
+	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
+		$video = sqlRead(table: 'VIDEOS', condition: 'ID = ' . (int) base64_decode($id), unique: true);
 
-	require_once('cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+		if(!empty($video)) { // REDIRECIONA PARA A URL DO VÍDEO
+			header('Location: ' . $video['URL']);
+			return true;
+		}
+	}
+
+	$pages = ceil(sqlLength('VIDEOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 VÍDEOS POR PÁGINA
+	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
+	$videos = sqlRead(table: 'VIDEOS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30');
+
+	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
 	<div class="container">
@@ -43,6 +55,5 @@
 ?>
 	</div>
 <?php
-	require_once('navegador.php');
-	require_once('rodape.php');
-?>
+	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
+	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA

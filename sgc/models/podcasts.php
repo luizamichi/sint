@@ -1,4 +1,5 @@
 <?php
+
 	// TÍTULO DA PÁGINA
 	$title = 'Podcasts';
 
@@ -10,21 +11,21 @@
 
 	// DEFINIÇÃO DE ARQUIVOS E DIRETÓRIOS
 	$hasFiles = true;
-	$files = array('AUDIO');
+	$files = ['AUDIO'];
 	$hasFolder = false;
 
 	// TEXTO DE AJUDA
 	$help = 'Os podcasts permitem o anexo de áudio no formato MP3, que são disponibilizados para as pessoas escutarem e também para fazerem o download do arquivo. Na página principal é exibido o último podcast publicado.';
 
 	// COLUNAS DO REGISTRO NO BANCO DE DADOS
-	$columns = array(
-		'ID'=> array('default'=> 1, 'domain'=> 'integer', 'label'=> 'ID', 'name'=> 'id', 'unique'=> true),
-		'TITULO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'TÍTULO', 'name'=> 'titulo', 'unique'=> false),
-		'AUDIO'=> array('default'=> '', 'domain'=> 'string', 'label'=> 'ÁUDIO', 'name'=> 'audio', 'unique'=> false),
-		'DATA'=> array('default'=> date('Y-m-d'), 'domain'=> 'string', 'label'=> 'DATA', 'name'=> 'data', 'unique'=> false),
-		'HORA'=> array('default'=> date('H:i'), 'domain'=> 'string', 'label'=> 'HORA', 'name'=> 'hora', 'unique'=> false),
-		'TEMPO'=> array('default'=> date('Y-m-d H:i:s'), 'domain'=> 'string', 'label'=> 'TEMPO', 'name'=> 'tempo', 'unique'=> false),
-	);
+	$columns = [
+		'ID' => ['default' => 1, 'domain' => 'integer', 'label' => 'ID', 'name' => 'id', 'unique' => true],
+		'TITULO' => ['default' => '', 'domain' => 'string', 'label' => 'TÍTULO', 'name' => 'titulo', 'unique' => false],
+		'AUDIO' => ['default' => '', 'domain' => 'string', 'label' => 'ÁUDIO', 'name' => 'audio', 'unique' => false],
+		'DATA' => ['default' => date('Y-m-d'), 'domain' => 'string', 'label' => 'DATA', 'name' => 'data', 'unique' => false],
+		'HORA' => ['default' => date('H:i'), 'domain' => 'string', 'label' => 'HORA', 'name' => 'hora', 'unique' => false],
+		'TEMPO' => ['default' => date('Y-m-d H:i:s'), 'domain' => 'string', 'label' => 'TEMPO', 'name' => 'tempo', 'unique' => false]
+	];
 
 	// INFORMAÇÕES DO REGISTRO NO BANCO DE DADOS
 	$sql = 'CREATE TABLE IF NOT EXISTS `PODCASTS` (
@@ -37,28 +38,27 @@
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;';
 
 	// INFORMAÇÕES PARA INSERÇÃO DE REGISTRO
-	$insert = array(
-		'ID'=> array('tag'=> 'input', 'type'=> 'number', 'attributes'=> array('disabled'=> 'disabled', 'readonly'=> 'readonly')),
-		'TITULO'=> array('tag'=> 'input', 'type'=> 'text', 'attributes'=> array('autofocus'=> 'autofocus', 'maxlength'=> 128, 'minlength'=> 4, 'required'=> 'required')),
-		'AUDIO'=> array('tag'=> 'input', 'type'=> 'file', 'attributes'=> array('accept'=> 'audio/mp3', 'required'=> 'required')),
-		'DATA'=> array('tag'=> 'input', 'type'=> 'date', 'attributes'=> array('data-mask'=> '0000-00-00', 'required'=> 'required')),
-		'HORA'=> array('tag'=> 'input', 'type'=> 'time', 'attributes'=> array('data-mask'=> '00:00', 'required'=> 'required')),
-		'TEMPO'=> array('tag'=> 'input', 'type'=> 'hidden', 'attributes'=> array('required'=> 'required')),
-	);
+	$insert = [
+		'ID' => ['tag' => 'input', 'type' => 'number', 'attributes' => ['disabled' => 'disabled', 'readonly' => 'readonly']],
+		'TITULO' => ['tag' => 'input', 'type' => 'text', 'attributes' => ['autofocus' => 'autofocus', 'maxlength' => 128, 'minlength' => 4, 'required' => 'required']],
+		'AUDIO' => ['tag' => 'input', 'type' => 'file', 'attributes' => ['accept' => 'audio/mp3', 'required' => 'required']],
+		'DATA' => ['tag' => 'input', 'type' => 'date', 'attributes' => ['data-mask' => '0000-00-00', 'required' => 'required']],
+		'HORA' => ['tag' => 'input', 'type' => 'time', 'attributes' => ['data-mask' => '00:00', 'required' => 'required']],
+		'TEMPO' => ['tag' => 'input', 'type' => 'hidden']
+	];
 
 	// INFORMAÇÕES PARA ALTERAÇÃO DE REGISTRO
 	$update = $insert;
 	unset($update['AUDIO']['attributes']['required']);
 
 	// INFORMAÇÕES PARA VISUALIZAÇÃO DE REGISTRO ÚNICO
-	$view = array(
-		'ID'=> array('tag'=> 'p'),
-		'TITULO'=> array('tag'=> 'p'),
-		'AUDIO'=> array('tag'=> 'audio'),
-		'DATA'=> array('tag'=> 'p'),
-		'HORA'=> array('tag'=> 'p'),
-	);
+	$view = [
+		'ID' => ['tag' => 'p'],
+		'TITULO' => ['tag' => 'p'],
+		'AUDIO' => ['tag' => 'audio'],
+		'DATA' => ['tag' => 'p', 'pretty' => fn(string $date) => date_format(date_create($date), 'd/m/Y')],
+		'HORA' => ['tag' => 'p']
+	];
 
 	// INFORMAÇÕES PARA LISTAGEM DE REGISTROS
 	$list = $view;
-?>

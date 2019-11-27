@@ -1,13 +1,22 @@
 <?php
-	if(count(get_included_files()) <= 1) { // DESABILITA O ACESSO A PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
-		header('Location: panel.php');
-		return false;
+
+	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
+	require_once(__DIR__ . '/load.php');
+
+	// DESABILITA O ACESSO À PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
+	if(count(get_included_files()) <= 1) {
+		header('Location: ../index.php');
+		exit;
 	}
 
 
 	// LIMPA CARACTERES MALICIOSOS
-	function anti_injection($query) {
-		$query = mysqli_real_escape_string(mysql(), $query); // REMOVE PALAVRAS QUE CONTENHAM SINTAXE SQL
+	function antiInjection(string $query): string {
+		if($sql = mysql()) {
+			$query = mysqli_real_escape_string($sql, $query); // REMOVE PALAVRAS QUE CONTENHAM SINTAXE SQL
+			mysqli_close($sql);
+		}
+
 		$query = trim($query); // LIMPA ESPAÇOS VAZIOS
 		$query = strip_tags($query); // REMOVE TAGS HTML E PHP
 		$query = addslashes($query); // ADICIONA BARRAS INVERTIDAS
@@ -16,25 +25,63 @@
 
 
 	// CRIA UMA STRING CHAVE-VALOR
-	function associative($key, $value) {
-		return $key . '=' . '"' . $value . '"';
+	function associative(string $key, int|string $value, bool $checkNull=false): string {
+		$decorator = '"';
+		if(substr($value, 0, 1) === '"' && substr($value, -1) === '"') {
+			$decorator = '';
+		}
+		elseif($checkNull && str_contains(mb_strtoupper($value), 'NULL')) {
+			$decorator = '';
+			$value = 'NULL';
+		}
+		return $key . '=' . $decorator . $value . $decorator;
 	}
 
 
-	// ESTABELE CONEXÃO COM O BANCO DE DADOS MYSQL
-	function mysql() {
-		$host = 'sinteemar.com.br';
-		$user = 'sint';
-		$password = 'Senha do banco de dados';
-		$schema = 'sint_2019';
+	// BOAS-VINDAS
+	function greetings(): string {
+		$hour = date('H');
+
+		if($hour >= 0 && $hour < 6) {
+			$return = 'Boa madrugada';
+		}
+		elseif($hour >= 6 && $hour < 12) {
+			$return = 'Bom dia';
+		}
+		elseif($hour >= 12 && $hour < 18) {
+			$return = 'Boa tarde';
+		}
+		else {
+			$return = 'Boa noite';
+		}
+
+		return $return;
+	}
+
+
+	// GRAVA UM LOG NO BANCO
+	function saveLog(string $action, int $user, string $text=null): void {
+		$user > 0 && sqlInsert(table: 'LOGS', fields: 'IP, ACAO, TEXTO, USUARIO, TEMPO', values: '"' . ($_SERVER['REMOTE_ADDR'] ?? '') . '", "' . $action . '", "' . $text . '", ' . $user . ', "' . SYSDATE . '"');
+	}
+
+
+	// ESTABELECE CONEXÃO COM O BANCO DE DADOS MYSQL
+	function mysql(int $tries=MYSQL_MAX_TRIES): ?object {
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 		try {
-			$connection = new mysqli($host, $user, $password, $schema);
+			$connection = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_SCHEMA);
 			$connection->set_charset('utf8');
 		}
 		catch(Exception $e) {
 			$connection = null;
+
+			if($tries >= 1) {
+				return mysql(--$tries);
+			}
+			else {
+				mail('suporte@luizamichi.com.br', 'Sinteemar - Erro de conexão SQL', 'HOST: ' . MYSQL_HOST . PHP_EOL . 'USER: ' . MYSQL_USER . PHP_EOL . 'PASSWORD: ' . MYSQL_PASSWORD . PHP_EOL . 'SCHEMA: ' . MYSQL_SCHEMA . PHP_EOL . 'ERRO: ' . $e->getMessage());
+			}
 		}
 		finally {
 			return $connection;
@@ -43,43 +90,19 @@
 
 
 	// INSERE REGISTRO NO BANCO DE DADOS
-	function sql_insert($table, $fields, $values) {
-		$query = 'INSERT INTO ' . $table . '(' . $fields . ') VALUES(' . $values . ');';
-		$result = false;
-
-		if($sql = mysql()) {
-			try {
-				$sql->query($query);
-				$result = $sql->affected_rows > 0;
-			}
-			catch(Exception $e) {
-				$result = false;
-			}
-			finally {
-				mysqli_close($sql);
-			}
-		}
-
-		return $result;
+	function sqlInsert(string $table, string $fields, string $values): bool {
+		$query = 'INSERT INTO ' . $table . ' (' . $fields . ') VALUES (' . $values . ');';
+		return (bool) sqlQuery($query);
 	}
 
 
 	// RETORNA A QUANTIDADE DE REGISTROS DE UMA TABELA
-	function sql_length($table, $condition=null) {
-		$query = 'SELECT COUNT(*) FROM ' . $table . ($condition ? ' WHERE ' . $condition : '') . ';';
+	function sqlLength(string $table, string $condition=null): int {
+		$query = 'SELECT COUNT(*) FROM ' . $table . ($condition ? ' WHERE 1 = 1 AND ' . $condition : '') . ';';
 		$rows = 0;
 
-		if($sql = mysql()) {
-			try {
-				$result = $sql->query($query);
-				$rows = $result->fetch_assoc()['COUNT(*)'];
-			}
-			catch(Exception $e) {
-				$rows = -1;
-			}
-			finally {
-				mysqli_close($sql);
-			}
+		if($execution = sqlQuery($query)) {
+			$rows = $execution->fetch_assoc()['COUNT(*)'] ?? 0;
 		}
 
 		return $rows;
@@ -87,21 +110,12 @@
 
 
 	// RETORNA O MAIOR (ÚLTIMO) ID DE UMA TABELA
-	function sql_max($table, $condition=null) {
-		$query = 'SELECT MAX(ID) FROM ' . $table . ($condition ? ' WHERE ' . $condition : '') . ';';
+	function sqlMax(string $table): int {
+		$query = 'SELECT MAX(ID) FROM ' . $table . ';';
 		$rows = 0;
 
-		if($sql = mysql()) {
-			try {
-				$result = $sql->query($query);
-				$rows = $result->fetch_assoc()['MAX(ID)'];
-			}
-			catch(Exception $e) {
-				$rows = -1;
-			}
-			finally {
-				mysqli_close($sql);
-			}
+		if($execution = sqlQuery($query)) {
+			$rows = $execution->fetch_assoc()['MAX(ID)'] ?? 0;
 		}
 
 		return $rows;
@@ -109,28 +123,16 @@
 
 
 	// LÊ REGISTROS DE UMA TABELA
-	function sql_read($table, $condition=null, $unique=false) {
-		$query = 'SELECT @ROW_NUMBER:=@ROW_NUMBER+1 AS ROWNUM, 1 FIX, ' . $table . '.* FROM ' . $table . ', (SELECT @ROW_NUMBER:=0) AS RN ' . ($condition ? ' WHERE ' . $condition : '') . ';';
-		$rows = null;
+	function sqlRead(string $table, string $condition=null, bool $unique=false): array {
+		$query = 'SELECT @ROW_NUMBER := @ROW_NUMBER + 1 AS ROWNUM, 1 FIX, ' . $table . '.* FROM ' . $table . ', (SELECT @ROW_NUMBER := 0) AS RN WHERE 1 = 1' . ($condition ? ' AND ' . $condition : '') . ';';
+		$rows = [];
 
-		if($sql = mysql()) {
-			try {
-				$result = $sql->query($query);
-				if($result->num_rows == 0) {
-					$rows = array();
-				}
-				elseif($result->num_rows == 1) {
-					$rows = $unique ? $result->fetch_assoc() : array($result->fetch_assoc());
-				}
-				else {
-					$rows = $unique ? $result->fetch_all(MYSQLI_ASSOC)[0] : $result->fetch_all(MYSQLI_ASSOC);
-				}
+		if($execution = sqlQuery($query)) {
+			if($execution->num_rows === 1) {
+				$rows = $unique ? $execution->fetch_assoc() : [$execution->fetch_assoc()];
 			}
-			catch(Exception $e) {
-				$rows = null;
-			}
-			finally {
-				mysqli_close($sql);
+			else {
+				$rows = $unique ? $execution->fetch_all(MYSQLI_ASSOC)[0] ?? [] : $execution->fetch_all(MYSQLI_ASSOC);
 			}
 		}
 
@@ -138,55 +140,34 @@
 	}
 
 
-	// REMOVE UM REGISTRO DA TABELA
-	function sql_remove($table, $field, $value) {
-		$query = 'DELETE FROM ' . $table . ' WHERE ' . $field . '="' . $value . '";';
-		$result = false;
-
+	// REALIZA UM COMANDO NO SQL
+	function sqlQuery(string $query): mixed {
 		if($sql = mysql()) {
 			try {
-				$sql->query($query);
-				$result = $sql->affected_rows > 0;
+				$result = $sql->query($query);
 			}
 			catch(Exception $e) {
-				$result = false;
+				mail('suporte@luizamichi.com.br', 'Sinteemar - Erro de consulta SQL', 'CONSULTA: ' . $query . PHP_EOL . 'ERRO: ' . $e->getMessage());
+				$result = null;
 			}
 			finally {
 				mysqli_close($sql);
 			}
 		}
 
-		return $result;
+		return $result ?? null;
 	}
 
 
-	// LISTA TODAS AS TABELAS DEFINIDAS NOS MODELOS
-	function sql_tables() {
-		return array_map(function($p) {
-			include_once('models/' . $p);
-			return $table;
-		}, array_slice(scandir('models'), 2));
+	// REMOVE UM REGISTRO DA TABELA
+	function sqlRemove(string $table, string $field, string $value): bool {
+		$query = 'DELETE FROM ' . $table . ' WHERE ' . $field . '="' . $value . '";';
+		return (bool) sqlQuery($query);
 	}
 
 
 	// ATUALIZA UM REGISTRO DA TABELA
-	function sql_update($table, $fields, $condition) {
+	function sqlUpdate(string $table, string $fields, string $condition): bool {
 		$query = 'UPDATE ' . $table . ' SET ' . $fields . ' WHERE ' . $condition . ';';
-		$result = false;
-
-		if($sql = mysql()) {
-			try {
-				$sql->query($query);
-				$result = $sql->affected_rows > 0;
-			}
-			catch(Exception $e) {
-				$result = false;
-			}
-			finally {
-				mysqli_close($sql);
-			}
-		}
-
-		return $result;
+		return (bool) sqlQuery($query);
 	}
-?>
