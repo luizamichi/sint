@@ -1,68 +1,103 @@
 <?php
+	chdir("controladores");
+	include_once("jornal.php");
+	include_once("inserir_acesso.php");
+	$i = 4;
+	chdir("..");
 
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
-
-	$name = 'jornais.php';
-	$title = 'Jornais';
-
-	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
-		$jornal = sqlRead(table: 'JORNAIS', condition: 'ID = ' . (int) base64_decode($id), unique: true);
-
-		if(!empty($jornal)) { // REDIRECIONA PARA O CAMINHO DA IMAGEM
-			header('Location: ' . BASE_URL . $jornal['IMAGEM']);
-			return true;
-		}
+	$quantidade = 20;
+	$host = isset($_SERVER["REQUEST_SCHEME"]) && isset($_SERVER["HTTP_HOST"]) ? $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/sinteemar/" : "https://sinteemar.com.br/";
+	if(isset($_GET["p"]) && is_numeric($_GET["p"]) && floor($_GET["p"]) > 0) {
+		$p = max($_GET["p"], 1);
 	}
-
-	$pages = ceil(sqlLength('JORNAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 JORNAIS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$jornais = sqlRead(table: 'JORNAIS', condition: 'ID > 0 ORDER BY EDICAO DESC LIMIT ' . ($page - 1) * 24 . ', 24');
-
-	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	else {
+		$p = 1;
+	}
+	$tamanho = $jornalDAO->tamanhoAtivo();
+	$paginas = max(ceil($tamanho / $quantidade), 1);
+	$tuplas = $jornalDAO->listarIntervaloAtivo(($p - 1) * $quantidade, $quantidade);
 ?>
 
-	<div class="container">
-		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
-		</div>
-<?php
-	if(!empty($jornais)) { // HÁ JORNAIS CADASTRADOS
-?>
-		<div class="row">
-<?php
-		foreach($jornais as $jornal) { // PERCORRE A LISTA DE JORNAIS
-?>
-			<div class="col m4 s6">
-				<a href="<?= BASE_URL . $jornal['DOCUMENTO'] ?>">
-					<div class="card hoverable small">
-						<div class="card-image">
-							<img alt="Jornal" loading="lazy" src="<?= BASE_URL . ($jornal['IMAGEM'] ?? 'img/jornal.jpg') ?>"/>
-						</div>
-						<div class="card-content">
-							<span class="black-text card-title"><?= $jornal['TITULO'] ?></span>
-							<div class="teal-text"><?= $jornal['EDICAO'] ?>ª edição</div>
-						</div>
-					</div>
-				</a>
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<title>Sinteemar - Jornais</title>
+	<link type="image/ico" rel="icon" href="imagens/favicon.ico" id="favicon-ico">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" id="bootstrap-css">
+	<link type="text/css" rel="stylesheet" href="css/estilo.css" id="estilo-css">
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Página de jornais">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#007358">
+	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="og:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:image:secure_url" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:site_name" content="Sinteemar">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Sinteemar - Jornais">
+	<meta property="og:url" content="<?php echo $host . "jornais.php"; ?>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:domain" content="<?php echo $host; ?>">
+	<meta name="twitter:title" content="Sinteemar - Jornais">
+	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="twitter:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+</head>
+
+<body>
+	<!-- Cabeçalho -->
+	<?php
+		$pagina = "jornais";
+		include_once("cabecalho.php");
+	?>
+
+	<!-- Conteúdo da Página -->
+	<section id="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h1 class="my-3">Jornais</h1>
+					<?php if($tamanho == 0) { echo "<p class=\"lead\">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</p>"; } ?>
+				</div>
 			</div>
 
-<?php
-		}
-?>
+			<?php foreach($tuplas as $tupla) {
+				if($i == 4) { ?>
+					<div class="row mb-4">
+						<div class="col-sm">
+							<div class="card-deck">
+				<?php $i = 0; } ?>
+					<div class="card" onclick="<?php echo "window.location='" . $tupla->getArquivo() . "'"; ?>">
+						<?php if($tupla->getImagem()) { ?>
+							<img class="card-img-top preview" src="<?php echo $tupla->getImagem(); ?>" alt="Jornal">
+						<?php } else { ?>
+							<img class="card-img-top preview" src="uploads/jornal.svg" alt="Jornal">
+						<?php } ?>
+						<div class="card-body">
+							<h5 class="card-title"><?php echo $tupla->getTitulo(); ?></h5>
+							<p class="card-text"><small class="text-muted"><?php echo $tupla->getEdicao(); ?>ª edição</small></p>
+						</div>
+					</div>
+			<?php $i++;
+				if($i == 4) { ?>
+							</div>
+						</div>
+					</div>
+			<?php }}
+				if($i != 4) { ?>
+							</div>
+						</div>
+					</div>
+			<?php } ?>
+
+			<?php include_once("paginacao.php"); ?>
 		</div>
-<?php
-	}
-	else { // AINDA NÃO HÁ JORNAIS CADASTRADOS
-?>
-		<h3 class="center-align">Ainda não temos jornais disponíveis :(</h3>
-<?php
-	}
-?>
-	</div>
-<?php
-	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
-	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA
+	</section>
+
+	<!-- Rodapé -->
+	<?php include_once("rodape.html"); ?>
+</body>
+
+</html>

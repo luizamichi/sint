@@ -1,61 +1,99 @@
 <?php
+	chdir("controladores");
+	include_once("podcast.php");
+	include_once("inserir_acesso.php");
+	$i = 3;
+	chdir("..");
 
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
-	$id = (int) base64_decode($id);
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
-
-	$name = 'podcasts.php';
-	$title = 'Podcasts';
-
-	$pages = ceil(sqlLength('PODCASTS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 PODCASTS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$podcasts = sqlRead(table: 'PODCASTS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24');
-
-	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	$quantidade = 15;
+	$host = isset($_SERVER["REQUEST_SCHEME"]) && isset($_SERVER["HTTP_HOST"]) ? $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/sinteemar/" : "https://sinteemar.com.br/";
+	if(isset($_GET["p"]) && is_numeric($_GET["p"]) && floor($_GET["p"]) > 0) {
+		$p = max($_GET["p"], 1);
+	}
+	else {
+		$p = 1;
+	}
+	$tamanho = $podcastDAO->tamanhoAtivo();
+	$paginas = max(ceil($tamanho / $quantidade), 1);
+	$tuplas = $podcastDAO->listarIntervaloAtivo(($p - 1) * $quantidade, $quantidade);
 ?>
 
-	<div class="container">
-		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
-		</div>
+<!DOCTYPE html>
+<html lang="pt-br">
 
-<?php
-	if(!empty($podcasts)) { // HÁ PODCASTS CADASTRADOS
-?>
-		<div class="row">
-<?php
-		foreach($podcasts as $podcast) { // PERCORRE A LISTA DE PODCASTS CADASTRADOS
-?>
-			<div class="col m6 s12">
-				<div class="card <?= ($id === (int) $podcast['ID'] ? 'green lighten-5' : '') ?>">
-					<div class="card-content">
-						<span class="black-text card-title"><?= $podcast['TITULO'] ?></span>
-						<audio <?= ($id === (int) $podcast['ID'] ? 'autoplay="autoplay"' : '') ?> controls style="width: 100%;">
-							<source src="<?= BASE_URL . $podcast['AUDIO'] ?>" type="audio/mp3"/>
-						</audio>
-					</div>
-					<div class="black-text card-action">
-						<a class="black-text" href="javascript:void(0)">Áudio postado em: <time datetime="<?= substr($podcast['DATA'], 0, 10) . ' ' . substr($podcast['HORA'], 0, 5) ?>"><?= date_format(date_create(substr($podcast['DATA'], 0, 10) . ' ' . $podcast['HORA']), 'd/m/Y - H:i') ?></time></a>
-						<a class="darken-4 green-text" download href="<?= BASE_URL . $podcast['AUDIO'] ?>">Download</a>
-					</div>
+<head>
+	<title>Sinteemar - Podcasts</title>
+	<link type="image/ico" rel="icon" href="imagens/favicon.ico" id="favicon-ico">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" id="bootstrap-css">
+	<link type="text/css" rel="stylesheet" href="css/estilo.css" id="estilo-css">
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Página de podcasts">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#007358">
+	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="og:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:image:secure_url" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:site_name" content="Sinteemar">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Sinteemar - Podcasts">
+	<meta property="og:url" content="<?php echo $host . "podcasts.php"; ?>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:domain" content="<?php echo $host; ?>">
+	<meta name="twitter:title" content="Sinteemar - Podcasts">
+	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="twitter:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+</head>
+
+<body>
+	<!-- Cabeçalho -->
+	<?php
+		$pagina = "podcasts";
+		include_once("cabecalho.php");
+	?>
+
+	<!-- Conteúdo da Página -->
+	<section id="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h1 class="my-3">Podcasts</h1>
+					<?php if($tamanho == 0) { echo "<p class=\"lead\">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</p>"; } ?>
 				</div>
 			</div>
-<?php
-		}
-?>
+
+			<?php foreach($tuplas as $tupla) {
+				if($i == 3) { ?>
+					<div class="row mb-4">
+						<div class="col-sm">
+							<div class="card-deck">
+				<?php $i = 0; } ?>
+				<div class="card">
+					<div class="card-body">
+						<h5 class="card-text"><?php echo $tupla->getTitulo(); ?></h5>
+						<p class="card-text"><audio controls style="width: 100%;"><source src="<?php echo $tupla->getAudio(); ?>" type="audio/mpeg"></audio></p>
+						<p class="card-text"><small class="text-muted"><?php echo $tupla->getData()->format("d/m/Y H\hi"); ?></small> <a class="badge badge-green" download href="<?php echo $tupla->getAudio(); ?>">DOWNLOAD</a></p>
+					</div>
+				</div>
+			<?php $i++;
+				if($i == 3) { ?>
+							</div>
+						</div>
+					</div>
+			<?php }}
+				if($i != 3) { ?>
+							</div>
+						</div>
+					</div>
+			<?php } ?>
+
+			<?php include_once("paginacao.php"); ?>
 		</div>
-<?php
-	}
-	else { // AINDA NÃO HÁ PODCASTS CADASTRADOS
-?>
-		<h3 class="center-align">Ainda não temos podcasts disponíveis :(</h3>
-<?php
-	}
-?>
-	</div>
-<?php
-	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
-	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA
+	</section>
+
+	<!-- Rodapé -->
+	<?php include_once("rodape.html"); ?>
+</body>
+
+</html>
