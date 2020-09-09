@@ -1,0 +1,25 @@
+/**
+ * Folha de estilos da página de manutenção
+ * @author Luiz Joaquim Aderaldo Amichi <ra90568@uem.br>
+ * @copyright 2021 Luiz Joaquim Aderaldo Amichi
+ */
+
+html, body {
+	height: 100%;
+}
+
+body {
+	display: -ms-flexbox;
+	display: -webkit-box;
+	display: flex;
+	-ms-flex-align: center;
+	-ms-flex-pack: center;
+	-webkit-box-align: center;
+	align-items: center;
+	-webkit-box-pack: center;
+	justify-content: center;
+	padding-top: auto;
+	padding-bottom: auto;
+	background-color: #f5f5f5;
+	min-height: 100%;
+}

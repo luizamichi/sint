@@ -1,93 +1,87 @@
 <?php
-
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	// DESABILITA O ACESSO À PÁGINA, PERMITE APENAS POR MEIO DE INCLUSÃO
-	if(count(get_included_files()) <= 1) {
-		header('Location: index.php');
-		exit;
+	$links = [
+		"index" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"boletins" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"convencoes" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"convenios" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"editais" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"diretoria" => ["class=\"dropdown-item submenu\"", "class=\"dropdown-item list-group-item-dark submenu\""],
+		"estatuto" => ["class=\"dropdown-item submenu\"", "class=\"dropdown-item list-group-item-dark submenu\""],
+		"eventos" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"financas" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"historico" => ["class=\"dropdown-item submenu\"", "class=\"dropdown-item list-group-item-dark submenu\""],
+		"institucional" => ["class=\"nav-item dropdown\"", "class=\"nav-item dropdown active\""],
+		"jornais" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"juridicos" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"noticias" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"podcasts" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+		"videos" => ["class=\"nav-item\"", "class=\"nav-item active\""],
+	];
+	if(!isset($pagina)) {
+		$pagina = "index";
 	}
-
-	$title ??= 'Sinteemar'; // VARIÁVEL OBTIDA NA INCLUSÃO
+	$links[$pagina][0] = $links[$pagina][1];
+	if(isset($subpagina)) {
+		$links[$subpagina][0] = $links[$subpagina][1];
+	}
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-	<meta charset="utf-8"/>
-	<meta name="author" content="Luiz Joaquim Aderaldo Amichi"/>
-	<meta name="description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1"/>
-	<title>Sinteemar - <?= $title ?></title>
-
-	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
-	<meta property="og:image" content="<?= BASE_URL ?>img/card.png"/>
-	<meta property="og:image:secure_url" content="<?= BASE_URL ?>img/card.png"/>
-	<meta property="og:locale" content="pt_BR"/>
-	<meta property="og:site_name" content="Sinteemar"/>
-	<meta property="og:type" content="website"/>
-	<meta property="og:title" content="Sinteemar - <?= $title ?>"/>
-	<meta property="og:url" content="<?= BASE_URL ?>"/>
-
-	<meta name="twitter:card" content="summary"/>
-	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"/>
-	<meta name="twitter:image" content="<?= BASE_URL ?>img/card.png"/>
-	<meta name="twitter:title" content="Sinteemar - <?= $title ?>"/>
-
-	<link rel="icon" href="<?= BASE_URL ?>img/sinteemar.svg"/>
-	<link rel="stylesheet" type="text/css" href="<?= BASE_URL ?>css/materialize.min.css"/>
-</head>
-
-<?php
-	$title = strtok($title, ' ');
-?>
-
-<body>
-	<nav class="darken-4 green nav-extended">
-		<div class="nav-wrapper">
-			<a class="brand-logo" href="<?= BASE_URL ?>index.php" title="Sinteemar">
-				<img alt="Sinteemar" loading="lazy" src="<?= BASE_URL ?>img/sinteemar.svg" style="margin-left: 10px;" width="25"/>
-				<span class="hide-on-small-only">SINTEEMAR</span>
-			</a>
-			<a class="sidenav-trigger" data-target="mobile-demo" href="javascript:void(0)">&#9776;</a>
-			<ul class="dropdown-content" id="dropdown-menu">
-				<li class="<?= $title === 'Diretoria' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>diretoria.php">Diretoria</a></li>
-				<li class="<?= $title === 'Estatuto' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>estatuto.php">Estatuto</a></li>
-				<li class="<?= $title === 'Histórico' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>historico.php">Histórico</a></li>
-			</ul>
-			<ul class="hide-on-med-and-down right">
-				<li class="<?= $title === 'Início' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>index.php">Início</a></li>
-				<li class="<?= $title === 'Boletins' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>boletins.php">Boletins</a></li>
-				<li class="<?= $title === 'Convenções' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>convencoes.php">Convenções</a></li>
-				<li class="<?= $title === 'Convênios' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>convenios.php">Convênios</a></li>
-				<li class="<?= $title === 'Editais' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>editais.php">Editais</a></li>
-				<li class="<?= $title === 'Eventos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>eventos.php">Eventos</a></li>
-				<li class="<?= $title === 'Finanças' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>financas.php">Finanças</a></li>
-				<li class="<?= in_array($title, ['Diretoria', 'Estatuto', 'Histórico']) ? 'active' : '' ?>"><a class="dropdown-trigger" href="javascript:void(0)" data-target="dropdown-menu">Institucional</a></li>
-				<li class="<?= $title === 'Jornais' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>jornais.php">Jornais</a></li>
-				<li class="<?= $title === 'Jurídicos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>juridicos.php">Jurídicos</a></li>
-				<li class="<?= $title === 'Notícias' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>noticias.php">Notícias</a></li>
-				<li class="<?= $title === 'Podcasts' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>podcasts.php">Podcasts</a></li>
-				<li class="<?= $title === 'Vídeos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>videos.php">Vídeos</a></li>
-			</ul>
-			<ul class="sidenav" id="mobile-demo">
-				<li class="<?= $title === 'Início' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>index.php">Início</a></li>
-				<li class="<?= $title === 'Boletins' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>boletins.php">Boletins</a></li>
-				<li class="<?= $title === 'Convenções' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>convencoes.php">Convenções</a></li>
-				<li class="<?= $title === 'Convênios' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>convenios.php">Convênios</a></li>
-				<li class="<?= $title === 'Diretoria' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>diretoria.php">Diretoria</a></li>
-				<li class="<?= $title === 'Editais' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>editais.php">Editais</a></li>
-				<li class="<?= $title === 'Estatuto' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>estatuto.php">Estatuto</a></li>
-				<li class="<?= $title === 'Eventos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>eventos.php">Eventos</a></li>
-				<li class="<?= $title === 'Finanças' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>financas.php">Finanças</a></li>
-				<li class="<?= $title === 'Histórico' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>historico.php">Histórico</a></li>
-				<li class="<?= $title === 'Jornais' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>jornais.php">Jornais</a></li>
-				<li class="<?= $title === 'Jurídicos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>juridicos.php">Jurídicos</a></li>
-				<li class="<?= $title === 'Notícias' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>noticias.php">Notícias</a></li>
-				<li class="<?= $title === 'Podcasts' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>podcasts.php">Podcasts</a></li>
-				<li class="<?= $title === 'Vídeos' ? 'active' : '' ?>"><a href="<?= BASE_URL ?>videos.php">Vídeos</a></li>
-			</ul>
+<header>
+	<nav class="navbar navbar-expand-lg navbar-dark static-top">
+		<div class="container">
+			<img src="imagens/logo.svg" alt="Logo" width="35" height="35">
+			<a class="navbar-brand" href="index.php">SINTEEMAR</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li <?php echo $links["index"][0]; ?>>
+						<a class="nav-link" href="index.php">Início</a>
+					</li>
+					<li <?php echo $links["boletins"][0]; ?>>
+						<a class="nav-link" href="boletins.php">Boletins</a>
+					</li>
+					<li <?php echo $links["convencoes"][0]; ?>>
+						<a class="nav-link" href="convencoes.php">Convenções</a>
+					</li>
+					<li <?php echo $links["convenios"][0]; ?>>
+						<a class="nav-link" href="convenios.php">Convênios</a>
+					</li>
+					<li <?php echo $links["editais"][0]; ?>>
+						<a class="nav-link" href="editais.php">Editais</a>
+					</li>
+					<li <?php echo $links["eventos"][0]; ?>>
+						<a class="nav-link" href="eventos.php">Eventos</a>
+					</li>
+					<li <?php echo $links["financas"][0]; ?>>
+						<a class="nav-link" href="financas.php">Finanças</a>
+					</li>
+					<li <?php echo $links["institucional"][0]; ?>>
+						<a class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Institucional</a>
+						<div class="dropdown-menu">
+							<a <?php echo $links["diretoria"][0]; ?> href="diretoria.php">Diretoria</a>
+							<a <?php echo $links["estatuto"][0]; ?> href="estatuto.php">Estatuto</a>
+							<a <?php echo $links["historico"][0]; ?> href="historico.php">Histórico</a>
+						</div>
+					</li>
+					<li <?php echo $links["jornais"][0]; ?>>
+						<a class="nav-link" href="jornais.php">Jornais</a>
+					</li>
+					<li <?php echo $links["juridicos"][0]; ?>>
+						<a class="nav-link" href="juridicos.php">Jurídicos</a>
+					</li>
+					<li <?php echo $links["noticias"][0]; ?>>
+						<a class="nav-link" href="noticias.php">Notícias</a>
+					</li>
+					<li <?php echo $links["podcasts"][0]; ?>>
+						<a class="nav-link" href="podcasts.php">Podcasts</a>
+					</li>
+					<li <?php echo $links["videos"][0]; ?>>
+						<a class="nav-link" href="videos.php">Vídeos</a>
+					</li>
+				</ul>
+			</div>
 		</div>
 	</nav>
+</header>
