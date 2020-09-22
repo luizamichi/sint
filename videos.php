@@ -1,59 +1,64 @@
 <?php
-
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
-
-	$name = 'videos.php';
-	$title = 'Vídeos';
-
-	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
-		$video = sqlRead(table: 'VIDEOS', condition: 'ID = ' . (int) base64_decode($id), unique: true);
-
-		if(!empty($video)) { // REDIRECIONA PARA A URL DO VÍDEO
-			header('Location: ' . $video['URL']);
-			return true;
-		}
-	}
-
-	$pages = ceil(sqlLength('VIDEOS') / 30); // QUANTIDADE DE PÁGINAS PARA 30 VÍDEOS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$videos = sqlRead(table: 'VIDEOS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 30 . ', 30');
-
-	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	chdir("controladores");
+	include_once("inserir_acesso.php");
+	$host = isset($_SERVER["REQUEST_SCHEME"]) && isset($_SERVER["HTTP_HOST"]) ? $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/sinteemar/" : "https://sinteemar.com.br/";
 ?>
 
-	<div class="container">
-		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<title>Sinteemar - Vídeos</title>
+	<link type="image/ico" rel="icon" href="imagens/favicon.ico" id="favicon-ico">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" id="bootstrap-css">
+	<link type="text/css" rel="stylesheet" href="css/estilo.css" id="estilo-css">
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Página de vídeos">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#007358">
+	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="og:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:image:secure_url" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:site_name" content="Sinteemar">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Sinteemar - Vídeos">
+	<meta property="og:url" content="<?php echo $host . "videos.php"; ?>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:domain" content="<?php echo $host; ?>">
+	<meta name="twitter:title" content="Sinteemar - Vídeos">
+	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="twitter:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+</head>
+
+<body>
+	<!-- Cabeçalho -->
+	<?php
+		$pagina = "videos";
+		include_once("cabecalho.php");
+	?>
+
+	<!-- Conteúdo da Página -->
+	<section class="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h1 class="my-3">Vídeos</h1>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="embed-responsive embed-responsive-21by9">
+					<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/?listType=user_uploads&list=sinteemar&showinfo=1&theme=light" title="YouTube"></iframe>
+				</div>
+			</div>
+			<p class="text-center">Se inscreva em nosso canal do <a class="text-danger font-weight-bold" href="https://www.youtube.com/sinteemar" target="_blank">YouTube</a> e acompanhe nossas reportagens e novidades em vídeo.</p>
 		</div>
+	</section>
 
-<?php
-	if(!empty($videos)) { // HÁ VÍDEOS CADASTRADOS
-?>
-		<div class="collection">
-<?php
-		foreach($videos as $video) { // PERCORRE A LISTA DE VÍDEOS CADASTRADOS
-?>
-			<a class="collection-item" href="<?= $video['URL'] ?>">
-				<h6 class="black-text"><?= $video['TITULO'] ?></h6>
-				<small><?= $video['URL'] ?></small>
-			</a>
-<?php
-		}
-?>
-		</div>
-<?php
-	}
-	else { // AINDA NÃO HÁ VÍDEOS CADASTRADOS
-?>
-		<h3 class="center-align">Ainda não temos vídeos disponíveis :(</h3>
-<?php
-	}
-?>
-	</div>
-<?php
-	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
-	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA
+	<!-- Rodapé -->
+	<?php include_once("rodape.html"); ?>
+</body>
+
+</html>

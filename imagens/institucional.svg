@@ -1,0 +1,15 @@
+<svg version="1.1" id="Institucional" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="512" height="512" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+	<path d="M392,60V0H120v60H0v452h512V60H392z M362,30v452h-30V299H180v183h-30V30H362z M302,359h-92v-30h92V359z M210,389h31v93h-31 V389z M271,389h31v93h-31V389z M30,90h90v392H30V90z M482,482h-90V90h90V482z"/>
+	<rect x="60" y="120" width="30" height="30"/>
+	<rect x="60" y="180" width="30" height="30"/>
+	<rect x="60" y="240" width="30" height="30"/>
+	<rect x="60" y="300" width="30" height="30"/>
+	<rect x="422" y="120" width="30" height="30"/>
+	<rect x="422" y="180" width="30" height="30"/>
+	<rect x="422" y="240" width="30" height="30"/>
+	<rect x="422" y="300" width="30" height="30"/>
+	<rect x="60" y="360" width="30" height="30"/>
+	<rect x="422" y="360" width="30" height="30"/>
+	<path d="M332,60H180v89h152V60z M302,119h-92V90h92V119z"/>
+	<path d="M332,180H180v89h152V180z M302,239h-92v-29h92V239z"/>
+</svg>

@@ -1,92 +1,104 @@
 <?php
-
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
-
-	$name = 'convenios.php';
-	$title = 'Convênios';
-
-	$pages = ceil(sqlLength('CONVENIOS') / 15); // QUANTIDADE DE PÁGINAS PARA 15 CONVÊNIOS POR PÁGINA
-	$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-	$convenios = sqlRead(table: 'CONVENIOS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 15 . ', 15');
-
-	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
+	chdir("controladores");
+	include_once("convenio.php");
+	include_once("inserir_acesso.php");
+	$host = isset($_SERVER["REQUEST_SCHEME"]) && isset($_SERVER["HTTP_HOST"]) ? $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/sinteemar/" : "https://sinteemar.com.br/";
+	$tuplas = $convenioDAO->listarAtivo(33);
+	chdir("..");
 ?>
 
-	<div class="container">
-		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-2"><?= $title ?></h1>
-		</div>
+<!DOCTYPE html>
+<html lang="pt-br">
 
-<?php
-	if(!empty($convenios)) { // HÁ CONVÊNIOS CADASTRADOS
-?>
-		<div class="row">
-<?php
-		foreach($convenios as $convenio) { // PERCORRE A LISTA DE CONVÊNIOS CADASTRADOS
-?>
-			<div class="col m4 s6">
-				<div class="card">
-					<div class="card-image">
-						<img alt="Convênio" loading="lazy" src="<?= BASE_URL . $convenio['IMAGEM'] ?>"/>
-					</div>
-					<div class="card-content">
-						<span class="black-text card-title"><?= $convenio['TITULO'] ?></span>
-<?php
-			if($convenio['TELEFONE']) {
-?>
-						<strong>Telefone:</strong> <span><?= $convenio['TELEFONE'] ?></span>
-						<br/>
-<?php
-			}
-			if($convenio['CELULAR']) {
-?>
-						<strong>Celular:</strong> <a class="teal-text" href="tel:<?= preg_replace('/\D/', '', $convenio['CELULAR']) ?>"><?= $convenio['CELULAR'] ?></a>
-						<br/>
-<?php
-			}
-			if($convenio['EMAIL']) {
-?>
-						<strong>E-mail:</strong> <a class="teal-text" href="mailto:<?= $convenio['EMAIL'] ?>"><?= $convenio['EMAIL'] ?></a>
-						<br/>
-<?php
-			}
-			if($convenio['URL']) {
-?>
-						<strong>Website:</strong> <a class="teal-text" href="<?= $convenio['URL'] ?>"><?= $convenio['URL'] ?></a>
-						<br/>
-<?php
-			}
-?>
-						<span><?= nl2br($convenio['TEXTO']) ?></span>
-						<br/>
-<?php
-			if($convenio['DOCUMENTO']) {
-?>
-						<a class="teal-text" href="<?= BASE_URL . $convenio['DOCUMENTO'] ?>">Documento com detalhes</a>
-						<br/>
-<?php
-			}
-?>
+<head>
+	<title>Sinteemar - Convênios</title>
+	<link type="image/ico" rel="icon" href="imagens/favicon.ico" id="favicon-ico">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" id="bootstrap-css">
+	<link type="text/css" rel="stylesheet" href="css/estilo.css" id="estilo-css">
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Página de convênios">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#007358">
+	<meta property="og:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="og:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:image:secure_url" content="<?php echo $host . "uploads/card.jpg"; ?>">
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:site_name" content="Sinteemar">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Sinteemar - Convênios">
+	<meta property="og:url" content="<?php echo $host . "convenios.php"; ?>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:domain" content="<?php echo $host; ?>">
+	<meta name="twitter:title" content="Sinteemar - Convênios">
+	<meta name="twitter:description" content="Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá">
+	<meta property="twitter:image" content="<?php echo $host . "uploads/card.jpg"; ?>">
+</head>
 
-					</div>
+<body>
+	<!-- Cabeçalho -->
+	<?php
+		$pagina = "convenios";
+		include_once("cabecalho.php");
+	?>
+
+	<!-- Conteúdo da Página -->
+	<section id="content">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h1 class="my-3">Convênios</h1>
+					<?php if(empty($tuplas)) { echo "<p class=\"lead\">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</p>"; } ?>
 				</div>
 			</div>
-<?php
-		}
-?>
+
+			<div class="card-columns mb-3">
+				<?php foreach($tuplas as $tupla) { ?>
+					<div class="card">
+						<img class="card-img-top" src="<?php echo $tupla->getImagem(); ?>" alt="Convênio">
+						<div class="card-body">
+							<h5 class="card-title"><?php echo $tupla->getTitulo(); ?></h5>
+							<div class="card-text">
+								<?php if($tupla->getCidade()) { ?>
+									<img src="imagens/localizacao.svg" alt="Cidade" width="20" height="20" style="margin-right: 5px;">
+									<?php echo $tupla->getCidade(); ?>
+									<br>
+								<?php } ?>
+								<?php if($tupla->getTelefone()) { ?>
+									<img src="imagens/telefone.svg" alt="Telefone" width="20" height="20" style="margin-right: 5px;">
+									<?php echo preg_replace("/^([0-9]{2})([0-9]{4})([0-9]{4})$/", "($1) $2-$3", $tupla->getTelefone()); ?>
+									<br>
+								<?php } ?>
+								<?php if($tupla->getCelular()) { ?>
+									<img src="imagens/celular.svg" alt="Celular" width="20" height="20" style="margin-right: 5px;">
+									<?php echo preg_replace("/^([0-9]{2})([0-9]{5})([0-9]{4})$/", "($1) $2-$3", $tupla->getCelular()); ?>
+									<br>
+								<?php } ?>
+								<?php if($tupla->getEmail()) { ?>
+									<img src="imagens/email.svg" alt="E-mail" width="20" height="20" style="margin-right: 5px;">
+									<?php echo $tupla->getEmail(); ?>
+									<br>
+								<?php } ?>
+								<?php if($tupla->getSite()) { ?>
+									<a href="<?php echo $tupla->getSite(); ?>" title="Website" target="_blank"><img class="preto" src="imagens/web.svg" alt="Website" width="20" height="20" style="margin-right: 5px;"></a>
+								<?php } ?>
+								<?php if($tupla->getArquivo()) { ?>
+									<a href="<?php echo $tupla->getArquivo(); ?>" title="Documento com detalhes"><img class="preto" src="imagens/pdf.svg" alt="Documento PDF" width="20" height="20" style="margin-right: 5px;"></a>
+								<?php } ?>
+								<?php if($tupla->getSite() || $tupla->getArquivo()) { ?>
+									<br>
+								<?php } ?>
+								<p class="text-justify mt-1"><?php echo $tupla->getDescricao(); ?></p>
+							</div>
+						</div>
+					</div>
+				<?php } ?>
+			</div>
 		</div>
-<?php
-	}
-	else { // AINDA NÃO HÁ CONVÊNIOS CADASTRADOS
-?>
-		<h3 class="center-align">Ainda não temos convênios disponíveis :(</h3>
-<?php
-	}
-?>
-	</div>
-<?php
-	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
-	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA
+	</section>
+
+	<!-- Rodapé -->
+	<?php include_once("rodape.html"); ?>
+</body>
+
+</html>

@@ -1,83 +1,170 @@
 <?php
+	chdir("controladores");
+	include_once("edital.php");
+	include_once("inserir_acesso.php");
+	$i = 4;
+	chdir("..");
 
-	// CARREGA TODAS AS CONSTANTES PRÉ-DEFINIDAS
-	require_once(__DIR__ . '/sgc/load.php');
-
-	$id = filter_input(INPUT_GET, 'id', FILTER_DEFAULT); // ID CODIFICADO EM BASE64
-	$page = max(1, filter_input(INPUT_GET, 'p', FILTER_SANITIZE_NUMBER_INT)); // NÚMERO DA PÁGINA SOLICITADA
-
-	$name = 'editais.php';
-	$title = 'Editais';
-
-	if(!empty($id)) { // FOI INFORMADO UM ID NA URL
-		$edital = sqlRead(table: 'EDITAIS', condition: 'ID = ' . (int) base64_decode($id), unique: true);
-		$title = empty($edital) ? 'Editais' : 'Editais - ' . $edital['TITULO'];
+	$quantidade = 20;
+	$host = isset($_SERVER["REQUEST_SCHEME"]) && isset($_SERVER["HTTP_HOST"]) ? $_SERVER["REQUEST_SCHEME"] . "://" . $_SERVER["HTTP_HOST"] . "/sinteemar/" : "https://sinteemar.com.br/";
+	if(isset($_GET["id"]) && is_numeric($_GET["id"]) && floor($_GET["id"]) > 0) {
+		$tupla = $editalDAO->procurarId($_GET["id"]);
+		if(!$tupla || $tupla->isStatus() == FALSE) {
+			unset($_GET["id"]);
+			unset($tupla);
+		}
+		else {
+			$id = TRUE;
+			$website = "https://sinteemar.com.br/editais.php";
+			$ancora = $website . "?id=" . $tupla->getId();
+			$facebook = "https://www.facebook.com/sharer/sharer.php?u=" . $website . "?id=" . $tupla->getId();
+			$twitter = "https://twitter.com/home?status=" . $website . "?id=" . $tupla->getId();
+			$whatsapp = "https://api.whatsapp.com/send?text=" . $website . "?id=" . $tupla->getId();
+		}
 	}
-	else {
-		$pages = ceil(sqlLength('EDITAIS') / 24); // QUANTIDADE DE PÁGINAS PARA 24 EDITAIS POR PÁGINA
-		$page = min($page, $pages); // EVITA O ACESSO ÀS PÁGINAS INEXISTENTES
-		$editais = sqlRead(table: 'EDITAIS', condition: 'ID > 0 ORDER BY ID DESC LIMIT ' . ($page - 1) * 24 . ', 24');
+	if(!isset($id)) {
+		if(isset($_GET["p"]) && is_numeric($_GET["p"]) && floor($_GET["p"]) > 0) {
+			$p = max($_GET["p"], 1);
+		}
+		else {
+			$p = 1;
+		}
+		$tamanho = $editalDAO->tamanhoAtivo();
+		$paginas = max(ceil($tamanho / $quantidade), 1);
+		$tuplas = $editalDAO->listarIntervaloAtivo(($p - 1) * $quantidade, $quantidade);
 	}
-
-	require_once(__DIR__ . '/cabecalho.php'); // INSERE O CABEÇALHO DA PÁGINA
 ?>
 
-	<div class="container">
-		<div class="col darken-4 green">
-			<h1 class="center-align white-text z-depth-2"><?= $edital['TITULO'] ?? $title ?></h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<title>Sinteemar - Editais</title>
+	<link type="image/ico" rel="icon" href="imagens/favicon.ico" id="favicon-ico">
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" id="bootstrap-css">
+	<link type="text/css" rel="stylesheet" href="css/estilo.css" id="estilo-css">
+	<meta charset="utf-8">
+	<meta name="author" content="Luiz Joaquim Aderaldo Amichi">
+	<meta name="description" content="Página de editais">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#007358">
+	<meta property="og:description" content="<?php echo (isset($tupla) && $tupla->getDescricao() ? str_replace("&emsp;", "", strip_tags($tupla->getDescricao())) : "Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"); ?>">
+	<meta property="og:image" content="<?php echo (isset($tupla) ? $host . $tupla->getImagem() : $host . "uploads/card.jpg"); ?>">
+	<meta property="og:image:secure_url" content="<?php echo (isset($tupla) ? $host . $tupla->getImagem() : $host . "uploads/card.jpg"); ?>">
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:site_name" content="Sinteemar">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="<?php echo (isset($tupla) && $tupla->getTitulo() ? $tupla->getTitulo() : "Sinteemar - Editais"); ?>">
+	<meta property="og:url" content="<?php echo (isset($tupla) ? $website . "?id=" . $tupla->getId() : $host . "editais.php"); ?>">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:domain" content="<?php echo $host; ?>">
+	<meta name="twitter:title" content="<?php echo (isset($tupla) && $tupla->getTitulo() ? $tupla->getTitulo() : "Sinteemar - Editais"); ?>">
+	<meta name="twitter:description" content="<?php echo (isset($tupla) && $tupla->getDescricao() ? (strlen(strip_tags($tupla->getDescricao())) >= 200 ? substr(strip_tags($tupla->getDescricao()), 0, 196) . "..." : strip_tags($tupla->getDescricao())) : "Sindicato dos Trabalhadores em Estabelecimentos de Ensino de Maringá"); ?>">
+	<meta property="twitter:image" content="<?php echo (isset($tupla) && $tupla->getImagem() ? $host . $tupla->getImagem() : $host . "uploads/card.jpg"); ?>">
+</head>
+
+<body>
+	<!-- Cabeçalho -->
+	<?php
+		$pagina = "editais";
+		include_once("cabecalho.php");
+	?>
+
+	<!-- Conteúdo da Página -->
+	<?php if(isset($id)) { ?>
+		<div class="container">
+			<div class="row">
+				<div class="col-sm text-center">
+					<h1 class="my-3"><?php echo $tupla->getTitulo(); ?></h1>
+					<img class="edital" src="<?php echo $tupla->getImagem(); ?>" alt="Edital" data-toggle="modal" data-target="#modalEdital">
+					<div class="mt-2 midias-sociais">
+						<small class="mx-3"><time datetime="<?php echo $tupla->getData()->format("Y-m-d\Th:i:s"); ?>"><?php echo $tupla->getData()->format("d/m/Y H\hi"); ?></time> - <strong>Por <?php echo mb_convert_case($tupla->getUsuario()->getNome(), MB_CASE_TITLE, "UTF-8"); ?></strong></small>
+						<a class="azul mx-1" href="<?php echo $facebook; ?>" title="Compartilhar no Facebook" target="_blank"><img src="imagens/facebook.svg" alt="Facebook" width="20" height="20"></a>
+						<a class="azul-claro mx-1" href="<?php echo $twitter; ?>" title="Compartilhar no X" target="_blank"><img src="imagens/x.svg" alt="X" width="20" height="20"></a>
+						<a class="verde mx-1" href="<?php echo $whatsapp; ?>" title="Compartilhar no WhatsApp" target="_blank"><img src="imagens/whatsapp.svg" alt="WhatsApp" width="20" height="20"></a>
+						<a class="vermelho mx-1" title="Copiar link para a área de transferência" id="ancora"><img src="imagens/ancora.svg" alt="Link" width="20" height="20"></a>
+					</div>
+					<input class="text-muted" type="text" id="ancora-input" value="<?php echo $ancora; ?>">
+					<hr>
+					<?php if($tupla->getDescricao()) { ?>
+						<div class="text-justify my-4"><?php echo $tupla->getDescricao(); ?></div>
+					<?php } ?>
+				</div>
+			</div>
 		</div>
-<?php
-	if(isset($edital) && !empty($edital)) { // EXIBE O EDITAL SOLICITADO
-?>
-		<div class="center">
-			<img alt="Edital" loading="lazy" class="materialboxed responsive-img" src="<?= BASE_URL . $edital['IMAGEM'] ?>" width="300"/>
+
+		<div class="modal fade" id="modalEdital" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+						<img class="img-fluid" src="<?php echo $tupla->getImagem(); ?>" alt="Edital">
+					</div>
+				</div>
+			</div>
 		</div>
-		<div id="text-content"><?= $edital['TEXTO'] ?></div>
-		<div class="fixed-action-btn">
-			<a class="btn-floating btn-large tooltipped" data-id="text-content" data-position="left" data-tooltip="Alterar o tamanho da fonte" id="button-toggle" href="javascript:void(0)">
-				<img alt="Alterar o tamanho da fonte" loading="lazy" src="img/fonte.png" style="filter: invert(1); margin: 3px;" width="50"/>
-			</a>
-		</div>
-<?php
-	}
-	elseif(isset($editais) && !empty($editais)) { // HÁ EDITAIS CADASTRADOS
-?>
-		<div class="row">
-<?php
-		foreach($editais as $edital) { // PERCORRE A LISTA DE EDITAIS
-?>
-			<div class="col m4 s6">
-				<a href="<?= BASE_URL ?>editais.php?id=<?= rtrim(strtr(base64_encode($edital['ID']), '+/', '-_'), '=') ?>">
-					<div class="card hoverable small">
-						<div class="card-image">
-							<img alt="Edital" loading="lazy" src="<?= BASE_URL . $edital['IMAGEM'] ?>"/>
-						</div>
-						<div class="card-content">
-							<span class="black-text card-title"><?= $edital['TITULO'] ?></span>
+
+	<?php } else { ?>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<h1 class="my-3">Editais</h1>
+					<?php if($tamanho == 0) { echo "<p class=\"lead\">AINDA NÃO TEMOS CONTEÚDO DISPONÍVEL :(</p>"; } ?>
+				</div>
+			</div>
+
+			<?php foreach($tuplas as $tupla) {
+				if($i == 4) { ?>
+					<div class="row mb-4">
+						<div class="col-sm">
+							<div class="card-deck">
+				<?php $i = 0; } ?>
+				<div class="card" onclick="<?php echo "window.location='?id=" . $tupla->getId() . "'"; ?>">
+						<img class="card-img-top" src="<?php echo $tupla->getImagem(); ?>" alt="Edital">
+					<div class="card-body">
+						<h5 class="card-title"><?php echo $tupla->getTitulo(); ?></h5>
+						<p class="card-text"><small class="text-muted"><time datetime="<?php echo $tupla->getData()->format("Y-m-d\Th:i:s"); ?>"><?php echo $tupla->getData()->format("d/m/Y H\hi"); ?></time></small></p>
+					</div>
+				</div>
+			<?php $i++;
+				if($i == 4) { ?>
+							</div>
 						</div>
 					</div>
-				</a>
-			</div>
-<?php
-		}
-?>
+			<?php }}
+				if($i != 4) { ?>
+							</div>
+						</div>
+					</div>
+			<?php } ?>
+
+			<?php include_once("paginacao.php"); ?>
 		</div>
-<?php
-	}
-	else {
-		if(isset($editais) || empty($editais)) { // AINDA NÃO HÁ EDITAIS CADASTRADOS
-?>
-		<h3 class="center-align">Ainda não temos editais disponíveis :(</h3>
-<?php
-		}
-		else { // FOI INFORMADO UM ID INVÁLIDO
-?>
-		<h3 class="center-align">Não foi encontrado o edital solicitado :(</h3>
-<?php
-		}
-	}
-?>
-	</div>
-<?php
-	require_once(__DIR__ . '/navegador.php'); // INSERE O NAVEGADOR DE PÁGINAS
-	require_once(__DIR__ . '/rodape.php'); // INSERE O RODAPÉ DA PÁGINA
+	<?php } ?>
+
+	<!-- Rodapé -->
+	<?php include_once("rodape.html"); ?>
+
+	<!-- Script -->
+	<?php if(isset($ancora)) { ?>
+		<script>
+			let ancora = document.getElementById("ancora");
+			let ancoraInput = document.getElementById("ancora-input");
+			ancora.addEventListener("click", () => {
+				ancoraInput.select();
+				document.execCommand("copy");
+				ancoraInput.disabled = true;
+				ancoraInput.setAttribute("value", "Link copiado para a área de transferência");
+			});
+			ancora.addEventListener("mouseover", () => {
+				ancoraInput.style.display = "inline";
+			});
+			ancora.addEventListener("mouseout", () => {
+				ancoraInput.style.display = "none";
+				ancoraInput.disabled = false;
+				ancoraInput.setAttribute("value", "<?php echo $ancora; ?>");
+			});
+		</script>
+	<?php } ?>
+</body>
+
+</html>

@@ -1,0 +1,155 @@
+/**
+ * Folha de estilos do sistema de gerenciamento de conteúdo (tema escuro)
+ * @author Luiz Joaquim Aderaldo Amichi <luizamichi@luizamichi.com.br>
+ * @copyright 2021 Luiz Joaquim Aderaldo Amichi
+ */
+
+body {
+	overflow-x: hidden;
+	background-color: #292929;
+	color: #ffffff;
+}
+
+a, div, p, textarea, strong, ul, li, input, select, table, tr, th, #inputImagem, #inputArquivo, .custom-file-label, .custom-file-input, .text-dark {
+	color: #ffffff !important;
+	background-color: #292929 !important;
+	text-decoration: none !important;
+}
+
+td img, .input-group-text img, .sidebar-heading img, .list-group-flush img, .list-group img {
+	filter: invert(1);
+}
+
+#sidebar-wrapper a:hover, .btn-outline-success:hover {
+	background-color: #218838 !important;
+}
+
+#sidebar-wrapper a.bg-success:hover {
+	background-color: #035a00 !important;
+}
+
+.bg-light {
+	background-color: #292929 !important;
+}
+
+.list-group-item img, .sidebar-heading img {
+	padding-right: 10px;
+	width: 35px;
+}
+
+.menu-superior {
+	background-color: #292929;
+	z-index: 10;
+	top: 0;
+	position: sticky;
+}
+
+.mini-menu {
+	display: none;
+	visibility: hidden;
+}
+
+.not-selectable {
+	-webkit-user-select: none !important;
+	-khtml-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
+	-o-user-select: none !important;
+	user-select: none !important;
+}
+
+.remover:hover {
+	color: #a71d2a !important;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.active .nav-link {
+	text-decoration: underline #ffffff !important;
+}
+
+img.branco {
+	filter: invert(1);
+}
+
+img.cinza:hover {
+	filter: invert(.1) sepia(1) saturate(100) hue-rotate(100deg) brightness(3) grayscale(100%);
+}
+
+img.hover-azul:hover {
+	filter: invert(.5) sepia(1) saturate(100) hue-rotate(225deg);
+}
+
+img.hover-vermelho:hover {
+	filter: invert(.5) sepia(1) saturate(100) hue-rotate(350deg);
+}
+
+p.rodape {
+	bottom: 0;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
+
+#sidebar-wrapper {
+	min-height: 100vh;
+	margin-left: -15rem;
+	-webkit-transition: margin .25s ease-out;
+	-moz-transition: margin .25s ease-out;
+	-o-transition: margin .25s ease-out;
+	transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+	background-color: #292929;
+	padding: 0.875rem 1.25rem;
+	font-size: 1.2rem;
+	height: 3.55rem;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+#sidebar-wrapper .list-group {
+	z-index: auto;
+	top: 0;
+	position: sticky;
+	width: 15rem;
+	margin-top: 0;
+	overflow: visible;
+}
+
+#page-content-wrapper {
+	min-width: 100vw;
+	position: relative;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+	margin-left: 0;
+}
+
+@media (min-width: 768px) {
+	#sidebar-wrapper {
+		margin-left: 0;
+	}
+
+	#page-content-wrapper {
+		min-width: 0;
+		width: 100%;
+	}
+
+	#wrapper.toggled #sidebar-wrapper {
+		margin-left: -15rem;
+	}
+}
+
+@media (max-width: 574px) {
+	.form-right {
+		margin-top: 2vh;
+	}
+}
+
+@media (max-width: 768px) {
+	.mini-menu {
+		display: initial;
+		visibility: visible;
+	}
+}

@@ -1,0 +1,128 @@
+/**
+ * Folha de estilos do sistema de gerenciamento de conteúdo
+ * @author Luiz Joaquim Aderaldo Amichi <luizamichi@luizamichi.com.br>
+ * @copyright 2021 Luiz Joaquim Aderaldo Amichi
+ */
+
+body {
+	overflow-x: hidden;
+}
+
+.list-group-item img, .sidebar-heading img {
+	padding-right: 10px;
+	width: 35px;
+}
+
+.menu-superior {
+	background-color: #ececec;
+	z-index: 10;
+	top: 0;
+	position: sticky;
+	height: auto;
+}
+
+.mini-menu {
+	display: none;
+	visibility: hidden;
+}
+
+.not-selectable {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.remover:hover {
+	color: #a71d2a !important;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+img.branco {
+	filter: invert(1);
+}
+
+img.cinza:hover {
+	filter: invert(.1) sepia(1) saturate(100) hue-rotate(100deg) brightness(3) grayscale(100%);
+}
+
+img.hover-azul:hover {
+	filter: invert(.5) sepia(1) saturate(100) hue-rotate(225deg);
+}
+
+img.hover-vermelho:hover {
+	filter: invert(.5) sepia(1) saturate(100) hue-rotate(350deg);
+}
+
+p.rodape {
+	bottom: 0;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+}
+
+#sidebar-wrapper {
+	min-height: 100vh;
+	margin-left: -15rem;
+	-webkit-transition: margin .25s ease-out;
+	-moz-transition: margin .25s ease-out;
+	-o-transition: margin .25s ease-out;
+	transition: margin .25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+	background-color: #ececec;
+	padding: 0.875rem 1.25rem;
+	font-size: 1.2rem;
+	height: 3.55rem;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+#sidebar-wrapper .list-group {
+	z-index: auto;
+	top: 0;
+	position: sticky;
+	width: 15rem;
+	margin-top: 0;
+	overflow: visible;
+}
+
+#page-content-wrapper {
+	min-width: 100vw;
+	position: relative;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+	margin-left: 0;
+}
+
+@media (min-width: 768px) {
+	#sidebar-wrapper {
+		margin-left: 0;
+	}
+
+	#page-content-wrapper {
+		min-width: 0;
+		width: 100%;
+	}
+
+	#wrapper.toggled #sidebar-wrapper {
+		margin-left: -15rem;
+	}
+}
+
+@media (max-width: 574px) {
+	.form-right {
+		margin-top: 2vh;
+	}
+}
+
+@media (max-width: 768px) {
+	.mini-menu {
+		display: initial;
+		visibility: visible;
+	}
+}
